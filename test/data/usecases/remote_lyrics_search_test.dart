@@ -11,6 +11,13 @@ abstract class HttpClient {
   });
 }
 
+class LyricsSearchParams {
+  final String artist;
+  final String music;
+
+  LyricsSearchParams({@required this.artist, @required this.music});
+}
+
 class RemoteLyricsSearch {
   final HttpClient httpClient;
   final String url;
@@ -20,11 +27,8 @@ class RemoteLyricsSearch {
     @required this.url,
   });
 
-  Future<void> search({
-    @required String artist,
-    @required String music,
-  }) async {
-    final lyricsRequest = "$url/$artist/$music";
+  Future<void> search(LyricsSearchParams params) async {
+    final lyricsRequest = "$url/${params.artist}/${params.music}";
 
     await httpClient.request(url: lyricsRequest);
   }
@@ -34,24 +38,29 @@ class HttpClientSpy extends Mock implements HttpClient {}
 
 void main() {
   String url;
-  String artist;
-  String music;
+  LyricsSearchParams params;
   RemoteLyricsSearch sut;
   HttpClientSpy httpClientSpy;
 
   setUp(() {
-    artist = faker.person.name();
-    music = faker.lorem.sentence();
+    params = LyricsSearchParams(
+      artist: faker.person.name(),
+      music: faker.lorem.sentence(),
+    );
+
     url = faker.internet.httpUrl();
     httpClientSpy = HttpClientSpy();
     sut = RemoteLyricsSearch(url: url, httpClient: httpClientSpy);
   });
 
   test('Should call HttpClient with correct values', () async {
-    await sut.search(artist: artist, music: music);
+    await sut.search(params);
 
     verify(
-      httpClientSpy.request(url: "$url/$artist/$music", method: 'get'),
+      httpClientSpy.request(
+        url: "$url/${params.artist}/${params.music}",
+        method: 'get',
+      ),
     ).called(1);
   });
 }
