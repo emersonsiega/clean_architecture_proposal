@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -12,7 +15,7 @@ class HttpAdapter implements HttpClient {
   HttpAdapter(this.client);
 
   @override
-  Future<Map<String, String>> request({
+  Future<Map> request({
     @required String url,
     String method = 'get',
   }) async {
@@ -21,21 +24,40 @@ class HttpAdapter implements HttpClient {
       'accept': 'application/json',
     };
 
-    await client.get(
+    final response = await client.get(
       url,
       headers: defaultHeaders,
     );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    }
   }
 }
 
 class ClientSpy extends Mock implements Client {}
 
 void main() {
-  test('Should call get with correct values', () async {
-    final url = faker.internet.httpUrl();
-    final clientSpy = ClientSpy();
+  String url;
+  ClientSpy clientSpy;
+  HttpAdapter sut;
+  String response;
 
-    final sut = HttpAdapter(clientSpy);
+  void mockSuccess() {
+    when(clientSpy.get(any, headers: anyNamed('headers')))
+        .thenAnswer((_) async => Response(response, 200));
+  }
+
+  setUp(() {
+    url = faker.internet.httpUrl();
+    response = '{"any-key":"any-value"}';
+    clientSpy = ClientSpy();
+    sut = HttpAdapter(clientSpy);
+
+    mockSuccess();
+  });
+
+  test('Should call get with correct values', () async {
     await sut.request(url: url, method: 'get');
 
     verify(clientSpy.get(
@@ -45,5 +67,11 @@ void main() {
         'accept': 'application/json',
       },
     ));
+  });
+
+  test('Should returns value on 200', () async {
+    final response = await sut.request(url: url, method: 'get');
+
+    expect(response, {'any-key': 'any-value'});
   });
 }
