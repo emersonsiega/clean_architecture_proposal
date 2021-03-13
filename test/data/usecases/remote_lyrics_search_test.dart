@@ -16,6 +16,8 @@ class LyricsSearchParams {
   final String music;
 
   LyricsSearchParams({@required this.artist, @required this.music});
+
+  String toUrlString() => "$artist/$music";
 }
 
 class RemoteLyricsSearch {
@@ -28,7 +30,7 @@ class RemoteLyricsSearch {
   });
 
   Future<void> search(LyricsSearchParams params) async {
-    final lyricsRequest = "$url/${params.artist}/${params.music}";
+    final lyricsRequest = "$url/${params.toUrlString()}";
 
     await httpClient.request(url: lyricsRequest);
   }
