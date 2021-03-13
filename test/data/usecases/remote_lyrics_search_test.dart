@@ -25,11 +25,17 @@ class RemoteLyricsSearch {
 class HttpClientSpy extends Mock implements HttpClient {}
 
 void main() {
-  test('Should call HttpClient with correct values', () {
-    final url = faker.internet.httpUrl();
-    final httpClientSpy = HttpClientSpy();
-    final sut = RemoteLyricsSearch(url: url, httpClient: httpClientSpy);
+  String url;
+  RemoteLyricsSearch sut;
+  HttpClientSpy httpClientSpy;
 
+  setUp(() {
+    url = faker.internet.httpUrl();
+    httpClientSpy = HttpClientSpy();
+    sut = RemoteLyricsSearch(url: url, httpClient: httpClientSpy);
+  });
+
+  test('Should call HttpClient with correct values', () {
     sut.search();
 
     verify(httpClientSpy.request(url: url)).called(1);
