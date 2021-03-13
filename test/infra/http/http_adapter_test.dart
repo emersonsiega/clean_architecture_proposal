@@ -16,7 +16,15 @@ class HttpAdapter implements HttpClient {
     @required String url,
     String method = 'get',
   }) async {
-    await client.get(url);
+    final defaultHeaders = {
+      'content-type': 'application/json',
+      'accept': 'application/json',
+    };
+
+    await client.get(
+      url,
+      headers: defaultHeaders,
+    );
   }
 }
 
@@ -30,6 +38,12 @@ void main() {
     final sut = HttpAdapter(clientSpy);
     await sut.request(url: url, method: 'get');
 
-    verify(clientSpy.get(url));
+    verify(clientSpy.get(
+      url,
+      headers: {
+        'content-type': 'application/json',
+        'accept': 'application/json',
+      },
+    ));
   });
 }
