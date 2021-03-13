@@ -30,8 +30,10 @@ class HttpAdapter implements HttpClient {
     );
 
     if (response.statusCode == 200) {
-      return jsonDecode(response.body);
+      return response.body.isEmpty ? null : jsonDecode(response.body);
     }
+
+    return null;
   }
 }
 
@@ -43,9 +45,9 @@ void main() {
   HttpAdapter sut;
   String response;
 
-  void mockSuccess() {
+  void mockSuccess(data) {
     when(clientSpy.get(any, headers: anyNamed('headers')))
-        .thenAnswer((_) async => Response(response, 200));
+        .thenAnswer((_) async => Response(data, 200));
   }
 
   setUp(() {
@@ -54,7 +56,7 @@ void main() {
     clientSpy = ClientSpy();
     sut = HttpAdapter(clientSpy);
 
-    mockSuccess();
+    mockSuccess(response);
   });
 
   test('Should call get with correct values', () async {
@@ -69,9 +71,17 @@ void main() {
     ));
   });
 
-  test('Should returns value on 200', () async {
+  test('Should return value on 200', () async {
     final response = await sut.request(url: url, method: 'get');
 
     expect(response, {'any-key': 'any-value'});
+  });
+
+  test('Should return null on 200 with no data', () async {
+    mockSuccess('');
+
+    final response = await sut.request(url: url, method: 'get');
+
+    expect(response, null);
   });
 }
