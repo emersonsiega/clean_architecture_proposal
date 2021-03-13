@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
@@ -45,9 +44,9 @@ void main() {
   HttpAdapter sut;
   String response;
 
-  void mockSuccess(data) {
+  void mockSuccess(String data, {int statusCode = 200}) {
     when(clientSpy.get(any, headers: anyNamed('headers')))
-        .thenAnswer((_) async => Response(data, 200));
+        .thenAnswer((_) async => Response(data, statusCode));
   }
 
   setUp(() {
@@ -79,6 +78,14 @@ void main() {
 
   test('Should return null on 200 with no data', () async {
     mockSuccess('');
+
+    final response = await sut.request(url: url, method: 'get');
+
+    expect(response, null);
+  });
+
+  test('Should return null on 204', () async {
+    mockSuccess('', statusCode: 204);
 
     final response = await sut.request(url: url, method: 'get');
 
