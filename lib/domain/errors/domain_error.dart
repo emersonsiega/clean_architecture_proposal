@@ -1,1 +1,1 @@
-enum DomainError { invalidQuery }
+enum DomainError { invalidQuery, unexpected }

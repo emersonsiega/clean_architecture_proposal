@@ -35,12 +35,21 @@ void main() {
     ).called(1);
   });
 
-  test('Should throw a NotFoundError if httpClient throws 404', () async {
+  test('Should throw a invalidQuery error if httpClient throws 404', () async {
     when(httpClientSpy.request(url: anyNamed('url')))
         .thenThrow(HttpError.notFound);
 
     final future = sut.search(params);
 
     expect(future, throwsA(DomainError.invalidQuery));
+  });
+
+  test('Should throw a unexpectedError if httpClient throws 500', () async {
+    when(httpClientSpy.request(url: anyNamed('url')))
+        .thenThrow(HttpError.serverError);
+
+    final future = sut.search(params);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }

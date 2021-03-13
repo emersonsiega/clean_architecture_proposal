@@ -18,8 +18,12 @@ class RemoteLyricsSearch implements LyricsSearch {
       final lyricsRequest = "$url/${params.toUrlString()}";
 
       await httpClient.request(url: lyricsRequest);
-    } on HttpError {
-      throw DomainError.invalidQuery;
+    } on HttpError catch (error) {
+      if (error == HttpError.notFound) {
+        throw DomainError.invalidQuery;
+      }
+
+      throw DomainError.unexpected;
     }
   }
 }
