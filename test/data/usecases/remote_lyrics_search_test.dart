@@ -1,44 +1,9 @@
 import 'package:faker/faker.dart';
-import 'package:meta/meta.dart';
 import 'package:mockito/mockito.dart';
-
 import 'package:test/test.dart';
 
-abstract class HttpClient {
-  Future<void> request({
-    @required String url,
-    String method: 'get',
-  });
-}
-
-abstract class LyricsSearch {
-  Future<void> search(LyricsSearchParams params);
-}
-
-class LyricsSearchParams {
-  final String artist;
-  final String music;
-
-  LyricsSearchParams({@required this.artist, @required this.music});
-
-  String toUrlString() => "$artist/$music";
-}
-
-class RemoteLyricsSearch implements LyricsSearch {
-  final HttpClient httpClient;
-  final String url;
-
-  RemoteLyricsSearch({
-    @required this.httpClient,
-    @required this.url,
-  });
-
-  Future<void> search(LyricsSearchParams params) async {
-    final lyricsRequest = "$url/${params.toUrlString()}";
-
-    await httpClient.request(url: lyricsRequest);
-  }
-}
+import 'package:clean_architecture_proposal/data/data.dart';
+import 'package:clean_architecture_proposal/domain/domain.dart';
 
 class HttpClientSpy extends Mock implements HttpClient {}
 
