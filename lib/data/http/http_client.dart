@@ -1,7 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart';
 
 abstract class HttpClient {
-  Future<void> request({
+  Future<Map<String, String>> request({
     @required String url,
     String method: 'get',
   });

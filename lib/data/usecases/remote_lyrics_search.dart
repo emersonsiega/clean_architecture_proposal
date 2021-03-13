@@ -13,11 +13,13 @@ class RemoteLyricsSearch implements LyricsSearch {
     @required this.url,
   });
 
-  Future<void> search(LyricsSearchParams params) async {
+  Future<LyricEntity> search(LyricsSearchParams params) async {
     try {
       final lyricsRequest = "$url/${params.toUrlString()}";
 
-      await httpClient.request(url: lyricsRequest);
+      final remoteEntity = await httpClient.request(url: lyricsRequest);
+
+      return RemoteLyricModel.fromJson(params, remoteEntity).entity;
     } on HttpError catch (error) {
       if (error == HttpError.notFound) {
         throw DomainError.invalidQuery;

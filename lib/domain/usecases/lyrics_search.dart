@@ -1,7 +1,9 @@
 import 'package:meta/meta.dart';
 
+import '../../domain/domain.dart';
+
 abstract class LyricsSearch {
-  Future<void> search(LyricsSearchParams params);
+  Future<LyricEntity> search(LyricsSearchParams params);
 }
 
 class LyricsSearchParams {

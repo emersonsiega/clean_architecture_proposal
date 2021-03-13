@@ -12,9 +12,17 @@ void main() {
   LyricsSearchParams params;
   RemoteLyricsSearch sut;
   HttpClientSpy httpClientSpy;
+  LyricEntity entity;
+
+  PostExpectation mockHttpClientCall() =>
+      when(httpClientSpy.request(url: anyNamed('url')));
 
   void mockError(HttpError error) {
-    when(httpClientSpy.request(url: anyNamed('url'))).thenThrow(error);
+    mockHttpClientCall().thenThrow(error);
+  }
+
+  void mockSuccess() {
+    mockHttpClientCall().thenAnswer((_) async => {'lyrics': entity.lyric});
   }
 
   setUp(() {
@@ -23,9 +31,17 @@ void main() {
       music: faker.lorem.sentence(),
     );
 
+    entity = LyricEntity(
+      lyric: faker.lorem.sentence(),
+      artist: params.artist,
+      music: params.music,
+    );
+
     url = faker.internet.httpUrl();
     httpClientSpy = HttpClientSpy();
     sut = RemoteLyricsSearch(url: url, httpClient: httpClientSpy);
+
+    mockSuccess();
   });
 
   test('Should call HttpClient with correct values', () async {
@@ -53,5 +69,11 @@ void main() {
     final future = sut.search(params);
 
     expect(future, throwsA(DomainError.unexpected));
+  });
+
+  test('Should return LyricsEntity on success', () async {
+    final lyrics = await sut.search(params);
+
+    expect(lyrics, entity);
   });
 }
