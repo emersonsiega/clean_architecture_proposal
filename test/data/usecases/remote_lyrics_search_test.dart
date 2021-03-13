@@ -13,6 +13,10 @@ void main() {
   RemoteLyricsSearch sut;
   HttpClientSpy httpClientSpy;
 
+  void mockError(HttpError error) {
+    when(httpClientSpy.request(url: anyNamed('url'))).thenThrow(error);
+  }
+
   setUp(() {
     params = LyricsSearchParams(
       artist: faker.person.name(),
@@ -36,8 +40,7 @@ void main() {
   });
 
   test('Should throw a invalidQuery error if httpClient throws 404', () async {
-    when(httpClientSpy.request(url: anyNamed('url')))
-        .thenThrow(HttpError.notFound);
+    mockError(HttpError.notFound);
 
     final future = sut.search(params);
 
@@ -45,8 +48,7 @@ void main() {
   });
 
   test('Should throw a unexpectedError if httpClient throws 500', () async {
-    when(httpClientSpy.request(url: anyNamed('url')))
-        .thenThrow(HttpError.serverError);
+    mockError(HttpError.serverError);
 
     final future = sut.search(params);
 
