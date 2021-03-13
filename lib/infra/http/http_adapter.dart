@@ -19,10 +19,14 @@ class HttpAdapter implements HttpClient {
       'accept': 'application/json',
     };
 
-    final response = await client.get(
-      url,
-      headers: defaultHeaders,
-    );
+    var response = Response('', 500);
+
+    if (method == 'get') {
+      response = await client.get(
+        url,
+        headers: defaultHeaders,
+      );
+    }
 
     return _handleResponse(response);
   }

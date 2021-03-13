@@ -77,4 +77,12 @@ void main() {
 
     expect(future, throwsA(HttpError.serverError));
   });
+
+  test('Should throw serverError if invalid method is provided', () async {
+    mockResponse('', statusCode: 200);
+
+    final future = sut.request(url: url, method: 'invalid');
+
+    expect(future, throwsA(HttpError.serverError));
+  });
 }
