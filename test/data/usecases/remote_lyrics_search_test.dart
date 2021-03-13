@@ -11,6 +11,10 @@ abstract class HttpClient {
   });
 }
 
+abstract class LyricsSearch {
+  Future<void> search(LyricsSearchParams params);
+}
+
 class LyricsSearchParams {
   final String artist;
   final String music;
@@ -20,7 +24,7 @@ class LyricsSearchParams {
   String toUrlString() => "$artist/$music";
 }
 
-class RemoteLyricsSearch {
+class RemoteLyricsSearch implements LyricsSearch {
   final HttpClient httpClient;
   final String url;
 
