@@ -1,0 +1,1 @@
+enum DomainError { invalidQuery }

@@ -34,4 +34,13 @@ void main() {
       ),
     ).called(1);
   });
+
+  test('Should throw a NotFoundError if httpClient throws 404', () async {
+    when(httpClientSpy.request(url: anyNamed('url')))
+        .thenThrow(HttpError.notFound);
+
+    final future = sut.search(params);
+
+    expect(future, throwsA(DomainError.invalidQuery));
+  });
 }

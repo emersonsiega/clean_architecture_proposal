@@ -14,8 +14,12 @@ class RemoteLyricsSearch implements LyricsSearch {
   });
 
   Future<void> search(LyricsSearchParams params) async {
-    final lyricsRequest = "$url/${params.toUrlString()}";
+    try {
+      final lyricsRequest = "$url/${params.toUrlString()}";
 
-    await httpClient.request(url: lyricsRequest);
+      await httpClient.request(url: lyricsRequest);
+    } on HttpError {
+      throw DomainError.invalidQuery;
+    }
   }
 }
