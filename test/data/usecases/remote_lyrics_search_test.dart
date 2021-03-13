@@ -5,7 +5,10 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 abstract class HttpClient {
-  Future<void> request({@required String url});
+  Future<void> request({
+    @required String url,
+    String method: 'get',
+  });
 }
 
 class RemoteLyricsSearch {
@@ -35,9 +38,9 @@ void main() {
     sut = RemoteLyricsSearch(url: url, httpClient: httpClientSpy);
   });
 
-  test('Should call HttpClient with correct values', () {
-    sut.search();
+  test('Should call HttpClient with correct values', () async {
+    await sut.search();
 
-    verify(httpClientSpy.request(url: url)).called(1);
+    verify(httpClientSpy.request(url: url, method: 'get')).called(1);
   });
 }
