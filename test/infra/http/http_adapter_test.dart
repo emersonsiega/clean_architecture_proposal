@@ -40,7 +40,7 @@ class HttpAdapter implements HttpClient {
       throw HttpError.notFound;
     }
 
-    return null;
+    throw HttpError.serverError;
   }
 }
 
@@ -106,5 +106,13 @@ void main() {
     final future = sut.request(url: url);
 
     expect(future, throwsA(HttpError.notFound));
+  });
+
+  test('Should throw serverError on error', () async {
+    mockResponse('', statusCode: 500);
+
+    final future = sut.request(url: url);
+
+    expect(future, throwsA(HttpError.serverError));
   });
 }
