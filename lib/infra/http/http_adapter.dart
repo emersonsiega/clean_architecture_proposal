@@ -21,11 +21,15 @@ class HttpAdapter implements HttpClient {
 
     var response = Response('', 500);
 
-    if (method == 'get') {
-      response = await client.get(
-        url,
-        headers: defaultHeaders,
-      );
+    try {
+      if (method == 'get') {
+        response = await client.get(
+          url,
+          headers: defaultHeaders,
+        );
+      }
+    } catch (error) {
+      throw HttpError.serverError;
     }
 
     return _handleResponse(response);

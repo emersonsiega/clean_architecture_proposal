@@ -14,9 +14,15 @@ void main() {
   HttpAdapter sut;
   String response;
 
+  PostExpectation mockClientCall() =>
+      when(clientSpy.get(any, headers: anyNamed('headers')));
+
   void mockResponse(String data, {int statusCode: 200}) {
-    when(clientSpy.get(any, headers: anyNamed('headers')))
-        .thenAnswer((_) async => Response(data, statusCode));
+    mockClientCall().thenAnswer((_) async => Response(data, statusCode));
+  }
+
+  void mockError() {
+    mockClientCall().thenThrow(Exception());
   }
 
   setUp(() {
@@ -82,6 +88,14 @@ void main() {
     mockResponse('', statusCode: 200);
 
     final future = sut.request(url: url, method: 'invalid');
+
+    expect(future, throwsA(HttpError.serverError));
+  });
+
+  test('Should throw serverError if client throws', () async {
+    mockError();
+
+    final future = sut.request(url: url);
 
     expect(future, throwsA(HttpError.serverError));
   });
