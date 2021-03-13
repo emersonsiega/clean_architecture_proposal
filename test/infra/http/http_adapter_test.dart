@@ -28,8 +28,16 @@ class HttpAdapter implements HttpClient {
       headers: defaultHeaders,
     );
 
+    return _handleResponse(response);
+  }
+
+  Map _handleResponse(Response response) {
     if (response.statusCode == 200) {
       return response.body.isEmpty ? null : jsonDecode(response.body);
+    } else if (response.statusCode == 204) {
+      return null;
+    } else if (response.statusCode == 404) {
+      throw HttpError.notFound;
     }
 
     return null;
@@ -44,7 +52,7 @@ void main() {
   HttpAdapter sut;
   String response;
 
-  void mockSuccess(String data, {int statusCode = 200}) {
+  void mockResponse(String data, {int statusCode: 200}) {
     when(clientSpy.get(any, headers: anyNamed('headers')))
         .thenAnswer((_) async => Response(data, statusCode));
   }
@@ -55,11 +63,11 @@ void main() {
     clientSpy = ClientSpy();
     sut = HttpAdapter(clientSpy);
 
-    mockSuccess(response);
+    mockResponse(response);
   });
 
   test('Should call get with correct values', () async {
-    await sut.request(url: url, method: 'get');
+    await sut.request(url: url);
 
     verify(clientSpy.get(
       url,
@@ -71,24 +79,32 @@ void main() {
   });
 
   test('Should return value on 200', () async {
-    final response = await sut.request(url: url, method: 'get');
+    final response = await sut.request(url: url);
 
     expect(response, {'any-key': 'any-value'});
   });
 
   test('Should return null on 200 with no data', () async {
-    mockSuccess('');
+    mockResponse('');
 
-    final response = await sut.request(url: url, method: 'get');
+    final response = await sut.request(url: url);
 
     expect(response, null);
   });
 
   test('Should return null on 204', () async {
-    mockSuccess('', statusCode: 204);
+    mockResponse('', statusCode: 204);
 
-    final response = await sut.request(url: url, method: 'get');
+    final response = await sut.request(url: url);
 
     expect(response, null);
+  });
+
+  test('Should throw notFound error on 404', () async {
+    mockResponse('', statusCode: 404);
+
+    final future = sut.request(url: url);
+
+    expect(future, throwsA(HttpError.notFound));
   });
 }
