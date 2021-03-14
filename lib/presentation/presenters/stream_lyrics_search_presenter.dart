@@ -12,6 +12,7 @@ class LyricsSearchState {
   String music;
   String artistError;
   String musicError;
+  String localError;
   bool isLoading = false;
 
   bool get isFormValid =>
@@ -51,19 +52,24 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _stateController.stream.map((state) => state.isLoading);
 
   @override
-  Stream<String> get localErrorStream => throw UnimplementedError();
+  Stream<String> get localErrorStream =>
+      _stateController.stream.map((state) => state.localError);
 
   @override
   Future<void> search() async {
-    _state.isLoading = true;
-    _update();
+    try {
+      _state.isLoading = true;
+      _update();
 
-    await lyricsSearch.search(
-      LyricsSearchParams(artist: _state.artist, music: _state.music),
-    );
-
-    _state.isLoading = false;
-    _update();
+      await lyricsSearch.search(
+        LyricsSearchParams(artist: _state.artist, music: _state.music),
+      );
+    } on DomainError catch (error) {
+      _state.localError = error.description;
+    } finally {
+      _state.isLoading = false;
+      _update();
+    }
   }
 
   void _update() => _stateController.add(_state);

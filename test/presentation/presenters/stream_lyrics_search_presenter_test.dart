@@ -25,6 +25,12 @@ void main() {
     mockValidationCall(field).thenReturn(value);
   }
 
+  PostExpectation mockSearchCall() => when(lyricsSearchSpy.search(any));
+
+  void mockLyricsSearchError({DomainError error: DomainError.unexpected}) {
+    mockSearchCall().thenThrow(error);
+  }
+
   setUp(() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
@@ -129,6 +135,21 @@ void main() {
     sut.validateMusic(music);
 
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+
+    await sut.search();
+  });
+
+  test('Should emit invalidQuery on LyricsSearch failure', () async {
+    mockLyricsSearchError(error: DomainError.invalidQuery);
+
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+
+    expectLater(sut.isLoadingStream, emits(false));
+    expectLater(
+      sut.localErrorStream,
+      emits('Invalid query. Try again with different values.'),
+    );
 
     await sut.search();
   });
