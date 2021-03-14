@@ -27,8 +27,8 @@ void main() {
 
   setUp(() {
     params = LyricsSearchParams(
-      artist: faker.person.name(),
-      music: faker.lorem.sentence(),
+      artist: "Eric Clapton",
+      music: 'Tears in Heaven',
     );
 
     entity = LyricEntity(
@@ -49,7 +49,7 @@ void main() {
 
     verify(
       httpClientSpy.request(
-        url: "$url/${params.artist}/${params.music}",
+        url: "$url/Eric%20Clapton/Tears%20in%20Heaven",
         method: 'get',
       ),
     ).called(1);
