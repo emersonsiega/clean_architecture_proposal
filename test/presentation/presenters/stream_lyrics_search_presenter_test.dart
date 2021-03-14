@@ -19,9 +19,9 @@ class LyricsSearchState {
 
   bool get isFormValid =>
       artist?.isNotEmpty == true &&
-      artistError?.isNotEmpty == false &&
+      artistError?.isNotEmpty != true &&
       music?.isNotEmpty == true &&
-      musicError?.isNotEmpty == false;
+      musicError?.isNotEmpty != true;
 }
 
 class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
@@ -167,6 +167,15 @@ void main() {
     expectLater(sut.artistErrorStream, emits('invalid'));
     expectLater(sut.musicErrorStream, emits(null));
     expectLater(sut.isFormValidStream, emits(false));
+
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+  });
+
+  test('Should emits form valid if all fields are valid', () async {
+    expectLater(sut.artistErrorStream, emits(null));
+    expectLater(sut.musicErrorStream, emits(null));
+    expectLater(sut.isFormValidStream, emits(true));
 
     sut.validateArtist(artist);
     sut.validateMusic(music);
