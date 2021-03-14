@@ -9,12 +9,16 @@ abstract class FormValidManager {
   Stream<bool> get isFormValidStream;
 }
 
+abstract class LocalErrorManager {
+  Stream<String> get localErrorStream;
+}
+
 abstract class FormLoadingManager {
   Stream<bool> get isLoadingStream;
 }
 
 abstract class LyricsSearchPresenter
-    implements FormValidManager, FormLoadingManager {
+    implements FormValidManager, FormLoadingManager, LocalErrorManager {
   Stream<String> get artistErrorStream;
   Stream<String> get musicErrorStream;
 
@@ -26,7 +30,7 @@ abstract class LyricsSearchPresenter
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
 
-class SearchPage extends StatelessWidget {
+class SearchPage extends StatefulWidget {
   final LyricsSearchPresenter presenter;
 
   const SearchPage({
@@ -35,11 +39,44 @@ class SearchPage extends StatelessWidget {
   }) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    void _hideKeyboard() {
-      FocusScope.of(context).requestFocus(FocusNode());
-    }
+  _SearchPageState createState() => _SearchPageState();
+}
 
+class _SearchPageState extends State<SearchPage> {
+  StreamSubscription _subscription;
+
+  @override
+  void initState() {
+    _subscription = widget.presenter.localErrorStream.listen((error) {
+      if (error != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Colors.red[900],
+            content: Text(
+              error,
+              textAlign: TextAlign.center,
+            ),
+          ),
+        );
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+
+    super.dispose();
+  }
+
+  void _hideKeyboard() {
+    FocusScope.of(context).requestFocus(FocusNode());
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text("Lyrics Search"),
@@ -54,7 +91,7 @@ class SearchPage extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 StreamBuilder<String>(
-                  stream: presenter.artistErrorStream,
+                  stream: widget.presenter.artistErrorStream,
                   initialData: null,
                   builder: (context, snapshot) {
                     return TextFormField(
@@ -65,13 +102,13 @@ class SearchPage extends StatelessWidget {
                         errorText: snapshot.data,
                       ),
                       textInputAction: TextInputAction.none,
-                      onChanged: presenter.validateArtist,
+                      onChanged: widget.presenter.validateArtist,
                     );
                   },
                 ),
                 const SizedBox(height: 30),
                 StreamBuilder<String>(
-                  stream: presenter.musicErrorStream,
+                  stream: widget.presenter.musicErrorStream,
                   initialData: null,
                   builder: (context, snapshot) {
                     return TextFormField(
@@ -82,7 +119,7 @@ class SearchPage extends StatelessWidget {
                         errorText: snapshot.data,
                       ),
                       textInputAction: TextInputAction.done,
-                      onChanged: presenter.validateMusic,
+                      onChanged: widget.presenter.validateMusic,
                     );
                   },
                 ),
@@ -92,12 +129,12 @@ class SearchPage extends StatelessWidget {
         ),
       ),
       floatingActionButton: StreamBuilder<bool>(
-        stream: presenter.isFormValidStream,
+        stream: widget.presenter.isFormValidStream,
         initialData: false,
         builder: (context, isFormValid) {
           return FloatingActionButton(
             child: StreamBuilder<bool>(
-              stream: presenter.isLoadingStream,
+              stream: widget.presenter.isLoadingStream,
               initialData: false,
               builder: (context, isLoading) {
                 if (isLoading.data == true) {
@@ -107,7 +144,8 @@ class SearchPage extends StatelessWidget {
                 return Icon(Icons.search);
               },
             ),
-            onPressed: isFormValid.data == true ? presenter.search : null,
+            onPressed:
+                isFormValid.data == true ? widget.presenter.search : null,
           );
         },
       ),
@@ -121,6 +159,7 @@ void main() {
   String music;
   StreamController<String> artistErrorController;
   StreamController<String> musicErrorController;
+  StreamController<String> formErrorController;
   StreamController<bool> isFormValidController;
   StreamController<bool> isLoadingController;
 
@@ -129,6 +168,8 @@ void main() {
         .thenAnswer((_) => artistErrorController.stream);
     when(searchPresenterSpy.musicErrorStream)
         .thenAnswer((_) => musicErrorController.stream);
+    when(searchPresenterSpy.localErrorStream)
+        .thenAnswer((_) => formErrorController.stream);
     when(searchPresenterSpy.isFormValidStream)
         .thenAnswer((_) => isFormValidController.stream);
     when(searchPresenterSpy.isLoadingStream)
@@ -141,6 +182,7 @@ void main() {
     searchPresenterSpy = LyricsSearchPresenterSpy();
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
+    formErrorController = StreamController<String>();
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
     mockPresenter();
@@ -149,6 +191,7 @@ void main() {
   tearDown(() {
     artistErrorController.close();
     musicErrorController.close();
+    formErrorController.close();
     isFormValidController.close();
     isLoadingController.close();
   });
@@ -305,5 +348,14 @@ void main() {
     isLoadingController.add(false);
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('Should present error if search fails',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    formErrorController.add('error_message');
+    await tester.pump();
+    expect(find.text('error_message'), findsOneWidget);
   });
 }
