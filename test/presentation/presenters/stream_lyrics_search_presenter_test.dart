@@ -153,4 +153,19 @@ void main() {
 
     await sut.search();
   });
+
+  test('Should emit unexpectedError on LyricsSearch failure', () async {
+    mockLyricsSearchError();
+
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+
+    expectLater(sut.isLoadingStream, emits(false));
+    expectLater(
+      sut.localErrorStream,
+      emits('Something wrong happened. Please, try again!'),
+    );
+
+    await sut.search();
+  });
 }
