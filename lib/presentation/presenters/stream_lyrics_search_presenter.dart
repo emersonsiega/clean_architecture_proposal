@@ -13,6 +13,7 @@ class LyricsSearchState {
   String artistError;
   String musicError;
   String localError;
+  PageConfig navigateTo;
   bool isLoading = false;
 
   bool get isFormValid =>
@@ -56,14 +57,20 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _stateController.stream.map((state) => state.localError);
 
   @override
+  Stream<PageConfig> get navigateToStream =>
+      _stateController.stream.map((state) => state.navigateTo);
+
+  @override
   Future<void> search() async {
     try {
       _state.isLoading = true;
       _update();
 
-      await lyricsSearch.search(
+      final entity = await lyricsSearch.search(
         LyricsSearchParams(artist: _state.artist, music: _state.music),
       );
+
+      _state.navigateTo = PageConfig('/lyric', arguments: entity);
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {

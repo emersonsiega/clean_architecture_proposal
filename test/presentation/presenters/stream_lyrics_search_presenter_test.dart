@@ -1,4 +1,5 @@
 import 'package:clean_architecture_proposal/domain/domain.dart';
+import 'package:clean_architecture_proposal/ui/ui.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -15,6 +16,8 @@ void main() {
   LyricsSearchSpy lyricsSearchSpy;
   String artist;
   String music;
+  String lyric;
+  LyricEntity entity;
 
   PostExpectation mockValidationCall(String field) =>
       when(validationSpy.validate(
@@ -31,6 +34,10 @@ void main() {
     mockSearchCall().thenThrow(error);
   }
 
+  void mockLyricsSearchSuccess() {
+    mockSearchCall().thenAnswer((_) async => entity);
+  }
+
   setUp(() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
@@ -38,10 +45,14 @@ void main() {
       validation: validationSpy,
       lyricsSearch: lyricsSearchSpy,
     );
+
     artist = faker.person.name();
     music = faker.lorem.sentence();
+    lyric = faker.lorem.sentences(50).join(" ");
+    entity = LyricEntity(lyric: lyric, artist: artist, music: music);
 
     mockValidation();
+    mockLyricsSearchSuccess();
   });
 
   test('Should call validation with correct artist', () async {
@@ -164,6 +175,22 @@ void main() {
     expectLater(
       sut.localErrorStream,
       emits('Something wrong happened. Please, try again!'),
+    );
+
+    await sut.search();
+  });
+
+  test('Should navigate to lyric page on LyricsSearch', () async {
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+    expectLater(
+      sut.navigateToStream,
+      emitsInOrder([
+        null,
+        PageConfig('/lyric', arguments: entity, type: NavigateType.push)
+      ]),
     );
 
     await sut.search();
