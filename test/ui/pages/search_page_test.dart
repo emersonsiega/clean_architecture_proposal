@@ -184,4 +184,29 @@ void main() {
 
     expect(find.text('error'), findsOneWidget);
   });
+
+  testWidgets('Should present no error if data is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    artistErrorController.add(null);
+    musicErrorController.add(null);
+    await tester.pump();
+
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Artist'),
+        matching: find.byType(Text),
+      ),
+      findsNWidgets(2),
+    );
+
+    expect(
+      find.descendant(
+        of: find.bySemanticsLabel('Music'),
+        matching: find.byType(Text),
+      ),
+      findsNWidgets(2),
+    );
+  });
 }
