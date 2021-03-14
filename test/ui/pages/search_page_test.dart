@@ -26,6 +26,8 @@ abstract class LyricsSearchPresenter
   void validateMusic(String music);
 
   Future<void> search();
+
+  void dispose();
 }
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
@@ -67,6 +69,8 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     _subscription?.cancel();
+
+    widget.presenter.dispose();
 
     super.dispose();
   }
@@ -357,5 +361,13 @@ void main() {
     formErrorController.add('error_message');
     await tester.pump();
     expect(find.text('error_message'), findsOneWidget);
+  });
+
+  testWidgets('Should close streams on dispose', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    addTearDown(() {
+      verify(searchPresenterSpy.dispose()).called(1);
+    });
   });
 }
