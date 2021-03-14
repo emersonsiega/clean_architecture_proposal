@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -10,7 +9,12 @@ abstract class FormValidManager {
   Stream<bool> get isFormValidStream;
 }
 
-abstract class LyricsSearchPresenter implements FormValidManager {
+abstract class FormLoadingManager {
+  Stream<bool> get isLoadingStream;
+}
+
+abstract class LyricsSearchPresenter
+    implements FormValidManager, FormLoadingManager {
   Stream<String> get artistErrorStream;
   Stream<String> get musicErrorStream;
 
@@ -90,10 +94,20 @@ class SearchPage extends StatelessWidget {
       floatingActionButton: StreamBuilder<bool>(
         stream: presenter.isFormValidStream,
         initialData: false,
-        builder: (context, snapshot) {
+        builder: (context, isFormValid) {
           return FloatingActionButton(
-            child: Icon(Icons.search),
-            onPressed: snapshot.data == true ? presenter.search : null,
+            child: StreamBuilder<bool>(
+              stream: presenter.isLoadingStream,
+              initialData: false,
+              builder: (context, isLoading) {
+                if (isLoading.data == true) {
+                  return CircularProgressIndicator();
+                }
+
+                return Icon(Icons.search);
+              },
+            ),
+            onPressed: isFormValid.data == true ? presenter.search : null,
           );
         },
       ),
@@ -108,6 +122,7 @@ void main() {
   StreamController<String> artistErrorController;
   StreamController<String> musicErrorController;
   StreamController<bool> isFormValidController;
+  StreamController<bool> isLoadingController;
 
   void mockPresenter() {
     when(searchPresenterSpy.artistErrorStream)
@@ -116,6 +131,8 @@ void main() {
         .thenAnswer((_) => musicErrorController.stream);
     when(searchPresenterSpy.isFormValidStream)
         .thenAnswer((_) => isFormValidController.stream);
+    when(searchPresenterSpy.isLoadingStream)
+        .thenAnswer((_) => isLoadingController.stream);
   }
 
   setUp(() {
@@ -125,6 +142,7 @@ void main() {
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
     isFormValidController = StreamController<bool>();
+    isLoadingController = StreamController<bool>();
     mockPresenter();
   });
 
@@ -132,6 +150,7 @@ void main() {
     artistErrorController.close();
     musicErrorController.close();
     isFormValidController.close();
+    isLoadingController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -264,5 +283,13 @@ void main() {
     await tester.pump();
 
     verify(searchPresenterSpy.search()).called(1);
+  });
+
+  testWidgets('Should present loading', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isLoadingController.add(true);
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
 }
