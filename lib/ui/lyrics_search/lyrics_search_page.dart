@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 
 import '../../dependency_management/dependency_management.dart';
 
+import '../ui.dart';
+
 import './components/components.dart';
 import './lyrics_search_presenter.dart';
 
@@ -12,12 +14,18 @@ class LyricsSearchPage extends StatefulWidget {
   _LyricsSearchPageState createState() => _LyricsSearchPageState();
 }
 
-class _LyricsSearchPageState extends State<LyricsSearchPage> {
+class _LyricsSearchPageState extends State<LyricsSearchPage>
+    with NavigateToPageMixin {
   LyricsSearchPresenter presenter = Get.i().get();
   StreamSubscription _subscription;
 
   @override
+  Stream<PageConfig> navigateToPageManager;
+
+  @override
   void initState() {
+    navigateToPageManager = presenter.navigateToStream;
+
     _subscription = presenter.localErrorStream.listen((error) {
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(

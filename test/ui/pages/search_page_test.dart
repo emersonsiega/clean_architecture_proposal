@@ -17,6 +17,7 @@ void main() {
   StreamController<String> artistErrorController;
   StreamController<String> musicErrorController;
   StreamController<String> formErrorController;
+  StreamController<PageConfig> navigateToController;
   StreamController<bool> isFormValidController;
   StreamController<bool> isLoadingController;
 
@@ -27,6 +28,8 @@ void main() {
         .thenAnswer((_) => musicErrorController.stream);
     when(searchPresenterSpy.localErrorStream)
         .thenAnswer((_) => formErrorController.stream);
+    when(searchPresenterSpy.navigateToStream)
+        .thenAnswer((_) => navigateToController.stream);
     when(searchPresenterSpy.isFormValidStream)
         .thenAnswer((_) => isFormValidController.stream);
     when(searchPresenterSpy.isLoadingStream)
@@ -40,6 +43,7 @@ void main() {
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
     formErrorController = StreamController<String>();
+    navigateToController = StreamController<PageConfig>();
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
     mockPresenter();
@@ -51,12 +55,19 @@ void main() {
     formErrorController.close();
     isFormValidController.close();
     isLoadingController.close();
+    navigateToController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
     Get.i().put<LyricsSearchPresenter>(searchPresenterSpy);
 
-    final page = MaterialApp(home: LyricsSearchPage());
+    final page = MaterialApp(
+      initialRoute: '/',
+      routes: {
+        '/': (_) => LyricsSearchPage(),
+        '/other_page': (_) => Text('other_page'),
+      },
+    );
 
     await tester.pumpWidget(page);
   }
@@ -205,6 +216,15 @@ void main() {
     isLoadingController.add(false);
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
+  });
+
+  testWidgets('Should navigate to other page', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    navigateToController.add(PageConfig('/other_page'));
+    await tester.pumpAndSettle();
+
+    expect(find.text("other_page"), findsOneWidget);
   });
 
   testWidgets('Should present error if search fails',
