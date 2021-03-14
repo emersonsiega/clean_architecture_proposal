@@ -123,4 +123,13 @@ void main() {
 
     verify(lyricsSearchSpy.search(params)).called(1);
   });
+
+  test('Should emit correct events on LyricsSearch success', () async {
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+
+    await sut.search();
+  });
 }
