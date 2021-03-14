@@ -11,12 +11,17 @@ class LyricPage extends StatelessWidget {
       appBar: AppBar(
         title: Text("${entity.artist}"),
         bottom: PreferredSize(
-          preferredSize: Size.fromHeight(50),
+          preferredSize: Size.fromHeight(35),
           child: Container(
-            height: 50,
+            height: 35,
             width: double.infinity,
             child: Center(
-              child: Text("${entity.music}"),
+              child: Text(
+                "${entity.music}",
+                style: Theme.of(context).textTheme.subtitle1.copyWith(
+                      color: Colors.white,
+                    ),
+              ),
             ),
           ),
         ),
