@@ -43,4 +43,10 @@ void main() {
 
     expect(error, 'Invalid value. Min length is 3');
   });
+
+  test('Should return null if value is valid', () {
+    final error = sut.validate('abc');
+
+    expect(error, isNull);
+  });
 }
