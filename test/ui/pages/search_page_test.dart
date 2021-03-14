@@ -54,10 +54,14 @@ class SearchPage extends StatelessWidget {
 }
 
 void main() {
-  testWidgets('Should load SearchPage with correct values',
-      (WidgetTester tester) async {
+  Future<void> loadPage(WidgetTester tester) async {
     final page = MaterialApp(home: SearchPage());
     await tester.pumpWidget(page);
+  }
+
+  testWidgets('Should load SearchPage with correct values',
+      (WidgetTester tester) async {
+    await loadPage(tester);
 
     final artistInputTextChildren = find.descendant(
       of: find.bySemanticsLabel('Artist'),
