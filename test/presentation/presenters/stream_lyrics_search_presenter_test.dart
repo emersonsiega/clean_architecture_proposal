@@ -71,11 +71,24 @@ void main() {
   String artist;
   String music;
 
+  PostExpectation mockValidationCall() => when(validationSpy.validate(
+      field: anyNamed('field'), value: anyNamed('value')));
+
+  void mockValidationError() {
+    mockValidationCall().thenReturn('invalid');
+  }
+
+  void mockValidationSuccess() {
+    mockValidationCall().thenReturn(null);
+  }
+
   setUp(() {
     validationSpy = ValidationSpy();
     sut = StreamLyricsSearchPresenter(validation: validationSpy);
     artist = faker.person.name();
     music = faker.lorem.sentence();
+
+    mockValidationSuccess();
   });
 
   test('Should call validation with correct artist', () async {
@@ -95,11 +108,15 @@ void main() {
   });
 
   test('Should present error if artist is invalid', () async {
-    when(validationSpy.validate(
-            field: anyNamed('field'), value: anyNamed('value')))
-        .thenReturn('invalid');
+    mockValidationError();
 
     expectLater(sut.artistErrorStream, emits('invalid'));
+
+    sut.validateArtist(artist);
+  });
+
+  test('Should emits null if artist is valid', () async {
+    expectLater(sut.artistErrorStream, emits(null));
 
     sut.validateArtist(artist);
   });
