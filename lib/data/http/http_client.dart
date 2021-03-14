@@ -5,5 +5,6 @@ abstract class HttpClient {
   Future<Map> request({
     @required String url,
     String method: 'get',
+    Duration timeout: const Duration(seconds: 10),
   });
 }

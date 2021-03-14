@@ -13,6 +13,7 @@ class HttpAdapter implements HttpClient {
   Future<Map> request({
     @required String url,
     String method = 'get',
+    Duration timeout: const Duration(seconds: 10),
   }) async {
     final defaultHeaders = {
       'content-type': 'application/json',
@@ -23,10 +24,12 @@ class HttpAdapter implements HttpClient {
 
     try {
       if (method == 'get') {
-        response = await client.get(
-          url,
-          headers: defaultHeaders,
-        );
+        response = await client
+            .get(
+              url,
+              headers: defaultHeaders,
+            )
+            .timeout(timeout);
       }
     } catch (error) {
       throw HttpError.serverError;
