@@ -5,7 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-abstract class LyricsSearchPresenter {
+abstract class FormValidManager {
+  Stream<bool> get isFormValidStream;
+}
+
+abstract class LyricsSearchPresenter implements FormValidManager {
   Stream<String> get artistErrorStream;
   Stream<String> get musicErrorStream;
 
@@ -80,9 +84,15 @@ class SearchPage extends StatelessWidget {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.search),
-        onPressed: null,
+      floatingActionButton: StreamBuilder<bool>(
+        stream: presenter.isFormValidStream,
+        initialData: false,
+        builder: (context, snapshot) {
+          return FloatingActionButton(
+            child: Icon(Icons.search),
+            onPressed: snapshot.data == true ? () {} : null,
+          );
+        },
       ),
     );
   }
@@ -94,12 +104,15 @@ void main() {
   String music;
   StreamController<String> artistErrorController;
   StreamController<String> musicErrorController;
+  StreamController<bool> isFormValidController;
 
   void mockStreams() {
     when(searchPresenterSpy.artistErrorStream)
         .thenAnswer((_) => artistErrorController.stream);
     when(searchPresenterSpy.musicErrorStream)
         .thenAnswer((_) => musicErrorController.stream);
+    when(searchPresenterSpy.isFormValidStream)
+        .thenAnswer((_) => isFormValidController.stream);
   }
 
   setUp(() {
@@ -108,12 +121,14 @@ void main() {
     searchPresenterSpy = LyricsSearchPresenterSpy();
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
+    isFormValidController = StreamController<bool>();
     mockStreams();
   });
 
   tearDown(() {
     artistErrorController.close();
     musicErrorController.close();
+    isFormValidController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -208,5 +223,18 @@ void main() {
       ),
       findsNWidgets(2),
     );
+  });
+
+  testWidgets('Should enable button if form is valid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isFormValidController.add(true);
+    await tester.pump();
+
+    final button = tester.widget<FloatingActionButton>(
+      find.byType(FloatingActionButton),
+    );
+    expect(button.onPressed, isNotNull);
   });
 }
