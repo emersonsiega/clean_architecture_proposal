@@ -12,14 +12,22 @@ abstract class Validation {
 }
 
 class LyricsSearchState {
+  String artist;
+  String music;
   String artistError;
   String musicError;
+
+  bool get isFormValid =>
+      artist?.isNotEmpty == true &&
+      artistError?.isNotEmpty == false &&
+      music?.isNotEmpty == true &&
+      musicError?.isNotEmpty == false;
 }
 
 class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   final Validation validation;
   final _state = LyricsSearchState();
-  final _stateController = StreamController<LyricsSearchState>();
+  final _stateController = StreamController<LyricsSearchState>.broadcast();
 
   StreamLyricsSearchPresenter({@required this.validation}) {
     _stateController.add(_state);
@@ -34,7 +42,8 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _stateController.stream.map((state) => state.musicError);
 
   @override
-  Stream<bool> get isFormValidStream => throw UnimplementedError();
+  Stream<bool> get isFormValidStream =>
+      _stateController.stream.map((state) => state.isFormValid);
 
   @override
   Stream<bool> get isLoadingStream => throw UnimplementedError();
@@ -51,6 +60,7 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   void validateArtist(String artist) {
+    _state.artist = artist;
     final error = validation.validate(field: 'artist', value: artist);
     _state.artistError = error;
     _update();
@@ -58,6 +68,7 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   void validateMusic(String music) {
+    _state.music = music;
     final error = validation.validate(field: 'music', value: music);
     _state.musicError = error;
     _update();
@@ -77,15 +88,13 @@ void main() {
   String artist;
   String music;
 
-  PostExpectation mockValidationCall() => when(validationSpy.validate(
-      field: anyNamed('field'), value: anyNamed('value')));
+  PostExpectation mockValidationCall(String field) =>
+      when(validationSpy.validate(
+          field: field == null ? anyNamed('field') : field,
+          value: anyNamed('value')));
 
-  void mockValidationError() {
-    mockValidationCall().thenReturn('invalid');
-  }
-
-  void mockValidationSuccess() {
-    mockValidationCall().thenReturn(null);
+  void mockValidation({String field, String value}) {
+    mockValidationCall(field).thenReturn(value);
   }
 
   setUp(() {
@@ -94,7 +103,7 @@ void main() {
     artist = faker.person.name();
     music = faker.lorem.sentence();
 
-    mockValidationSuccess();
+    mockValidation();
   });
 
   test('Should call validation with correct artist', () async {
@@ -114,7 +123,7 @@ void main() {
   });
 
   test('Should present error if artist is invalid', () async {
-    mockValidationError();
+    mockValidation(value: 'invalid');
 
     expectLater(sut.artistErrorStream, emits('invalid'));
 
@@ -128,7 +137,7 @@ void main() {
   });
 
   test('Should present error if music is invalid', () async {
-    mockValidationError();
+    mockValidation(value: 'invalid');
 
     expectLater(sut.musicErrorStream, emits('invalid'));
 
@@ -138,6 +147,28 @@ void main() {
   test('Should emits null if music is valid', () async {
     expectLater(sut.musicErrorStream, emits(null));
 
+    sut.validateMusic(music);
+  });
+
+  test('Should emits invalid form if any field is invalid', () async {
+    mockValidation(field: 'music', value: 'invalid');
+
+    expectLater(sut.artistErrorStream, emits(null));
+    expectLater(sut.musicErrorStream, emits('invalid'));
+    expectLater(sut.isFormValidStream, emits(false));
+
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+  });
+
+  test('Should emits invalid form if any field is invalid', () async {
+    mockValidation(field: 'artist', value: 'invalid');
+
+    expectLater(sut.artistErrorStream, emits('invalid'));
+    expectLater(sut.musicErrorStream, emits(null));
+    expectLater(sut.isFormValidStream, emits(false));
+
+    sut.validateArtist(artist);
     sut.validateMusic(music);
   });
 }
