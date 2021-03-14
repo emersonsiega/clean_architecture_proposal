@@ -1,0 +1,42 @@
+import 'package:flutter/material.dart';
+
+import '../ui/ui.dart';
+
+import './factories/factories.dart';
+
+void main() {
+  lazyInjectInfra();
+
+  runApp(App());
+}
+
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      initialRoute: '/',
+      theme: _makeAppTheme(),
+      routes: _makeAppRoutes(),
+    );
+  }
+}
+
+Map<String, WidgetBuilder> _makeAppRoutes() {
+  return {
+    '/': (_) => LyricsSearchPage(),
+    'lyric': (_) => Scaffold(body: Center(child: Text("Lyrics here..."))),
+  };
+}
+
+ThemeData _makeAppTheme() {
+  return ThemeData(
+    primaryColor: Colors.deepPurple,
+    accentColor: Colors.deepPurple[800],
+    inputDecorationTheme: InputDecorationTheme(
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(6),
+      ),
+    ),
+  );
+}
