@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,6 +16,8 @@ abstract class LyricsSearchPresenter implements FormValidManager {
 
   void validateArtist(String artist);
   void validateMusic(String music);
+
+  Future<void> search();
 }
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
@@ -90,7 +93,7 @@ class SearchPage extends StatelessWidget {
         builder: (context, snapshot) {
           return FloatingActionButton(
             child: Icon(Icons.search),
-            onPressed: snapshot.data == true ? () {} : null,
+            onPressed: snapshot.data == true ? presenter.search : null,
           );
         },
       ),
@@ -106,7 +109,7 @@ void main() {
   StreamController<String> musicErrorController;
   StreamController<bool> isFormValidController;
 
-  void mockStreams() {
+  void mockPresenter() {
     when(searchPresenterSpy.artistErrorStream)
         .thenAnswer((_) => artistErrorController.stream);
     when(searchPresenterSpy.musicErrorStream)
@@ -122,7 +125,7 @@ void main() {
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
     isFormValidController = StreamController<bool>();
-    mockStreams();
+    mockPresenter();
   });
 
   tearDown(() {
@@ -249,5 +252,17 @@ void main() {
       find.byType(FloatingActionButton),
     );
     expect(button.onPressed, isNull);
+  });
+
+  testWidgets('Should call search on form submit', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isFormValidController.add(true);
+    await tester.pump();
+
+    await tester.tap(find.byType(FloatingActionButton));
+    await tester.pump();
+
+    verify(searchPresenterSpy.search()).called(1);
   });
 }
