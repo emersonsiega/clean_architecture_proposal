@@ -1,6 +1,6 @@
 name: clean_architecture_proposal
 description: A new Flutter project.
-publish_to: 'none'
+publish_to: "none"
 version: 1.0.0+1
 
 environment:
@@ -12,6 +12,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   equatable: 2.0.0
   http: 0.12.0
+  get_it: 6.0.0
 
 dev_dependencies:
   flutter_test:
