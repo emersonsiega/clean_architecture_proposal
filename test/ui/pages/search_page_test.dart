@@ -7,6 +7,7 @@ import 'package:mockito/mockito.dart';
 
 abstract class LyricsSearchPresenter {
   Stream<String> get artistErrorStream;
+  Stream<String> get musicErrorStream;
 
   void validateArtist(String artist);
   void validateMusic(String music);
@@ -58,15 +59,21 @@ class SearchPage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 30),
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: "Music",
-                    hintText: "Tears in Heaven",
-                    prefixIcon: Icon(Icons.music_note),
-                    errorText: null,
-                  ),
-                  textInputAction: TextInputAction.done,
-                  onChanged: presenter.validateMusic,
+                StreamBuilder<String>(
+                  stream: presenter.musicErrorStream,
+                  initialData: null,
+                  builder: (context, snapshot) {
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Music",
+                        hintText: "Tears in Heaven",
+                        prefixIcon: Icon(Icons.music_note),
+                        errorText: snapshot.data,
+                      ),
+                      textInputAction: TextInputAction.done,
+                      onChanged: presenter.validateMusic,
+                    );
+                  },
                 ),
               ],
             ),
@@ -86,10 +93,13 @@ void main() {
   String artist;
   String music;
   StreamController<String> artistErrorController;
+  StreamController<String> musicErrorController;
 
   void mockStreams() {
     when(searchPresenterSpy.artistErrorStream)
         .thenAnswer((_) => artistErrorController.stream);
+    when(searchPresenterSpy.musicErrorStream)
+        .thenAnswer((_) => musicErrorController.stream);
   }
 
   setUp(() {
@@ -97,11 +107,13 @@ void main() {
     music = faker.lorem.sentence();
     searchPresenterSpy = LyricsSearchPresenterSpy();
     artistErrorController = StreamController<String>();
+    musicErrorController = StreamController<String>();
     mockStreams();
   });
 
   tearDown(() {
     artistErrorController.close();
+    musicErrorController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -158,6 +170,16 @@ void main() {
     await loadPage(tester);
 
     artistErrorController.add('error');
+    await tester.pump();
+
+    expect(find.text('error'), findsOneWidget);
+  });
+
+  testWidgets('Should present error if Music is invalid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    musicErrorController.add('error');
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
