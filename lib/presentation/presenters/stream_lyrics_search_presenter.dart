@@ -38,27 +38,27 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   Stream<String> get artistErrorStream =>
-      _stateController.stream.map((state) => state.artistError);
+      _stateController.stream.map((state) => state.artistError).distinct();
 
   @override
   Stream<String> get musicErrorStream =>
-      _stateController.stream.map((state) => state.musicError);
+      _stateController.stream.map((state) => state.musicError).distinct();
 
   @override
   Stream<bool> get isFormValidStream =>
-      _stateController.stream.map((state) => state.isFormValid);
+      _stateController.stream.map((state) => state.isFormValid).distinct();
 
   @override
   Stream<bool> get isLoadingStream =>
-      _stateController.stream.map((state) => state.isLoading);
+      _stateController.stream.map((state) => state.isLoading).distinct();
 
   @override
   Stream<String> get localErrorStream =>
-      _stateController.stream.map((state) => state.localError);
+      _stateController.stream.map((state) => state.localError).distinct();
 
   @override
   Stream<PageConfig> get navigateToStream =>
-      _stateController.stream.map((state) => state.navigateTo);
+      _stateController.stream.map((state) => state.navigateTo).distinct();
 
   @override
   Future<void> search() async {
