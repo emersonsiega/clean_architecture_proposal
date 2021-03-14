@@ -27,7 +27,7 @@ class App extends StatelessWidget {
 Map<String, WidgetBuilder> _makeAppRoutes() {
   return {
     '/': (_) => LyricsSearchPage(),
-    'lyric': (_) => Scaffold(body: Center(child: Text("Lyrics here..."))),
+    '/lyric': (_) => Scaffold(body: Center(child: Text("Lyrics here..."))),
   };
 }
 
