@@ -7,6 +7,7 @@ import './factories/factories.dart';
 void main() {
   lazyInjectInfra();
   lazyInjectUsecases();
+  lazyInjectPresenters();
 
   runApp(App());
 }
