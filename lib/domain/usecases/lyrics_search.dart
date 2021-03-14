@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/domain.dart';
@@ -6,7 +7,7 @@ abstract class LyricsSearch {
   Future<LyricEntity> search(LyricsSearchParams params);
 }
 
-class LyricsSearchParams {
+class LyricsSearchParams extends Equatable {
   final String artist;
   final String music;
 
@@ -16,4 +17,7 @@ class LyricsSearchParams {
   });
 
   String toUrlString() => "$artist/$music";
+
+  @override
+  List<Object> get props => [artist, music];
 }

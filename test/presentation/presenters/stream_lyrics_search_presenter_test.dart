@@ -1,3 +1,4 @@
+import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -6,9 +7,12 @@ import 'package:clean_architecture_proposal/presentation/presentation.dart';
 
 class ValidationSpy extends Mock implements Validation {}
 
+class LyricsSearchSpy extends Mock implements LyricsSearch {}
+
 void main() {
   StreamLyricsSearchPresenter sut;
   ValidationSpy validationSpy;
+  LyricsSearchSpy lyricsSearchSpy;
   String artist;
   String music;
 
@@ -23,7 +27,11 @@ void main() {
 
   setUp(() {
     validationSpy = ValidationSpy();
-    sut = StreamLyricsSearchPresenter(validation: validationSpy);
+    lyricsSearchSpy = LyricsSearchSpy();
+    sut = StreamLyricsSearchPresenter(
+      validation: validationSpy,
+      lyricsSearch: lyricsSearchSpy,
+    );
     artist = faker.person.name();
     music = faker.lorem.sentence();
 
@@ -103,5 +111,16 @@ void main() {
 
     sut.validateArtist(artist);
     sut.validateMusic(music);
+  });
+
+  test('Should call LyricsSearch with correct values', () async {
+    sut.validateArtist(artist);
+    sut.validateMusic(music);
+
+    await sut.search();
+
+    final params = LyricsSearchParams(artist: artist, music: music);
+
+    verify(lyricsSearchSpy.search(params)).called(1);
   });
 }

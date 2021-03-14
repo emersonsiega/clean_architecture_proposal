@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:meta/meta.dart';
 
 import '../../ui/ui.dart';
@@ -21,10 +22,14 @@ class LyricsSearchState {
 
 class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   final Validation validation;
+  final LyricsSearch lyricsSearch;
   final _state = LyricsSearchState();
   final _stateController = StreamController<LyricsSearchState>.broadcast();
 
-  StreamLyricsSearchPresenter({@required this.validation}) {
+  StreamLyricsSearchPresenter({
+    @required this.validation,
+    @required this.lyricsSearch,
+  }) {
     _stateController.add(_state);
   }
 
@@ -47,8 +52,10 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   Stream<String> get localErrorStream => throw UnimplementedError();
 
   @override
-  Future<void> search() {
-    throw UnimplementedError();
+  Future<void> search() async {
+    await lyricsSearch.search(
+      LyricsSearchParams(artist: _state.artist, music: _state.music),
+    );
   }
 
   void _update() => _stateController.add(_state);
