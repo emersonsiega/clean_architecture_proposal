@@ -43,7 +43,9 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   }
 
   @override
-  void validateMusic(String music) {}
+  void validateMusic(String music) {
+    validation.validate(field: 'music', value: music);
+  }
 }
 
 class ValidationSpy extends Mock implements Validation {}
@@ -52,11 +54,13 @@ void main() {
   StreamLyricsSearchPresenter sut;
   ValidationSpy validationSpy;
   String artist;
+  String music;
 
   setUp(() {
     validationSpy = ValidationSpy();
     sut = StreamLyricsSearchPresenter(validation: validationSpy);
     artist = faker.person.name();
+    music = faker.lorem.sentence();
   });
 
   test('Should call validation with correct artist', () async {
@@ -64,6 +68,14 @@ void main() {
 
     verify(
       validationSpy.validate(field: 'artist', value: artist),
+    ).called(1);
+  });
+
+  test('Should call validation with correct music', () async {
+    sut.validateMusic(music);
+
+    verify(
+      validationSpy.validate(field: 'music', value: music),
     ).called(1);
   });
 }
