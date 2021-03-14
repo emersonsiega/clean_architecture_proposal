@@ -134,4 +134,10 @@ void main() {
 
     sut.validateMusic(music);
   });
+
+  test('Should emits null if music is valid', () async {
+    expectLater(sut.musicErrorStream, emits(null));
+
+    sut.validateMusic(music);
+  });
 }
