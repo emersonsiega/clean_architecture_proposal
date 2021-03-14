@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:meta/meta.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
@@ -9,16 +11,27 @@ abstract class Validation {
   String validate({@required String field, @required String value});
 }
 
+class LyricsSearchState {
+  String emailError;
+}
+
 class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   final Validation validation;
+  final _state = LyricsSearchState();
+  final _stateController = StreamController<LyricsSearchState>();
 
-  StreamLyricsSearchPresenter({@required this.validation});
+  StreamLyricsSearchPresenter({@required this.validation}) {
+    _stateController.add(_state);
+  }
 
   @override
-  Stream<String> get artistErrorStream => throw UnimplementedError();
+  Stream<String> get artistErrorStream =>
+      _stateController.stream.map((state) => state.emailError);
 
   @override
-  void dispose() {}
+  void dispose() {
+    _stateController.close();
+  }
 
   @override
   Stream<bool> get isFormValidStream => throw UnimplementedError();
@@ -39,7 +52,9 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   void validateArtist(String artist) {
-    validation.validate(field: 'artist', value: artist);
+    final error = validation.validate(field: 'artist', value: artist);
+    _state.emailError = error;
+    _stateController.add(_state);
   }
 
   @override
@@ -77,5 +92,15 @@ void main() {
     verify(
       validationSpy.validate(field: 'music', value: music),
     ).called(1);
+  });
+
+  test('Should present error if artist is invalid', () async {
+    when(validationSpy.validate(
+            field: anyNamed('field'), value: anyNamed('value')))
+        .thenReturn('invalid');
+
+    expectLater(sut.artistErrorStream, emits('invalid'));
+
+    sut.validateArtist(artist);
   });
 }
