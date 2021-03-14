@@ -5,157 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-abstract class FormValidManager {
-  Stream<bool> get isFormValidStream;
-}
-
-abstract class LocalErrorManager {
-  Stream<String> get localErrorStream;
-}
-
-abstract class FormLoadingManager {
-  Stream<bool> get isLoadingStream;
-}
-
-abstract class LyricsSearchPresenter
-    implements FormValidManager, FormLoadingManager, LocalErrorManager {
-  Stream<String> get artistErrorStream;
-  Stream<String> get musicErrorStream;
-
-  void validateArtist(String artist);
-  void validateMusic(String music);
-
-  Future<void> search();
-
-  void dispose();
-}
+import 'package:clean_architecture_proposal/ui/ui.dart';
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
-
-class SearchPage extends StatefulWidget {
-  final LyricsSearchPresenter presenter;
-
-  const SearchPage({
-    Key key,
-    @required this.presenter,
-  }) : super(key: key);
-
-  @override
-  _SearchPageState createState() => _SearchPageState();
-}
-
-class _SearchPageState extends State<SearchPage> {
-  StreamSubscription _subscription;
-
-  @override
-  void initState() {
-    _subscription = widget.presenter.localErrorStream.listen((error) {
-      if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red[900],
-            content: Text(
-              error,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
-      }
-    });
-
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-
-    widget.presenter.dispose();
-
-    super.dispose();
-  }
-
-  void _hideKeyboard() {
-    FocusScope.of(context).requestFocus(FocusNode());
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Lyrics Search"),
-        centerTitle: true,
-      ),
-      body: GestureDetector(
-        onTap: _hideKeyboard,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 32),
-          child: Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                StreamBuilder<String>(
-                  stream: widget.presenter.artistErrorStream,
-                  initialData: null,
-                  builder: (context, snapshot) {
-                    return TextFormField(
-                      decoration: InputDecoration(
-                        labelText: "Artist",
-                        hintText: "Eric Clapton",
-                        prefixIcon: Icon(Icons.person),
-                        errorText: snapshot.data,
-                      ),
-                      textInputAction: TextInputAction.none,
-                      onChanged: widget.presenter.validateArtist,
-                    );
-                  },
-                ),
-                const SizedBox(height: 30),
-                StreamBuilder<String>(
-                  stream: widget.presenter.musicErrorStream,
-                  initialData: null,
-                  builder: (context, snapshot) {
-                    return TextFormField(
-                      decoration: InputDecoration(
-                        labelText: "Music",
-                        hintText: "Tears in Heaven",
-                        prefixIcon: Icon(Icons.music_note),
-                        errorText: snapshot.data,
-                      ),
-                      textInputAction: TextInputAction.done,
-                      onChanged: widget.presenter.validateMusic,
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-      floatingActionButton: StreamBuilder<bool>(
-        stream: widget.presenter.isFormValidStream,
-        initialData: false,
-        builder: (context, isFormValid) {
-          return FloatingActionButton(
-            child: StreamBuilder<bool>(
-              stream: widget.presenter.isLoadingStream,
-              initialData: false,
-              builder: (context, isLoading) {
-                if (isLoading.data == true) {
-                  return CircularProgressIndicator();
-                }
-
-                return Icon(Icons.search);
-              },
-            ),
-            onPressed:
-                isFormValid.data == true ? widget.presenter.search : null,
-          );
-        },
-      ),
-    );
-  }
-}
 
 void main() {
   LyricsSearchPresenterSpy searchPresenterSpy;
@@ -202,7 +54,7 @@ void main() {
 
   Future<void> loadPage(WidgetTester tester) async {
     final page = MaterialApp(
-      home: SearchPage(presenter: searchPresenterSpy),
+      home: LyricsSearchPage(presenter: searchPresenterSpy),
     );
 
     await tester.pumpWidget(page);
