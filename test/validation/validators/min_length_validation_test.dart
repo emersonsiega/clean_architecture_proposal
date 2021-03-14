@@ -24,4 +24,10 @@ void main() {
 
     expect(error, isNull);
   });
+
+  test('Should return null if value is null', () {
+    final error = sut.validate(null);
+
+    expect(error, isNull);
+  });
 }
