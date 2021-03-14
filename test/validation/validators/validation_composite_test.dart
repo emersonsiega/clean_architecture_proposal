@@ -1,30 +1,7 @@
-import 'package:clean_architecture_proposal/validation/validation.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:clean_architecture_proposal/presentation/presentation.dart';
-
-class ValidationComposite implements Validation {
-  final List<FieldValidation> validations;
-
-  ValidationComposite(this.validations);
-
-  @override
-  String validate({String field, String value}) {
-    final fieldValidations =
-        validations.where((validation) => validation.field == field);
-
-    for (var validation in fieldValidations) {
-      final error = validation.validate(value);
-
-      if (error?.isNotEmpty != false) {
-        return error;
-      }
-    }
-
-    return null;
-  }
-}
+import 'package:clean_architecture_proposal/validation/validation.dart';
 
 class FieldValidationSpy extends Mock implements FieldValidation {}
 
