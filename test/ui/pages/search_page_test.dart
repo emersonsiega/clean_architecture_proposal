@@ -1,9 +1,13 @@
+import 'dart:async';
+
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 abstract class LyricsSearchPresenter {
+  Stream<String> get artistErrorStream;
+
   void validateArtist(String artist);
   void validateMusic(String music);
 }
@@ -37,15 +41,21 @@ class SearchPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                TextFormField(
-                  decoration: InputDecoration(
-                    labelText: "Artist",
-                    hintText: "Eric Clapton",
-                    prefixIcon: Icon(Icons.person),
-                    errorText: null,
-                  ),
-                  textInputAction: TextInputAction.none,
-                  onChanged: presenter.validateArtist,
+                StreamBuilder<String>(
+                  stream: presenter.artistErrorStream,
+                  initialData: null,
+                  builder: (context, snapshot) {
+                    return TextFormField(
+                      decoration: InputDecoration(
+                        labelText: "Artist",
+                        hintText: "Eric Clapton",
+                        prefixIcon: Icon(Icons.person),
+                        errorText: snapshot.data,
+                      ),
+                      textInputAction: TextInputAction.none,
+                      onChanged: presenter.validateArtist,
+                    );
+                  },
                 ),
                 const SizedBox(height: 30),
                 TextFormField(
@@ -75,11 +85,23 @@ void main() {
   LyricsSearchPresenterSpy searchPresenterSpy;
   String artist;
   String music;
+  StreamController<String> artistErrorController;
+
+  void mockStreams() {
+    when(searchPresenterSpy.artistErrorStream)
+        .thenAnswer((_) => artistErrorController.stream);
+  }
 
   setUp(() {
     artist = faker.lorem.word();
     music = faker.lorem.sentence();
     searchPresenterSpy = LyricsSearchPresenterSpy();
+    artistErrorController = StreamController<String>();
+    mockStreams();
+  });
+
+  tearDown(() {
+    artistErrorController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -129,5 +151,15 @@ void main() {
 
     await tester.enterText(find.bySemanticsLabel('Music'), music);
     verify(searchPresenterSpy.validateMusic(music)).called(1);
+  });
+
+  testWidgets('Should present error if Artist is invalid',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    artistErrorController.add('error');
+    await tester.pump();
+
+    expect(find.text('error'), findsOneWidget);
   });
 }
