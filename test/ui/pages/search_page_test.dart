@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
+import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
 import 'package:clean_architecture_proposal/ui/ui.dart';
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
@@ -53,9 +54,9 @@ void main() {
   });
 
   Future<void> loadPage(WidgetTester tester) async {
-    final page = MaterialApp(
-      home: LyricsSearchPage(presenter: searchPresenterSpy),
-    );
+    Get.i().put<LyricsSearchPresenter>(searchPresenterSpy);
+
+    final page = MaterialApp(home: LyricsSearchPage());
 
     await tester.pumpWidget(page);
   }

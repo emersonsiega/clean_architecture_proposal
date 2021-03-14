@@ -2,26 +2,22 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+import '../../dependency_management/dependency_management.dart';
+
 import './lyrics_search_presenter.dart';
 
 class LyricsSearchPage extends StatefulWidget {
-  final LyricsSearchPresenter presenter;
-
-  const LyricsSearchPage({
-    Key key,
-    @required this.presenter,
-  }) : super(key: key);
-
   @override
   _LyricsSearchPageState createState() => _LyricsSearchPageState();
 }
 
 class _LyricsSearchPageState extends State<LyricsSearchPage> {
+  LyricsSearchPresenter presenter = Get.i().get();
   StreamSubscription _subscription;
 
   @override
   void initState() {
-    _subscription = widget.presenter.localErrorStream.listen((error) {
+    _subscription = presenter.localErrorStream.listen((error) {
       if (error != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -42,7 +38,7 @@ class _LyricsSearchPageState extends State<LyricsSearchPage> {
   void dispose() {
     _subscription?.cancel();
 
-    widget.presenter.dispose();
+    presenter.dispose();
 
     super.dispose();
   }
@@ -67,7 +63,7 @@ class _LyricsSearchPageState extends State<LyricsSearchPage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 StreamBuilder<String>(
-                  stream: widget.presenter.artistErrorStream,
+                  stream: presenter.artistErrorStream,
                   initialData: null,
                   builder: (context, snapshot) {
                     return TextFormField(
@@ -78,13 +74,13 @@ class _LyricsSearchPageState extends State<LyricsSearchPage> {
                         errorText: snapshot.data,
                       ),
                       textInputAction: TextInputAction.none,
-                      onChanged: widget.presenter.validateArtist,
+                      onChanged: presenter.validateArtist,
                     );
                   },
                 ),
                 const SizedBox(height: 30),
                 StreamBuilder<String>(
-                  stream: widget.presenter.musicErrorStream,
+                  stream: presenter.musicErrorStream,
                   initialData: null,
                   builder: (context, snapshot) {
                     return TextFormField(
@@ -95,7 +91,7 @@ class _LyricsSearchPageState extends State<LyricsSearchPage> {
                         errorText: snapshot.data,
                       ),
                       textInputAction: TextInputAction.done,
-                      onChanged: widget.presenter.validateMusic,
+                      onChanged: presenter.validateMusic,
                     );
                   },
                 ),
@@ -105,23 +101,25 @@ class _LyricsSearchPageState extends State<LyricsSearchPage> {
         ),
       ),
       floatingActionButton: StreamBuilder<bool>(
-        stream: widget.presenter.isFormValidStream,
+        stream: presenter.isFormValidStream,
         initialData: false,
         builder: (context, isFormValid) {
           return FloatingActionButton(
             child: StreamBuilder<bool>(
-              stream: widget.presenter.isLoadingStream,
+              stream: presenter.isLoadingStream,
               initialData: false,
               builder: (context, isLoading) {
                 if (isLoading.data == true) {
-                  return CircularProgressIndicator();
+                  return CircularProgressIndicator(
+                    strokeWidth: 1.5,
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  );
                 }
 
                 return Icon(Icons.search);
               },
             ),
-            onPressed:
-                isFormValid.data == true ? widget.presenter.search : null,
+            onPressed: isFormValid.data == true ? presenter.search : null,
           );
         },
       ),
