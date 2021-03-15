@@ -64,6 +64,8 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   Future<void> search() async {
     try {
       _state.isLoading = true;
+      _state.localError = null;
+      _state.navigateTo = null;
       _update();
 
       final entity = await lyricsSearch.search(
