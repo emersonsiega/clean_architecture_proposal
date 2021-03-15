@@ -2,12 +2,14 @@ import 'package:meta/meta.dart';
 
 import '../../domain/domain.dart';
 
-class LocalLyricModel extends LyricEntity {
+class LocalLyricModel {
+  LyricEntity _entity;
+
   LocalLyricModel._({
     @required String lyric,
     @required String artist,
     @required String music,
-  }) : super(artist: artist, music: music, lyric: lyric);
+  }) : _entity = LyricEntity(artist: artist, music: music, lyric: lyric);
 
   factory LocalLyricModel.fromEntity(LyricEntity entity) {
     return LocalLyricModel._(
@@ -17,11 +19,23 @@ class LocalLyricModel extends LyricEntity {
     );
   }
 
+  factory LocalLyricModel.fromMap(Map json) {
+    return LocalLyricModel._(
+      artist: json["artist"],
+      lyric: json["lyric"],
+      music: json["music"],
+    );
+  }
+
   Map toMap() {
     return {
-      'artist': artist,
-      'music': music,
-      'lyric': lyric,
+      'artist': _entity.artist,
+      'music': _entity.music,
+      'lyric': _entity.lyric,
     };
+  }
+
+  LyricEntity toEntity() {
+    return _entity;
   }
 }
