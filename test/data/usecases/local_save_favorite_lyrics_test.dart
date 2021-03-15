@@ -11,7 +11,7 @@ abstract class SaveLocalStorage {
 }
 
 abstract class SaveFavoriteLyrics {
-  Future<void> save(LyricEntity entity);
+  Future<void> save(List<LyricEntity> entities);
 }
 
 class LocalLyricEntity extends LyricEntity {
@@ -44,8 +44,10 @@ class LocalSaveFavoriteLyrics implements SaveFavoriteLyrics {
   LocalSaveFavoriteLyrics({@required this.saveLocalStorage});
 
   @override
-  Future<void> save(LyricEntity entity) async {
-    final localEntity = LocalLyricEntity.fromEntity(entity).toMap();
+  Future<void> save(List<LyricEntity> entities) async {
+    final localEntity = entities
+        .map((entity) => LocalLyricEntity.fromEntity(entity).toMap())
+        .toList();
 
     await saveLocalStorage.save(
       key: 'favorites',
@@ -72,7 +74,7 @@ void main() {
   });
 
   test('Should call SaveLocalStorage on save favorite', () async {
-    await sut.save(entity);
+    await sut.save([entity]);
 
     verify(
       saveLocalStorageSpy.save(
@@ -83,13 +85,13 @@ void main() {
   });
 
   test('Should call SaveLocalStorage with correct values', () async {
-    await sut.save(entity);
+    await sut.save([entity, entity]);
 
     verify(
       saveLocalStorageSpy.save(
         key: 'favorites',
         value:
-            '{"artist":"${entity.artist}","music":"${entity.music}","lyric":"${entity.lyric}"}',
+            '[{"artist":"${entity.artist}","music":"${entity.music}","lyric":"${entity.lyric}"},{"artist":"${entity.artist}","music":"${entity.music}","lyric":"${entity.lyric}"}]',
       ),
     ).called(1);
   });
