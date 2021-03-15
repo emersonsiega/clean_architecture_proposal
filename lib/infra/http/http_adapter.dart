@@ -1,11 +1,11 @@
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:meta/meta.dart';
-import 'package:http/http.dart';
 
 import '../../data/data.dart';
 
 class HttpAdapter implements HttpClient {
-  final Client client;
+  final Dio client;
 
   HttpAdapter(this.client);
 
@@ -20,16 +20,18 @@ class HttpAdapter implements HttpClient {
       'accept': 'application/json',
     };
 
-    var response = Response('', 500);
+    client.options = BaseOptions(
+      headers: defaultHeaders,
+      connectTimeout: timeout.inMilliseconds,
+      receiveTimeout: timeout.inMilliseconds,
+      sendTimeout: timeout.inMilliseconds,
+    );
+
+    var response = Response(data: '', statusCode: 500);
 
     try {
       if (method == 'get') {
-        response = await client
-            .get(
-              url,
-              headers: defaultHeaders,
-            )
-            .timeout(timeout);
+        response = await client.get(url);
       }
     } catch (error) {
       throw HttpError.serverError;
@@ -40,7 +42,7 @@ class HttpAdapter implements HttpClient {
 
   Map _handleResponse(Response response) {
     if (response.statusCode == 200) {
-      return response.body.isEmpty ? null : jsonDecode(response.body);
+      return response.data.isEmpty ? null : jsonDecode(response.data);
     } else if (response.statusCode == 204) {
       return null;
     } else if (response.statusCode == 404) {

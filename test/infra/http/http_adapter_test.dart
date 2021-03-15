@@ -1,12 +1,12 @@
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:http/http.dart';
+import 'package:dio/dio.dart';
 
 import 'package:clean_architecture_proposal/infra/infra.dart';
 import 'package:clean_architecture_proposal/data/data.dart';
 
-class ClientSpy extends Mock implements Client {}
+class ClientSpy extends Mock implements Dio {}
 
 void main() {
   String url;
@@ -15,10 +15,12 @@ void main() {
   String response;
 
   PostExpectation mockClientCall() =>
-      when(clientSpy.get(any, headers: anyNamed('headers')));
+      when(clientSpy.get(any, options: anyNamed('options')));
 
   void mockResponse(String data, {int statusCode: 200}) {
-    mockClientCall().thenAnswer((_) async => Response(data, statusCode));
+    mockClientCall().thenAnswer(
+      (_) async => Response(data: data, statusCode: statusCode),
+    );
   }
 
   void mockError() {
@@ -37,13 +39,7 @@ void main() {
   test('Should call get with correct values', () async {
     await sut.request(url: url);
 
-    verify(clientSpy.get(
-      url,
-      headers: {
-        'content-type': 'application/json',
-        'accept': 'application/json',
-      },
-    ));
+    verify(clientSpy.get(url)).called(1);
   });
 
   test('Should return value on 200', () async {
