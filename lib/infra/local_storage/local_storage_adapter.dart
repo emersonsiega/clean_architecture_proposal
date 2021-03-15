@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../../data/data.dart';
 
-class LocalStorageAdapter implements SaveLocalStorage {
+class LocalStorageAdapter implements SaveLocalStorage, LoadLocalStorage {
   final LocalStorage localStorage;
 
   LocalStorageAdapter({@required this.localStorage});
@@ -20,5 +20,11 @@ class LocalStorageAdapter implements SaveLocalStorage {
     } catch (error) {
       throw LocalStorageError.unexpected;
     }
+  }
+
+  @override
+  Future<String> load(String key) async {
+    await localStorage.getItem(key);
+    return null;
   }
 }
