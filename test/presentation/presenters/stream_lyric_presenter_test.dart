@@ -22,15 +22,21 @@ class StreamLyricPresenter implements LyricPresenter {
 class SaveFavoriteLyricsSpy extends Mock implements SaveFavoriteLyrics {}
 
 void main() {
-  test('Should call SaveFavoriteLyrics with correct values', () async {
-    final saveFavoriteLyricsSpy = SaveFavoriteLyricsSpy();
-    final sut = StreamLyricPresenter(saveFavoriteLyrics: saveFavoriteLyricsSpy);
-    final entity = LyricEntity(
+  StreamLyricPresenter sut;
+  SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
+  LyricEntity entity;
+
+  setUp(() {
+    saveFavoriteLyricsSpy = SaveFavoriteLyricsSpy();
+    sut = StreamLyricPresenter(saveFavoriteLyrics: saveFavoriteLyricsSpy);
+    entity = LyricEntity(
       lyric: faker.lorem.sentence(),
       artist: faker.person.name(),
       music: faker.lorem.word(),
     );
+  });
 
+  test('Should call SaveFavoriteLyrics with correct values', () async {
     await sut.addFavorite(entity);
 
     verify(saveFavoriteLyricsSpy.save([entity])).called(1);
