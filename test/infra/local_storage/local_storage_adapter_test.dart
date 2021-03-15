@@ -18,10 +18,15 @@ class LocalStorageAdapter implements SaveLocalStorage {
 }
 
 void main() {
-  test('Should call save with correct values', () async {
-    final localStorageSpy = LocalStorageSpy();
-    final sut = LocalStorageAdapter(localStorage: localStorageSpy);
+  LocalStorageAdapter sut;
+  LocalStorageSpy localStorageSpy;
 
+  setUp(() {
+    localStorageSpy = LocalStorageSpy();
+    sut = LocalStorageAdapter(localStorage: localStorageSpy);
+  });
+
+  test('Should call save with correct values', () async {
     await sut.save(key: 'any-key', value: 'any-value');
 
     verify(localStorageSpy.setItem('any-key', 'any-value')).called(1);
