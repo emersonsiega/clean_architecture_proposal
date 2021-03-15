@@ -108,4 +108,14 @@ void main() {
 
     await sut.checkIsFavorite(entity);
   });
+
+  test('Should emit isFavorite false event on checkIsFavorite', () async {
+    mockLoadResponse(null);
+
+    expectLater(sut.isFavoriteStream, emits(false));
+
+    await sut.checkIsFavorite(
+      LyricEntity(lyric: 'other', artist: 'other', music: 'other'),
+    );
+  });
 }
