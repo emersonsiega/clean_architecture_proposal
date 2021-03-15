@@ -1,21 +1,10 @@
-import 'package:clean_architecture_proposal/data/data.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:meta/meta.dart';
+
+import 'package:clean_architecture_proposal/infra/infra.dart';
 
 class LocalStorageSpy extends Mock implements LocalStorage {}
-
-class LocalStorageAdapter implements SaveLocalStorage {
-  final LocalStorage localStorage;
-
-  LocalStorageAdapter({@required this.localStorage});
-
-  @override
-  Future<void> save({@required String key, @required String value}) async {
-    await localStorage.setItem(key, value);
-  }
-}
 
 void main() {
   LocalStorageAdapter sut;
