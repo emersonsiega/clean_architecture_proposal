@@ -12,7 +12,7 @@ class LocalStorageAdapter implements SaveLocalStorage {
   LocalStorageAdapter({@required this.localStorage});
 
   @override
-  Future<void> save({String key, String value}) async {
+  Future<void> save({@required String key, @required String value}) async {
     await localStorage.setItem(key, value);
   }
 }
@@ -30,5 +30,13 @@ void main() {
     await sut.save(key: 'any-key', value: 'any-value');
 
     verify(localStorageSpy.setItem('any-key', 'any-value')).called(1);
+  });
+
+  test('Should rethrow error if save fails', () async {
+    when(localStorageSpy.setItem(any, any)).thenThrow('error');
+
+    final future = sut.save(key: 'any-key', value: 'any-value');
+
+    expect(future, throwsA('error'));
   });
 }
