@@ -46,5 +46,9 @@ void main() {
     expect(find.text(entity.lyric), findsOneWidget);
 
     expect(find.byType(BackButton), findsOneWidget);
+    expect(
+      find.byKey(Key("favoriteButton")),
+      findsOneWidget,
+    );
   });
 }

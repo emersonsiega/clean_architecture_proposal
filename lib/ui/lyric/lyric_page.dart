@@ -10,6 +10,13 @@ class LyricPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text("${entity.artist}"),
+        actions: [
+          IconButton(
+            key: Key("favoriteButton"),
+            icon: Icon(Icons.favorite_border),
+            onPressed: null,
+          ),
+        ],
         bottom: PreferredSize(
           preferredSize: Size.fromHeight(35),
           child: Container(
