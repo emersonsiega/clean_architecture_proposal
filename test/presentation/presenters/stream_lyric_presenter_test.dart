@@ -74,4 +74,21 @@ void main() {
 
     verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
   });
+
+  test('Should emit isFavorite true event on checkIsFavorite', () async {
+    when(loadFavoriteLyricsSpy.loadFavorites()).thenAnswer(
+      (_) async => [
+        entity,
+        LyricEntity(
+          lyric: 'other-lyric',
+          artist: 'other-artist',
+          music: 'other-music',
+        )
+      ],
+    );
+
+    expectLater(sut.isFavoriteStream, emits(true));
+
+    await sut.checkIsFavorite(entity);
+  });
 }
