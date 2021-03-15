@@ -45,13 +45,23 @@ class _LyricPageState extends State<LyricPage> {
           StreamBuilder<bool>(
             stream: presenter.isFavoriteStream,
             initialData: false,
-            builder: (context, snapshot) {
-              return IconButton(
-                key: Key("favoriteButton"),
-                icon: snapshot.data
-                    ? Icon(Icons.favorite)
-                    : Icon(Icons.favorite_border),
-                onPressed: () => presenter.addFavorite(_entity),
+            builder: (context, isFavorite) {
+              return StreamBuilder<bool>(
+                stream: presenter.isLoadingStream,
+                initialData: false,
+                builder: (context, isLoading) {
+                  return IconButton(
+                    key: Key("favoriteButton"),
+                    icon: isLoading.data
+                        ? Loading()
+                        : isFavorite.data
+                            ? Icon(Icons.favorite)
+                            : Icon(Icons.favorite_border),
+                    onPressed: isLoading.data
+                        ? () {}
+                        : () => presenter.addFavorite(_entity),
+                  );
+                },
               );
             },
           ),

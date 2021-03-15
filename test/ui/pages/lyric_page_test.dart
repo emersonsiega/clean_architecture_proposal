@@ -16,6 +16,7 @@ void main() {
   LyricPresenterSpy lyricPresenterSpy;
   StreamController<String> messageController;
   StreamController<bool> isFavoriteController;
+  StreamController<bool> isLoadingController;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
@@ -44,12 +45,15 @@ void main() {
         .thenAnswer((_) => messageController.stream);
     when(lyricPresenterSpy.isFavoriteStream)
         .thenAnswer((_) => isFavoriteController.stream);
+    when(lyricPresenterSpy.isLoadingStream)
+        .thenAnswer((_) => isLoadingController.stream);
   }
 
   setUp(() {
     lyricPresenterSpy = LyricPresenterSpy();
     messageController = StreamController<String>();
     isFavoriteController = StreamController<bool>();
+    isLoadingController = StreamController<bool>();
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
@@ -62,6 +66,7 @@ void main() {
   tearDown(() {
     messageController.close();
     isFavoriteController.close();
+    isLoadingController.close();
   });
 
   testWidgets('Should load LyricPage with correct data',
@@ -108,5 +113,19 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.favorite), findsOneWidget);
+  });
+
+  testWidgets('Should show and hide loading on addFavorite call',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    isLoadingController.add(true);
+    await tester.pump(Duration(milliseconds: 200));
+
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+
+    isLoadingController.add(false);
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsNothing);
   });
 }

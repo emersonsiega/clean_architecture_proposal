@@ -17,12 +17,7 @@ class SearchButton extends StatelessWidget {
           initialData: false,
           builder: (context, isLoading) {
             return FloatingActionButton(
-              child: isLoading.data == true
-                  ? CircularProgressIndicator(
-                      strokeWidth: 1.5,
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                    )
-                  : Icon(Icons.search),
+              child: isLoading.data == true ? Loading() : Icon(Icons.search),
               onPressed: isFormValid.data == true
                   ? isLoading.data == true
                       ? () {}
