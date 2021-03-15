@@ -15,6 +15,7 @@ void main() {
   LyricEntity entity;
   LyricPresenterSpy lyricPresenterSpy;
   StreamController<String> messageController;
+  StreamController<bool> isFavoriteController;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
@@ -41,11 +42,14 @@ void main() {
   void mockStreams() {
     when(lyricPresenterSpy.successMessageStream)
         .thenAnswer((_) => messageController.stream);
+    when(lyricPresenterSpy.isFavoriteStream)
+        .thenAnswer((_) => isFavoriteController.stream);
   }
 
   setUp(() {
     lyricPresenterSpy = LyricPresenterSpy();
     messageController = StreamController<String>();
+    isFavoriteController = StreamController<bool>();
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
@@ -57,6 +61,7 @@ void main() {
 
   tearDown(() {
     messageController.close();
+    isFavoriteController.close();
   });
 
   testWidgets('Should load LyricPage with correct data',
@@ -91,5 +96,17 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('success_message'), findsOneWidget);
+  });
+
+  testWidgets('Should change icon on addFavorite success',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    expect(find.byIcon(Icons.favorite_border), findsOneWidget);
+
+    isFavoriteController.add(true);
+    await tester.pumpAndSettle();
+
+    expect(find.byIcon(Icons.favorite), findsOneWidget);
   });
 }

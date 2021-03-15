@@ -42,10 +42,18 @@ class _LyricPageState extends State<LyricPage> {
       appBar: AppBar(
         title: Text("${_entity.artist}"),
         actions: [
-          IconButton(
-            key: Key("favoriteButton"),
-            icon: Icon(Icons.favorite_border),
-            onPressed: () => presenter.addFavorite(_entity),
+          StreamBuilder<bool>(
+            stream: presenter.isFavoriteStream,
+            initialData: false,
+            builder: (context, snapshot) {
+              return IconButton(
+                key: Key("favoriteButton"),
+                icon: snapshot.data
+                    ? Icon(Icons.favorite)
+                    : Icon(Icons.favorite_border),
+                onPressed: () => presenter.addFavorite(_entity),
+              );
+            },
           ),
         ],
         bottom: PreferredSize(
