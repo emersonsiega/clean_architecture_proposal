@@ -26,15 +26,21 @@ class LocalSaveFavoriteLyrics implements SaveFavoriteLyrics {
 class SaveLocalStorageSpy extends Mock implements SaveLocalStorage {}
 
 void main() {
-  test('Should call SaveLocalStorage on save favorite', () async {
-    final saveLocalStorageSpy = SaveLocalStorageSpy();
-    final sut = LocalSaveFavoriteLyrics(saveLocalStorage: saveLocalStorageSpy);
-    final entity = LyricEntity(
+  LocalSaveFavoriteLyrics sut;
+  SaveLocalStorageSpy saveLocalStorageSpy;
+  LyricEntity entity;
+
+  setUp(() {
+    saveLocalStorageSpy = SaveLocalStorageSpy();
+    sut = LocalSaveFavoriteLyrics(saveLocalStorage: saveLocalStorageSpy);
+    entity = LyricEntity(
       lyric: faker.lorem.words(5).join(" "),
       artist: faker.person.name(),
       music: faker.lorem.sentence(),
     );
+  });
 
+  test('Should call SaveLocalStorage on save favorite', () async {
     await sut.save(entity);
 
     verify(
