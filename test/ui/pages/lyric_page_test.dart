@@ -1,15 +1,21 @@
+import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:clean_architecture_proposal/ui/ui.dart';
+import 'package:mockito/mockito.dart';
+
+class LyricPresenterSpy extends Mock implements LyricPresenter {}
 
 void main() {
   LyricEntity entity;
+  LyricPresenterSpy lyricPresenterSpy;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
+    Get.i().put<LyricPresenter>(lyricPresenterSpy);
 
     final app = MaterialApp(
       initialRoute: '/',
@@ -30,6 +36,7 @@ void main() {
   }
 
   setUp(() {
+    lyricPresenterSpy = LyricPresenterSpy();
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
@@ -50,5 +57,14 @@ void main() {
       find.byKey(Key("favoriteButton")),
       findsOneWidget,
     );
+  });
+
+  testWidgets('Should call addFavorite with correct values',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    await tester.tap(find.byKey(Key("favoriteButton")));
+
+    verify(lyricPresenterSpy.addFavorite(entity)).called(1);
   });
 }
