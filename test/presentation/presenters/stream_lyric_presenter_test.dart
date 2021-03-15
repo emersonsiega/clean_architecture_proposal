@@ -7,7 +7,7 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:meta/meta.dart';
 
-abstract class LyricPresenter implements LocalErrorManager {
+abstract class LyricPresenter implements LocalErrorManager, FormLoadingManager {
   Future<void> addFavorite(LyricEntity entity);
 
   void dispose();
@@ -15,6 +15,7 @@ abstract class LyricPresenter implements LocalErrorManager {
 
 class LyricState {
   String localError;
+  bool isLoading;
 }
 
 class StreamLyricPresenter implements LyricPresenter {
@@ -29,12 +30,21 @@ class StreamLyricPresenter implements LyricPresenter {
       _stateController.stream.map((state) => state.localError).distinct();
 
   @override
+  Stream<bool> get isLoadingStream =>
+      _stateController.stream.map((state) => state.isLoading).distinct();
+
+  @override
   Future<void> addFavorite(LyricEntity entity) async {
     try {
+      _state.isLoading = true;
+      _state.localError = null;
+      _update();
+
       await saveFavoriteLyrics.save([entity]);
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {
+      _state.isLoading = false;
       _update();
     }
   }
@@ -77,6 +87,14 @@ void main() {
       sut.localErrorStream,
       emits('Something wrong happened. Please, try again!'),
     );
+
+    await sut.addFavorite(entity);
+  });
+
+  test('Should emits loading events on SaveFavoriteLyrics ', () async {
+    await sut.addFavorite(entity);
+
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
 
     await sut.addFavorite(entity);
   });
