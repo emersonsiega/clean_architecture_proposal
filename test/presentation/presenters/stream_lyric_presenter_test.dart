@@ -7,14 +7,22 @@ import 'package:clean_architecture_proposal/domain/domain.dart';
 
 class SaveFavoriteLyricsSpy extends Mock implements SaveFavoriteLyrics {}
 
+class LoadFavoriteLyricsSpy extends Mock implements LoadFavoriteLyrics {}
+
 void main() {
   StreamLyricPresenter sut;
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
+  LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
 
   setUp(() {
     saveFavoriteLyricsSpy = SaveFavoriteLyricsSpy();
-    sut = StreamLyricPresenter(saveFavoriteLyrics: saveFavoriteLyricsSpy);
+    loadFavoriteLyricsSpy = LoadFavoriteLyricsSpy();
+    sut = StreamLyricPresenter(
+      saveFavoriteLyrics: saveFavoriteLyricsSpy,
+      loadFavoriteLyrics: loadFavoriteLyricsSpy,
+    );
+
     entity = LyricEntity(
       lyric: faker.lorem.sentence(),
       artist: faker.person.name(),
@@ -59,5 +67,11 @@ void main() {
     expectLater(sut.isFavoriteStream, emitsInOrder([false, true]));
 
     await sut.addFavorite(entity);
+  });
+
+  test('Should call LoadFavoriteLyrics on checkIsFavorite', () async {
+    await sut.checkIsFavorite(entity);
+
+    verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
   });
 }

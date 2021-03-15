@@ -14,6 +14,7 @@ class LyricState {
 
 class StreamLyricPresenter implements LyricPresenter {
   final SaveFavoriteLyrics saveFavoriteLyrics;
+  final LoadFavoriteLyrics loadFavoriteLyrics;
   LyricState _state;
   final _stateController = StreamController<LyricState>.broadcast();
 
@@ -25,7 +26,10 @@ class StreamLyricPresenter implements LyricPresenter {
       ..successMessage = null;
   }
 
-  StreamLyricPresenter({@required this.saveFavoriteLyrics}) {
+  StreamLyricPresenter({
+    @required this.saveFavoriteLyrics,
+    @required this.loadFavoriteLyrics,
+  }) {
     _initialState();
   }
 
@@ -62,6 +66,11 @@ class StreamLyricPresenter implements LyricPresenter {
       _state.isLoading = false;
       _update();
     }
+  }
+
+  @override
+  Future<void> checkIsFavorite(LyricEntity entity) async {
+    await loadFavoriteLyrics.loadFavorites();
   }
 
   void _update() => _stateController.add(_state);
