@@ -1,44 +1,9 @@
-import 'dart:convert';
-
-import 'package:clean_architecture_proposal/data/data.dart';
-import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:meta/meta.dart';
 
-abstract class LoadFavoriteLyrics {
-  Future<List<LyricEntity>> loadFavorites();
-}
-
-class LocalLoadFavoriteLyrics implements LoadFavoriteLyrics {
-  final LoadLocalStorage loadLocalStorage;
-
-  LocalLoadFavoriteLyrics({@required this.loadLocalStorage});
-
-  @override
-  Future<List<LyricEntity>> loadFavorites() async {
-    try {
-      final favorites = await loadLocalStorage.load('favorites');
-
-      if (favorites?.isNotEmpty == true) {
-        List favoriteMapList = jsonDecode(favorites);
-
-        return favoriteMapList
-            .map((entity) => LocalLyricModel.fromMap(entity).toEntity())
-            .toList();
-      }
-
-      return null;
-    } catch (error) {
-      throw DomainError.unexpected;
-    }
-  }
-}
-
-abstract class LoadLocalStorage {
-  Future<String> load(String key);
-}
+import 'package:clean_architecture_proposal/data/data.dart';
+import 'package:clean_architecture_proposal/domain/domain.dart';
 
 class LoadLocalStorageSpy extends Mock implements LoadLocalStorage {}
 
