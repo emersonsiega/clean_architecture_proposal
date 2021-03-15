@@ -29,8 +29,7 @@ class LocalStorageAdapter implements SaveLocalStorage, LoadLocalStorage {
     }
 
     try {
-      await localStorage.getItem(key);
-      return null;
+      return await localStorage.getItem(key);
     } catch (error) {
       throw LocalStorageError.unexpected;
     }

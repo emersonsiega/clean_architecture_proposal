@@ -61,4 +61,12 @@ void main() {
 
     expect(future, throwsA(LocalStorageError.invalidKey));
   });
+
+  test('Should get correct values from load', () async {
+    when(localStorageSpy.getItem(any)).thenAnswer((_) => 'any-value');
+
+    final value = await sut.load('any-key');
+
+    expect(value, 'any-value');
+  });
 }
