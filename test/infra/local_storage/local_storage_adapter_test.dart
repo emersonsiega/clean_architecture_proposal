@@ -47,4 +47,12 @@ void main() {
 
     verify(localStorageSpy.getItem('any-key')).called(1);
   });
+
+  test('Should rethrow error if load fails', () async {
+    when(localStorageSpy.getItem(any)).thenThrow('error');
+
+    final future = sut.load('any-key');
+
+    expect(future, throwsA(LocalStorageError.unexpected));
+  });
 }

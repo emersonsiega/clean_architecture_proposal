@@ -24,7 +24,11 @@ class LocalStorageAdapter implements SaveLocalStorage, LoadLocalStorage {
 
   @override
   Future<String> load(String key) async {
-    await localStorage.getItem(key);
-    return null;
+    try {
+      await localStorage.getItem(key);
+      return null;
+    } catch (error) {
+      throw LocalStorageError.unexpected;
+    }
   }
 }
