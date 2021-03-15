@@ -3,7 +3,7 @@ import '../ui.dart';
 abstract class LyricsSearchPresenter
     implements
         FormValidManager,
-        FormLoadingManager,
+        LoadingManager,
         LocalErrorManager,
         NavigationManager {
   Stream<String> get artistErrorStream;
