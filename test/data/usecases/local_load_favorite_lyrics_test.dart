@@ -26,10 +26,15 @@ abstract class LoadLocalStorage {
 class LoadLocalStorageSpy extends Mock implements LoadLocalStorage {}
 
 void main() {
-  test('Should call LoadLocalStorage on load favorite', () async {
-    final loadLocalStorageSpy = LoadLocalStorageSpy();
-    final sut = LocalLoadFavoriteLyrics(loadLocalStorage: loadLocalStorageSpy);
+  LoadLocalStorageSpy loadLocalStorageSpy;
+  LocalLoadFavoriteLyrics sut;
 
+  setUp(() {
+    loadLocalStorageSpy = LoadLocalStorageSpy();
+    sut = LocalLoadFavoriteLyrics(loadLocalStorage: loadLocalStorageSpy);
+  });
+
+  test('Should call LoadLocalStorage on load favorite', () async {
     await sut.loadFavorites();
 
     verify(loadLocalStorageSpy.load(any)).called(1);
