@@ -39,4 +39,10 @@ void main() {
 
     verify(loadLocalStorageSpy.load(any)).called(1);
   });
+
+  test('Should call LoadLocalStorage with correct key', () async {
+    await sut.loadFavorites();
+
+    verify(loadLocalStorageSpy.load('favorites')).called(1);
+  });
 }
