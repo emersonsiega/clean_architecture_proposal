@@ -49,7 +49,7 @@ void main() {
 
     verify(
       httpClientSpy.request(
-        url: "$url/Eric%20Clapton/Tears%20in%20Heaven",
+        url: "$url/Eric Clapton/Tears in Heaven",
         method: 'get',
       ),
     ).called(1);

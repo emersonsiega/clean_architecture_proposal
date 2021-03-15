@@ -26,7 +26,7 @@ class HttpAdapter implements HttpClient {
       if (method == 'get') {
         response = await client
             .get(
-              url,
+              Uri.encodeFull(url),
               headers: defaultHeaders,
             )
             .timeout(timeout);

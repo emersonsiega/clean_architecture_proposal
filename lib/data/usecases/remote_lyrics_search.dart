@@ -18,7 +18,7 @@ class RemoteLyricsSearch implements LyricsSearch {
       final lyricsRequest = "$url/${params.toUrlString()}";
 
       final remoteEntity = await httpClient.request(
-        url: Uri.encodeFull(lyricsRequest),
+        url: lyricsRequest,
       );
 
       return RemoteLyricModel.fromJson(params, remoteEntity).entity;
