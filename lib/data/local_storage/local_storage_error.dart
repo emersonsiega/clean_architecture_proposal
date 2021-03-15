@@ -1,0 +1,1 @@
+enum LocalStorageError { unexpected, invalidKey }

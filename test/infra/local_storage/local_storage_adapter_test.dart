@@ -1,3 +1,4 @@
+import 'package:clean_architecture_proposal/data/local_storage/local_storage_error.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -27,5 +28,17 @@ void main() {
     final future = sut.save(key: 'any-key', value: 'any-value');
 
     expect(future, throwsA('error'));
+  });
+
+  test('Should throw invalidKey error if key is null', () async {
+    final future = sut.save(key: null, value: 'any-value');
+
+    expect(future, throwsA(LocalStorageError.invalidKey));
+  });
+
+  test('Should throw invalidKey error if key is empty', () async {
+    final future = sut.save(key: '', value: 'any-value');
+
+    expect(future, throwsA(LocalStorageError.invalidKey));
   });
 }

@@ -11,6 +11,10 @@ class LocalStorageAdapter implements SaveLocalStorage {
 
   @override
   Future<void> save({@required String key, @required String value}) async {
+    if (key?.isNotEmpty != true) {
+      throw LocalStorageError.invalidKey;
+    }
+
     await localStorage.setItem(key, value);
   }
 }
