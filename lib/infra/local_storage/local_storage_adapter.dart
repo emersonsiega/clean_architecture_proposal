@@ -15,6 +15,10 @@ class LocalStorageAdapter implements SaveLocalStorage {
       throw LocalStorageError.invalidKey;
     }
 
-    await localStorage.setItem(key, value);
+    try {
+      await localStorage.setItem(key, value);
+    } catch (error) {
+      throw LocalStorageError.unexpected;
+    }
   }
 }

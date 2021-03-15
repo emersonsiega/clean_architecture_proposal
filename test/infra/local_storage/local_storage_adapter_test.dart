@@ -27,7 +27,7 @@ void main() {
 
     final future = sut.save(key: 'any-key', value: 'any-value');
 
-    expect(future, throwsA('error'));
+    expect(future, throwsA(LocalStorageError.unexpected));
   });
 
   test('Should throw invalidKey error if key is null', () async {
