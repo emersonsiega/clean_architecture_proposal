@@ -14,18 +14,22 @@ void main() {
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
+  PostExpectation mockLoadFavoritesCall() =>
+      when(loadFavoriteLyricsSpy.loadFavorites());
+
+  void mockLoadResponse(List<LyricEntity> response) {
+    mockLoadFavoritesCall().thenAnswer((_) async => response);
+  }
 
   void mockLoadSuccess() {
-    when(loadFavoriteLyricsSpy.loadFavorites()).thenAnswer(
-      (_) async => [
-        entity,
-        LyricEntity(
-          lyric: 'other-lyric',
-          artist: 'other-artist',
-          music: 'other-music',
-        )
-      ],
-    );
+    mockLoadResponse([
+      entity,
+      LyricEntity(
+        lyric: 'other-lyric',
+        artist: 'other-artist',
+        music: 'other-music',
+      )
+    ]);
   }
 
   setUp(() {
@@ -92,6 +96,15 @@ void main() {
 
   test('Should emit isFavorite true event on checkIsFavorite', () async {
     expectLater(sut.isFavoriteStream, emits(true));
+
+    await sut.checkIsFavorite(entity);
+  });
+
+  test('Should emit isFavorite false event if checkIsFavorite returns null',
+      () async {
+    mockLoadResponse(null);
+
+    expectLater(sut.isFavoriteStream, emits(false));
 
     await sut.checkIsFavorite(entity);
   });
