@@ -19,11 +19,16 @@ class LocalLoadFavoriteLyrics implements LoadFavoriteLyrics {
   @override
   Future<List<LyricEntity>> loadFavorites() async {
     final favorites = await loadLocalStorage.load('favorites');
-    List favoriteMapList = jsonDecode(favorites);
 
-    return favoriteMapList
-        .map((entity) => LocalLyricModel.fromMap(entity).toEntity())
-        .toList();
+    if (favorites != null) {
+      List favoriteMapList = jsonDecode(favorites);
+
+      return favoriteMapList
+          .map((entity) => LocalLyricModel.fromMap(entity).toEntity())
+          .toList();
+    }
+
+    return null;
   }
 }
 
@@ -38,12 +43,17 @@ void main() {
   LocalLoadFavoriteLyrics sut;
   LyricEntity entity1;
   LyricEntity entity2;
+  PostExpectation mockLoadLocalCall() => when(loadLocalStorageSpy.load(any));
 
   void mockSuccess() {
-    when(loadLocalStorageSpy.load(any)).thenAnswer(
+    mockLoadLocalCall().thenAnswer(
       (_) async =>
           '[{"artist":"${entity1.artist}","music":"${entity1.music}","lyric":"${entity1.lyric}"},{"artist":"${entity2.artist}","music":"${entity2.music}","lyric":"${entity2.lyric}"}]',
     );
+  }
+
+  void mockCustomSuccess(String response) {
+    mockLoadLocalCall().thenAnswer((_) async => response);
   }
 
   setUp(() {
@@ -81,5 +91,13 @@ void main() {
     expect(entities, isNotNull);
     expect(entities, hasLength(2));
     expect(entities, containsAll([entity1, entity2]));
+  });
+
+  test('Should return null on null response', () async {
+    mockCustomSuccess(null);
+
+    final entities = await sut.loadFavorites();
+
+    expect(entities, isNull);
   });
 }
