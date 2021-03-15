@@ -55,4 +55,10 @@ void main() {
 
     expect(future, throwsA(LocalStorageError.unexpected));
   });
+
+  test('Should throw invalidKey error if key is null', () async {
+    final future = sut.load(null);
+
+    expect(future, throwsA(LocalStorageError.invalidKey));
+  });
 }
