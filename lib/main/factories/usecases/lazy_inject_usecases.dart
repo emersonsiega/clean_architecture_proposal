@@ -11,4 +11,10 @@ void lazyInjectUsecases() {
       url: lyricsApiUrlFactory(),
     ),
   );
+
+  Get.i().lazyPut<SaveFavoriteLyrics>(
+    () => LocalSaveFavoriteLyrics(
+      saveLocalStorage: Get.i().get<SaveLocalStorage>(),
+    ),
+  );
 }
