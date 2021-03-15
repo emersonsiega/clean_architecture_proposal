@@ -28,9 +28,11 @@ class LyricPage extends StatelessWidget {
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(32),
-        child: Text(
-          "${entity.lyric}",
-          textAlign: TextAlign.center,
+        child: Center(
+          child: Text(
+            "${entity.lyric}",
+            textAlign: TextAlign.center,
+          ),
         ),
       ),
     );
