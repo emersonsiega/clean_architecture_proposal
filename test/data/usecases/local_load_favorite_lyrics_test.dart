@@ -18,17 +18,21 @@ class LocalLoadFavoriteLyrics implements LoadFavoriteLyrics {
 
   @override
   Future<List<LyricEntity>> loadFavorites() async {
-    final favorites = await loadLocalStorage.load('favorites');
+    try {
+      final favorites = await loadLocalStorage.load('favorites');
 
-    if (favorites?.isNotEmpty == true) {
-      List favoriteMapList = jsonDecode(favorites);
+      if (favorites?.isNotEmpty == true) {
+        List favoriteMapList = jsonDecode(favorites);
 
-      return favoriteMapList
-          .map((entity) => LocalLyricModel.fromMap(entity).toEntity())
-          .toList();
+        return favoriteMapList
+            .map((entity) => LocalLyricModel.fromMap(entity).toEntity())
+            .toList();
+      }
+
+      return null;
+    } catch (error) {
+      throw DomainError.unexpected;
     }
-
-    return null;
   }
 }
 
@@ -54,6 +58,10 @@ void main() {
 
   void mockCustomSuccess(String response) {
     mockLoadLocalCall().thenAnswer((_) async => response);
+  }
+
+  void mockError() {
+    mockLoadLocalCall().thenThrow(LocalStorageError.unexpected);
   }
 
   setUp(() {
@@ -107,5 +115,13 @@ void main() {
     final entities = await sut.loadFavorites();
 
     expect(entities, isNull);
+  });
+
+  test('Should throw unexpectedError if load fails', () async {
+    mockError();
+
+    final future = sut.loadFavorites();
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
