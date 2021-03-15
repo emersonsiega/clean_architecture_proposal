@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../dependency_management/dependency_management.dart';
@@ -5,20 +7,45 @@ import '../../domain/domain.dart';
 
 import '../ui.dart';
 
-class LyricPage extends StatelessWidget {
+class LyricPage extends StatefulWidget {
+  @override
+  _LyricPageState createState() => _LyricPageState();
+}
+
+class _LyricPageState extends State<LyricPage> {
+  LyricPresenter presenter = Get.i().get();
+  LyricEntity _entity;
+  StreamSubscription _subscription;
+
+  @override
+  void initState() {
+    _subscription = presenter.successMessageStream.listen((message) {
+      if (message != null) {
+        showSuccessSnack(context: context, message: message);
+      }
+    });
+
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _subscription?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    LyricEntity entity = ModalRoute.of(context).settings.arguments;
-    LyricPresenter presenter = Get.i().get();
+    _entity = ModalRoute.of(context).settings.arguments;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("${entity.artist}"),
+        title: Text("${_entity.artist}"),
         actions: [
           IconButton(
             key: Key("favoriteButton"),
             icon: Icon(Icons.favorite_border),
-            onPressed: () => presenter.addFavorite(entity),
+            onPressed: () => presenter.addFavorite(_entity),
           ),
         ],
         bottom: PreferredSize(
@@ -28,7 +55,7 @@ class LyricPage extends StatelessWidget {
             width: double.infinity,
             child: Center(
               child: Text(
-                "${entity.music}",
+                "${_entity.music}",
                 style: Theme.of(context).textTheme.subtitle1.copyWith(
                       color: Colors.white,
                     ),
@@ -41,7 +68,7 @@ class LyricPage extends StatelessWidget {
         padding: const EdgeInsets.all(32),
         child: Center(
           child: Text(
-            "${entity.lyric}",
+            "${_entity.lyric}",
             textAlign: TextAlign.center,
           ),
         ),

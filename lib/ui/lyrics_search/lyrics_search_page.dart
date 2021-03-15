@@ -28,15 +28,7 @@ class _LyricsSearchPageState extends State<LyricsSearchPage>
 
     _subscription = presenter.localErrorStream.listen((error) {
       if (error != null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            backgroundColor: Colors.red[900],
-            content: Text(
-              error,
-              textAlign: TextAlign.center,
-            ),
-          ),
-        );
+        showErrorSnack(context: context, error: error);
       }
     });
 

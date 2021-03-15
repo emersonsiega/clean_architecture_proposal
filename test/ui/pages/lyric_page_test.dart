@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +14,7 @@ class LyricPresenterSpy extends Mock implements LyricPresenter {}
 void main() {
   LyricEntity entity;
   LyricPresenterSpy lyricPresenterSpy;
+  StreamController<String> messageController;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
@@ -35,13 +38,25 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  void mockStreams() {
+    when(lyricPresenterSpy.successMessageStream)
+        .thenAnswer((_) => messageController.stream);
+  }
+
   setUp(() {
     lyricPresenterSpy = LyricPresenterSpy();
+    messageController = StreamController<String>();
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
       music: faker.lorem.word(),
     );
+
+    mockStreams();
+  });
+
+  tearDown(() {
+    messageController.close();
   });
 
   testWidgets('Should load LyricPage with correct data',
@@ -66,5 +81,15 @@ void main() {
     await tester.tap(find.byKey(Key("favoriteButton")));
 
     verify(lyricPresenterSpy.addFavorite(entity)).called(1);
+  });
+
+  testWidgets('Should present message on addFavorite success',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    messageController.add("success_message");
+    await tester.pumpAndSettle();
+
+    expect(find.text('success_message'), findsOneWidget);
   });
 }
