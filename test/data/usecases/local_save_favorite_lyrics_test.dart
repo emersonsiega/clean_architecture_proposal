@@ -45,14 +45,18 @@ class LocalSaveFavoriteLyrics implements SaveFavoriteLyrics {
 
   @override
   Future<void> save(List<LyricEntity> entities) async {
-    final localEntity = entities
-        .map((entity) => LocalLyricEntity.fromEntity(entity).toMap())
-        .toList();
+    try {
+      final localEntity = entities
+          .map((entity) => LocalLyricEntity.fromEntity(entity).toMap())
+          .toList();
 
-    await saveLocalStorage.save(
-      key: 'favorites',
-      value: jsonEncode(localEntity),
-    );
+      await saveLocalStorage.save(
+        key: 'favorites',
+        value: jsonEncode(localEntity),
+      );
+    } catch (error) {
+      throw DomainError.unexpected;
+    }
   }
 }
 
@@ -94,5 +98,15 @@ void main() {
             '[{"artist":"${entity.artist}","music":"${entity.music}","lyric":"${entity.lyric}"},{"artist":"${entity.artist}","music":"${entity.music}","lyric":"${entity.lyric}"}]',
       ),
     ).called(1);
+  });
+
+  test('Should throw unexpectedError on error', () async {
+    when(saveLocalStorageSpy.save(
+            key: anyNamed('key'), value: anyNamed('value')))
+        .thenThrow(Exception());
+
+    final future = sut.save([entity, entity]);
+
+    expect(future, throwsA(DomainError.unexpected));
   });
 }
