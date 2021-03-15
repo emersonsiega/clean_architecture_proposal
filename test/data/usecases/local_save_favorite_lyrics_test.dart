@@ -1,64 +1,9 @@
-import 'dart:convert';
-
-import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
-import 'package:meta/meta.dart';
 
-abstract class SaveLocalStorage {
-  Future<void> save({@required String key, @required String value});
-}
-
-abstract class SaveFavoriteLyrics {
-  Future<void> save(List<LyricEntity> entities);
-}
-
-class LocalLyricEntity extends LyricEntity {
-  LocalLyricEntity._({
-    @required String lyric,
-    @required String artist,
-    @required String music,
-  }) : super(artist: artist, music: music, lyric: lyric);
-
-  factory LocalLyricEntity.fromEntity(LyricEntity entity) {
-    return LocalLyricEntity._(
-      artist: entity.artist,
-      lyric: entity.lyric,
-      music: entity.music,
-    );
-  }
-
-  Map toMap() {
-    return {
-      'artist': artist,
-      'music': music,
-      'lyric': lyric,
-    };
-  }
-}
-
-class LocalSaveFavoriteLyrics implements SaveFavoriteLyrics {
-  final SaveLocalStorage saveLocalStorage;
-
-  LocalSaveFavoriteLyrics({@required this.saveLocalStorage});
-
-  @override
-  Future<void> save(List<LyricEntity> entities) async {
-    try {
-      final localEntity = entities
-          .map((entity) => LocalLyricEntity.fromEntity(entity).toMap())
-          .toList();
-
-      await saveLocalStorage.save(
-        key: 'favorites',
-        value: jsonEncode(localEntity),
-      );
-    } catch (error) {
-      throw DomainError.unexpected;
-    }
-  }
-}
+import 'package:clean_architecture_proposal/data/data.dart';
+import 'package:clean_architecture_proposal/domain/domain.dart';
 
 class SaveLocalStorageSpy extends Mock implements SaveLocalStorage {}
 
