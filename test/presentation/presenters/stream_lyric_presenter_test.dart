@@ -11,6 +11,7 @@ abstract class LyricPresenter implements LocalErrorManager, FormLoadingManager {
   Future<void> addFavorite(LyricEntity entity);
 
   Stream<String> get successMessageStream;
+  Stream<bool> get isFavoriteStream;
 
   void dispose();
 }
@@ -18,15 +19,26 @@ abstract class LyricPresenter implements LocalErrorManager, FormLoadingManager {
 class LyricState {
   String localError;
   String successMessage;
-  bool isLoading;
+  bool isLoading = false;
+  bool isFavorite = false;
 }
 
 class StreamLyricPresenter implements LyricPresenter {
   final SaveFavoriteLyrics saveFavoriteLyrics;
-  final _state = LyricState();
+  LyricState _state;
   final _stateController = StreamController<LyricState>.broadcast();
 
-  StreamLyricPresenter({@required this.saveFavoriteLyrics});
+  void _initialState() {
+    _state = LyricState()
+      ..isFavorite = false
+      ..isLoading = false
+      ..localError = null
+      ..successMessage = null;
+  }
+
+  StreamLyricPresenter({@required this.saveFavoriteLyrics}) {
+    _initialState();
+  }
 
   @override
   Stream<String> get localErrorStream =>
@@ -41,15 +53,19 @@ class StreamLyricPresenter implements LyricPresenter {
       _stateController.stream.map((state) => state.successMessage).distinct();
 
   @override
+  Stream<bool> get isFavoriteStream =>
+      _stateController.stream.map((state) => state.isFavorite).distinct();
+
+  @override
   Future<void> addFavorite(LyricEntity entity) async {
     try {
+      _initialState();
       _state.isLoading = true;
-      _state.localError = null;
-      _state.successMessage = null;
       _update();
 
       await saveFavoriteLyrics.save([entity]);
 
+      _state.isFavorite = true;
       _state.successMessage = "Lyric was added to favorites!";
     } on DomainError catch (error) {
       _state.localError = error.description;
@@ -101,23 +117,24 @@ void main() {
     await sut.addFavorite(entity);
   });
 
-  test('Should emits loading events on SaveFavoriteLyrics', () async {
-    await sut.addFavorite(entity);
-
+  test('Should emit loading events on SaveFavoriteLyrics', () async {
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
 
     await sut.addFavorite(entity);
   });
 
-  test('Should emits success message event on SaveFavoriteLyrics success',
+  test('Should emit success message event on SaveFavoriteLyrics success',
       () async {
-    await sut.addFavorite(entity);
-
-    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
     expectLater(
       sut.successMessageStream,
       emitsInOrder([null, "Lyric was added to favorites!"]),
     );
+
+    await sut.addFavorite(entity);
+  });
+
+  test('Should emit isFavorite event on SaveFavoriteLyrics success', () async {
+    expectLater(sut.isFavoriteStream, emitsInOrder([false, true]));
 
     await sut.addFavorite(entity);
   });
