@@ -10,11 +10,14 @@ import 'package:meta/meta.dart';
 abstract class LyricPresenter implements LocalErrorManager, FormLoadingManager {
   Future<void> addFavorite(LyricEntity entity);
 
+  Stream<String> get successMessageStream;
+
   void dispose();
 }
 
 class LyricState {
   String localError;
+  String successMessage;
   bool isLoading;
 }
 
@@ -34,13 +37,20 @@ class StreamLyricPresenter implements LyricPresenter {
       _stateController.stream.map((state) => state.isLoading).distinct();
 
   @override
+  Stream<String> get successMessageStream =>
+      _stateController.stream.map((state) => state.successMessage).distinct();
+
+  @override
   Future<void> addFavorite(LyricEntity entity) async {
     try {
       _state.isLoading = true;
       _state.localError = null;
+      _state.successMessage = null;
       _update();
 
       await saveFavoriteLyrics.save([entity]);
+
+      _state.successMessage = "Lyric was added to favorites!";
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {
@@ -91,10 +101,23 @@ void main() {
     await sut.addFavorite(entity);
   });
 
-  test('Should emits loading events on SaveFavoriteLyrics ', () async {
+  test('Should emits loading events on SaveFavoriteLyrics', () async {
     await sut.addFavorite(entity);
 
     expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+
+    await sut.addFavorite(entity);
+  });
+
+  test('Should emits success message event on SaveFavoriteLyrics success',
+      () async {
+    await sut.addFavorite(entity);
+
+    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+    expectLater(
+      sut.successMessageStream,
+      emitsInOrder([null, "Lyric was added to favorites!"]),
+    );
 
     await sut.addFavorite(entity);
   });
