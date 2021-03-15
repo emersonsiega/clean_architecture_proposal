@@ -20,7 +20,7 @@ class LocalLoadFavoriteLyrics implements LoadFavoriteLyrics {
   Future<List<LyricEntity>> loadFavorites() async {
     final favorites = await loadLocalStorage.load('favorites');
 
-    if (favorites != null) {
+    if (favorites?.isNotEmpty == true) {
       List favoriteMapList = jsonDecode(favorites);
 
       return favoriteMapList
@@ -95,6 +95,14 @@ void main() {
 
   test('Should return null on null response', () async {
     mockCustomSuccess(null);
+
+    final entities = await sut.loadFavorites();
+
+    expect(entities, isNull);
+  });
+
+  test('Should return null on empty response', () async {
+    mockCustomSuccess('');
 
     final entities = await sut.loadFavorites();
 
