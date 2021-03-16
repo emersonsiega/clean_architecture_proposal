@@ -206,7 +206,12 @@ void main() {
       sut.navigateToStream,
       emitsInOrder([
         null,
-        PageConfig('/lyric', arguments: entity, type: NavigateType.push)
+        PageConfig(
+          '/lyric',
+          arguments: entity,
+          type: NavigateType.push,
+          whenComplete: sut.loadFavorites,
+        )
       ]),
     );
 

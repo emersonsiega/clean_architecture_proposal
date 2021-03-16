@@ -73,6 +73,14 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       .map((state) => state.isLoadingFavorites)
       .distinct();
 
+  void _navigateToLyric(LyricEntity entity) {
+    _state.navigateTo = PageConfig(
+      '/lyric',
+      arguments: entity,
+      whenComplete: loadFavorites,
+    );
+  }
+
   @override
   Future<void> search() async {
     try {
@@ -85,7 +93,7 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
         LyricsSearchParams(artist: _state.artist, music: _state.music),
       );
 
-      _state.navigateTo = PageConfig('/lyric', arguments: entity);
+      _navigateToLyric(entity);
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {
@@ -114,11 +122,7 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   Future<void> openFavorite(LyricEntity entity) async {
-    _state.navigateTo = PageConfig(
-      '/lyric',
-      arguments: entity,
-      whenComplete: loadFavorites,
-    );
+    _navigateToLyric(entity);
 
     _update();
   }
