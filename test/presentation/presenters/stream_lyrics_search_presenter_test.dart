@@ -41,6 +41,11 @@ void main() {
     mockSearchCall().thenAnswer((_) async => entity);
   }
 
+  void mockLoadFavoriteLyricsSuccess() {
+    when(loadFavoriteLyricsSpy.loadFavorites())
+        .thenAnswer((realInvocation) async => [entity]);
+  }
+
   setUp(() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
@@ -58,6 +63,7 @@ void main() {
 
     mockValidation();
     mockLyricsSearchSuccess();
+    mockLoadFavoriteLyricsSuccess();
   });
 
   test('Should call validation with correct artist', () async {
@@ -208,9 +214,6 @@ void main() {
   });
 
   test('Should emit favorites event on loadFavorites', () async {
-    when(loadFavoriteLyricsSpy.loadFavorites())
-        .thenAnswer((realInvocation) async => [entity]);
-
     expectLater(sut.favoritesStream, emits([entity]));
 
     await sut.loadFavorites();
