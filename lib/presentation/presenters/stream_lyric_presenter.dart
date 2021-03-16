@@ -59,7 +59,7 @@ class StreamLyricPresenter implements LyricPresenter {
       final favorites = await loadFavoriteLyrics.loadFavorites();
 
       if (favorites == null || !favorites.contains(entity)) {
-        await saveFavoriteLyrics.save([entity]);
+        await saveFavoriteLyrics.save([...favorites, entity]);
         _state.isFavorite = true;
         _state.successMessage = "Lyric was added to favorites!";
       }

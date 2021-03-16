@@ -14,6 +14,7 @@ void main() {
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
+  LyricEntity otherEntity;
   LyricEntity entityToAdd;
   PostExpectation mockLoadFavoritesCall() =>
       when(loadFavoriteLyricsSpy.loadFavorites());
@@ -23,14 +24,7 @@ void main() {
   }
 
   void mockLoadSuccess() {
-    mockLoadResponse([
-      entity,
-      LyricEntity(
-        lyric: 'other-lyric',
-        artist: 'other-artist',
-        music: 'other-music',
-      )
-    ]);
+    mockLoadResponse([entity, otherEntity]);
   }
 
   setUp(() {
@@ -47,6 +41,12 @@ void main() {
       music: faker.lorem.word(),
     );
 
+    otherEntity = LyricEntity(
+      lyric: 'other-lyric',
+      artist: 'other-artist',
+      music: 'other-music',
+    );
+
     entityToAdd = LyricEntity(
       lyric: faker.lorem.sentence(),
       artist: faker.person.name(),
@@ -56,10 +56,10 @@ void main() {
     mockLoadSuccess();
   });
 
-  test('Should call SaveFavoriteLyrics with correct values', () async {
+  test('Should call SaveFavoriteLyrics on addFavorite', () async {
     await sut.addFavorite(entityToAdd);
 
-    verify(saveFavoriteLyricsSpy.save([entityToAdd])).called(1);
+    verify(saveFavoriteLyricsSpy.save(any)).called(1);
   });
 
   test('Should emits error if SaveFavoriteLyrics fails', () async {
@@ -130,5 +130,12 @@ void main() {
     await sut.addFavorite(entity);
 
     verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
+  });
+
+  test('Should add entity to the list of favorites on save', () async {
+    await sut.addFavorite(entityToAdd);
+
+    verify(saveFavoriteLyricsSpy.save([entity, otherEntity, entityToAdd]))
+        .called(1);
   });
 }
