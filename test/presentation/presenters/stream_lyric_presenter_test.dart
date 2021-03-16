@@ -174,4 +174,16 @@ void main() {
 
     await sut.addFavorite(entity);
   });
+
+  test('Should emits error if checkIsFavorite fails', () async {
+    when(loadFavoriteLyricsSpy.loadFavorites())
+        .thenThrow(DomainError.unexpected);
+
+    expectLater(
+      sut.localErrorStream,
+      emits('Something wrong happened. Please, try again!'),
+    );
+
+    await sut.checkIsFavorite(entity);
+  });
 }

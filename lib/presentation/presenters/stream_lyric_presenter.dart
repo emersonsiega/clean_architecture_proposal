@@ -78,13 +78,18 @@ class StreamLyricPresenter implements LyricPresenter {
 
   @override
   Future<void> checkIsFavorite(LyricEntity entity) async {
-    _state.successMessage = null;
+    try {
+      _state.successMessage = null;
+      _state.isFavorite = false;
 
-    final favorites = await loadFavoriteLyrics.loadFavorites();
+      final favorites = await loadFavoriteLyrics.loadFavorites();
 
-    _state.isFavorite = favorites?.contains(entity) ?? false;
-
-    _update();
+      _state.isFavorite = favorites?.contains(entity) ?? false;
+    } on DomainError catch (error) {
+      _state.localError = error.description;
+    } finally {
+      _update();
+    }
   }
 
   void _update() => _stateController.add(_state);
