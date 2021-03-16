@@ -5,6 +5,7 @@ void _showSnack({
   @required String message,
   @required Color backgroundColor,
 }) {
+  ScaffoldMessenger.of(context).hideCurrentSnackBar();
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       backgroundColor: backgroundColor,

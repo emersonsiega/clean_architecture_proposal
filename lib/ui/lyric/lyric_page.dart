@@ -25,8 +25,6 @@ class _LyricPageState extends State<LyricPage> {
       }
     });
 
-    Future.delayed(Duration.zero, () => presenter.checkIsFavorite(_entity));
-
     super.initState();
   }
 
@@ -39,6 +37,7 @@ class _LyricPageState extends State<LyricPage> {
   @override
   Widget build(BuildContext context) {
     _entity = ModalRoute.of(context).settings.arguments;
+    presenter.checkIsFavorite(_entity);
 
     return Scaffold(
       appBar: AppBar(
