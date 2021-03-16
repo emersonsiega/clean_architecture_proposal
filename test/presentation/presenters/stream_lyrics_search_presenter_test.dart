@@ -220,7 +220,13 @@ void main() {
   });
 
   test('Should emit favorites event on loadFavorites', () async {
-    expectLater(sut.favoritesStream, emits([entity]));
+    expectLater(
+      sut.favoritesStream,
+      emitsInOrder([
+        null,
+        [entity]
+      ]),
+    );
 
     await sut.loadFavorites();
   });
@@ -231,6 +237,15 @@ void main() {
     expectLater(
       sut.localErrorStream,
       emits('Something wrong happened. Please, try again!'),
+    );
+
+    await sut.loadFavorites();
+  });
+
+  test('Should emit loading events on loadFavorites', () async {
+    expectLater(
+      sut.isLoadingFavoritesStream,
+      emitsInOrder([true, false]),
     );
 
     await sut.loadFavorites();

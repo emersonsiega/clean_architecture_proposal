@@ -15,6 +15,7 @@ class LyricsSearchState {
   String localError;
   PageConfig navigateTo;
   bool isLoading = false;
+  bool isLoadingFavorites = false;
   List<LyricEntity> favorites;
 
   bool get isFormValid =>
@@ -68,6 +69,11 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _stateController.stream.map((state) => state.favorites).distinct();
 
   @override
+  Stream<bool> get isLoadingFavoritesStream => _stateController.stream
+      .map((state) => state.isLoadingFavorites)
+      .distinct();
+
+  @override
   Future<void> search() async {
     try {
       _state.isLoading = true;
@@ -91,14 +97,17 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   @override
   Future<void> loadFavorites() async {
     try {
+      _state.isLoadingFavorites = true;
       _state.localError = null;
       _state.favorites = null;
+      _update();
 
       final favorites = await loadFavoriteLyrics.loadFavorites();
       _state.favorites = favorites;
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {
+      _state.isLoadingFavorites = false;
       _update();
     }
   }

@@ -11,6 +11,7 @@ abstract class LyricsSearchPresenter
   Stream<String> get artistErrorStream;
   Stream<String> get musicErrorStream;
   Stream<List<LyricEntity>> get favoritesStream;
+  Stream<bool> get isLoadingFavoritesStream;
 
   void validateArtist(String artist);
   void validateMusic(String music);
