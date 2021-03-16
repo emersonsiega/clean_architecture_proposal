@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -14,12 +15,14 @@ void main() {
   LyricsSearchPresenterSpy searchPresenterSpy;
   String artist;
   String music;
+  List<LyricEntity> favoritesList;
   StreamController<String> artistErrorController;
   StreamController<String> musicErrorController;
   StreamController<String> formErrorController;
   StreamController<PageConfig> navigateToController;
   StreamController<bool> isFormValidController;
   StreamController<bool> isLoadingController;
+  StreamController<List<LyricEntity>> favoritesController;
 
   void mockPresenter() {
     when(searchPresenterSpy.artistErrorStream)
@@ -34,11 +37,20 @@ void main() {
         .thenAnswer((_) => isFormValidController.stream);
     when(searchPresenterSpy.isLoadingStream)
         .thenAnswer((_) => isLoadingController.stream);
+    when(searchPresenterSpy.favoritesStream)
+        .thenAnswer((_) => favoritesController.stream);
   }
 
   setUp(() {
     artist = faker.lorem.word();
     music = faker.lorem.sentence();
+    favoritesList = [
+      LyricEntity(lyric: faker.lorem.sentence(), artist: artist, music: music),
+      LyricEntity(
+          lyric: faker.lorem.sentence(),
+          artist: faker.lorem.word(),
+          music: faker.lorem.sentence()),
+    ];
     searchPresenterSpy = LyricsSearchPresenterSpy();
     artistErrorController = StreamController<String>();
     musicErrorController = StreamController<String>();
@@ -46,6 +58,8 @@ void main() {
     navigateToController = StreamController<PageConfig>();
     isFormValidController = StreamController<bool>();
     isLoadingController = StreamController<bool>();
+    favoritesController = StreamController<List<LyricEntity>>();
+
     mockPresenter();
   });
 
@@ -56,6 +70,7 @@ void main() {
     isFormValidController.close();
     isLoadingController.close();
     navigateToController.close();
+    favoritesController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -249,5 +264,22 @@ void main() {
     await loadPage(tester);
 
     verify(searchPresenterSpy.loadFavorites()).called(1);
+  });
+
+  testWidgets('Should present list of favorites', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    favoritesController.add(favoritesList);
+    await tester.pump();
+
+    expect(find.text("Favorites"), findsOneWidget);
+    expect(
+      find.text("${favoritesList.first.artist} - ${favoritesList.first.music}"),
+      findsOneWidget,
+    );
+    expect(
+      find.text("${favoritesList[1].artist} - ${favoritesList[1].music}"),
+      findsOneWidget,
+    );
   });
 }

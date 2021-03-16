@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:meta/meta.dart';
 
+import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 
 import '../presentation.dart';

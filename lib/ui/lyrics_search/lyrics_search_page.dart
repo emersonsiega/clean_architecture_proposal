@@ -67,6 +67,8 @@ class _LyricsSearchPageState extends State<LyricsSearchPage>
                 ArtistInput(),
                 const SizedBox(height: 30),
                 MusicInput(),
+                const SizedBox(height: 30),
+                FavoritesList(),
               ],
             ),
           ),
