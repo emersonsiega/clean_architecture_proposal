@@ -243,4 +243,11 @@ void main() {
       verify(searchPresenterSpy.dispose()).called(1);
     });
   });
+
+  testWidgets('Should call loadFavorites on initState',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    verify(searchPresenterSpy.loadFavorites()).called(1);
+  });
 }

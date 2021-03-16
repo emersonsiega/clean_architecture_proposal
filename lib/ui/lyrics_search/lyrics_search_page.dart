@@ -24,6 +24,7 @@ class _LyricsSearchPageState extends State<LyricsSearchPage>
 
   @override
   void initState() {
+    presenter.loadFavorites();
     navigateToPageManager = presenter.navigateToStream;
 
     _subscription = presenter.localErrorStream.listen((error) {
