@@ -206,4 +206,13 @@ void main() {
 
     verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
   });
+
+  test('Should emit favorites event on loadFavorites', () async {
+    when(loadFavoriteLyricsSpy.loadFavorites())
+        .thenAnswer((realInvocation) async => [entity]);
+
+    expectLater(sut.favoritesStream, emits([entity]));
+
+    await sut.loadFavorites();
+  });
 }
