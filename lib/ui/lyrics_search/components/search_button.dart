@@ -18,6 +18,9 @@ class SearchButton extends StatelessWidget {
           builder: (context, isLoading) {
             return FloatingActionButton(
               child: isLoading.data == true ? Loading() : Icon(Icons.search),
+              backgroundColor: isFormValid.data != true
+                  ? Colors.grey
+                  : Theme.of(context).accentColor,
               onPressed: isFormValid.data == true
                   ? isLoading.data == true
                       ? () {}
