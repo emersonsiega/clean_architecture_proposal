@@ -18,6 +18,7 @@ abstract class LyricsSearchPresenter
 
   Future<void> search();
   Future<void> loadFavorites();
+  Future<void> openFavorite(LyricEntity entity);
 
   void dispose();
 }

@@ -250,4 +250,13 @@ void main() {
 
     await sut.loadFavorites();
   });
+
+  test('Should emit navigate events on openFavorite', () async {
+    expectLater(
+      sut.navigateToStream,
+      emits(PageConfig('/lyric', arguments: entity, type: NavigateType.push)),
+    );
+
+    await sut.openFavorite(entity);
+  });
 }

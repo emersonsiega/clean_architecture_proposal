@@ -112,6 +112,12 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
     }
   }
 
+  @override
+  Future<void> openFavorite(LyricEntity entity) async {
+    _state.navigateTo = PageConfig('/lyric', arguments: entity);
+    _update();
+  }
+
   void _update() => _stateController.add(_state);
 
   @override
