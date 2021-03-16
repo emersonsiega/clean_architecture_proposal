@@ -1,3 +1,5 @@
+import '../../domain/domain.dart';
+
 import '../ui.dart';
 
 abstract class LyricsSearchPresenter
@@ -8,11 +10,13 @@ abstract class LyricsSearchPresenter
         NavigationManager {
   Stream<String> get artistErrorStream;
   Stream<String> get musicErrorStream;
+  Stream<List<LyricEntity>> get favoritesStream;
 
   void validateArtist(String artist);
   void validateMusic(String music);
 
   Future<void> search();
+  Future<void> loadFavorites();
 
   void dispose();
 }

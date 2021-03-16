@@ -15,6 +15,7 @@ class LyricsSearchState {
   String localError;
   PageConfig navigateTo;
   bool isLoading = false;
+  List<LyricEntity> favorites;
 
   bool get isFormValid =>
       artist?.isNotEmpty == true &&
@@ -26,12 +27,14 @@ class LyricsSearchState {
 class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
   final Validation validation;
   final LyricsSearch lyricsSearch;
+  final LoadFavoriteLyrics loadFavoriteLyrics;
   final _state = LyricsSearchState();
   final _stateController = StreamController<LyricsSearchState>.broadcast();
 
   StreamLyricsSearchPresenter({
     @required this.validation,
     @required this.lyricsSearch,
+    @required this.loadFavoriteLyrics,
   }) {
     _stateController.add(_state);
   }
@@ -61,6 +64,10 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _stateController.stream.map((state) => state.navigateTo).distinct();
 
   @override
+  Stream<List<LyricEntity>> get favoritesStream =>
+      _stateController.stream.map((state) => state.favorites).distinct();
+
+  @override
   Future<void> search() async {
     try {
       _state.isLoading = true;
@@ -79,6 +86,11 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
       _state.isLoading = false;
       _update();
     }
+  }
+
+  @override
+  Future<void> loadFavorites() async {
+    await loadFavoriteLyrics.loadFavorites();
   }
 
   void _update() => _stateController.add(_state);

@@ -10,10 +10,13 @@ class ValidationSpy extends Mock implements Validation {}
 
 class LyricsSearchSpy extends Mock implements LyricsSearch {}
 
+class LoadFavoriteLyricsSpy extends Mock implements LoadFavoriteLyrics {}
+
 void main() {
   StreamLyricsSearchPresenter sut;
   ValidationSpy validationSpy;
   LyricsSearchSpy lyricsSearchSpy;
+  LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   String artist;
   String music;
   String lyric;
@@ -41,9 +44,11 @@ void main() {
   setUp(() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
+    loadFavoriteLyricsSpy = LoadFavoriteLyricsSpy();
     sut = StreamLyricsSearchPresenter(
       validation: validationSpy,
       lyricsSearch: lyricsSearchSpy,
+      loadFavoriteLyrics: loadFavoriteLyricsSpy,
     );
 
     artist = faker.person.name();
@@ -194,5 +199,11 @@ void main() {
     );
 
     await sut.search();
+  });
+
+  test('Should call LoadFavoriteLyrics on load', () async {
+    await sut.loadFavorites();
+
+    verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
   });
 }
