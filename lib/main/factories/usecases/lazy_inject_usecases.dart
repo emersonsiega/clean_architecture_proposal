@@ -14,7 +14,13 @@ void lazyInjectUsecases() {
 
   Get.i().lazyPut<SaveFavoriteLyrics>(
     () => LocalSaveFavoriteLyrics(
-      saveLocalStorage: Get.i().get<SaveLocalStorage>(),
+      saveLocalStorage: Get.i().get<LocalStorageComposite>(),
+    ),
+  );
+
+  Get.i().lazyPut<LoadFavoriteLyrics>(
+    () => LocalLoadFavoriteLyrics(
+      loadLocalStorage: Get.i().get<LocalStorageComposite>(),
     ),
   );
 }

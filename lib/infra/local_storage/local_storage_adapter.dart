@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 
 import '../../data/data.dart';
 
-class LocalStorageAdapter implements SaveLocalStorage, LoadLocalStorage {
+class LocalStorageAdapter implements LocalStorageComposite {
   final LocalStorage localStorage;
 
   LocalStorageAdapter({@required this.localStorage});

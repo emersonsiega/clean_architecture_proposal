@@ -7,6 +7,7 @@ void streamLyricPresenterFactory() {
   Get.i().lazyPut<LyricPresenter>(
     () => StreamLyricPresenter(
       saveFavoriteLyrics: Get.i().get<SaveFavoriteLyrics>(),
+      loadFavoriteLyrics: Get.i().get<LoadFavoriteLyrics>(),
     ),
   );
 }

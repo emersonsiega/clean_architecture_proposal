@@ -10,7 +10,7 @@ void lazyInjectInfra() {
     () => HttpAdapter(Client()),
   );
 
-  Get.i().lazyPut<SaveLocalStorage>(
+  Get.i().lazyPut<LocalStorageComposite>(
     () => LocalStorageAdapter(
       localStorage: LocalStorage('clean_arch_app.json'),
     ),
