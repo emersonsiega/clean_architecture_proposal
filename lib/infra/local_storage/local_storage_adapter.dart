@@ -16,6 +16,7 @@ class LocalStorageAdapter implements LocalStorageComposite {
     }
 
     try {
+      await localStorage.ready;
       await localStorage.setItem(key, value);
     } catch (error) {
       throw LocalStorageError.unexpected;
@@ -29,6 +30,7 @@ class LocalStorageAdapter implements LocalStorageComposite {
     }
 
     try {
+      await localStorage.ready;
       return await localStorage.getItem(key);
     } catch (error) {
       throw LocalStorageError.unexpected;

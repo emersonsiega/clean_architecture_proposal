@@ -11,6 +11,7 @@ void streamLyricsSearchPresenterFactory() {
     () => StreamLyricsSearchPresenter(
       validation: _makeValidations(),
       lyricsSearch: Get.i().get<LyricsSearch>(),
+      loadFavoriteLyrics: Get.i().get<LoadFavoriteLyrics>(),
     ),
   );
 }
