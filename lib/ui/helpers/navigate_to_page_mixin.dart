@@ -12,14 +12,19 @@ mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
   void initState() {
     super.initState();
 
-    _subscription = navigateToPageManager.listen((PageConfig page) {
+    _subscription = navigateToPageManager.listen((PageConfig page) async {
       if (page != null) {
         final navigator = Navigator.of(context);
 
         if (page.type == NavigateType.push) {
-          navigator.pushNamed(page.route, arguments: page.arguments);
+          await navigator.pushNamed(page.route, arguments: page.arguments);
         } else {
-          navigator.pushReplacementNamed(page.route, arguments: page.arguments);
+          await navigator.pushReplacementNamed(page.route,
+              arguments: page.arguments);
+        }
+
+        if (page.whenComplete != null) {
+          page.whenComplete();
         }
       }
     });

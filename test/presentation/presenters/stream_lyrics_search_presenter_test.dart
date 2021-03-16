@@ -259,4 +259,20 @@ void main() {
 
     await sut.openFavorite(entity);
   });
+
+  test('Should reload favorites after openFavorite', () async {
+    expectLater(
+      sut.navigateToStream,
+      emits(
+        PageConfig(
+          '/lyric',
+          arguments: entity,
+          type: NavigateType.push,
+          whenComplete: sut.loadFavorites,
+        ),
+      ),
+    );
+
+    await sut.openFavorite(entity);
+  });
 }
