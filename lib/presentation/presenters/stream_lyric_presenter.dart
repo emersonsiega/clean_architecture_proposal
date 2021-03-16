@@ -61,6 +61,7 @@ class StreamLyricPresenter implements LyricPresenter {
       if (favorites.contains(entity)) {
         favorites.remove(entity);
         await saveFavoriteLyrics.save(favorites);
+        _state.isFavorite = false;
       } else {
         await saveFavoriteLyrics.save([...favorites, entity]);
         _state.isFavorite = true;

@@ -145,4 +145,11 @@ void main() {
 
     verify(saveFavoriteLyricsSpy.save([otherEntity])).called(1);
   });
+
+  test('Should emit isFavorite false on remove entity from favorites',
+      () async {
+    expectLater(sut.isFavoriteStream, emits(false));
+
+    await sut.addFavorite(entity);
+  });
 }
