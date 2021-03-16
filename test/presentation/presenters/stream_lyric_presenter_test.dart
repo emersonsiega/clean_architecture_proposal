@@ -36,9 +36,9 @@ void main() {
     );
 
     entity = LyricEntity(
-      lyric: faker.lorem.sentence(),
-      artist: faker.person.name(),
-      music: faker.lorem.word(),
+      lyric: faker.lorem.sentence().toLowerCase(),
+      artist: faker.person.name().toLowerCase(),
+      music: faker.lorem.word().toLowerCase(),
     );
 
     otherEntity = LyricEntity(
@@ -123,6 +123,19 @@ void main() {
 
     await sut.checkIsFavorite(
       LyricEntity(lyric: 'other', artist: 'other', music: 'other'),
+    );
+  });
+
+  test('Should emit isFavorite true event on similar entities', () async {
+    mockLoadResponse([entity]);
+
+    expectLater(sut.isFavoriteStream, emits(true));
+
+    await sut.checkIsFavorite(
+      LyricEntity(
+          lyric: entity.lyric,
+          artist: entity.artist.toUpperCase(),
+          music: entity.music.toUpperCase()),
     );
   });
 
