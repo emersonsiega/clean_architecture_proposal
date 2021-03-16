@@ -295,4 +295,20 @@ void main() {
     await tester.pump();
     expect(find.text("Favorites"), findsNothing);
   });
+
+  testWidgets('Should call openFavorite on tap favorite',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    favoritesController.add(favoritesList);
+    await tester.pump();
+
+    final favoriteTile = find.byKey(Key("${favoritesList.first.id}"));
+    expect(favoriteTile, findsOneWidget);
+
+    await tester.tap(favoriteTile);
+    await tester.pump();
+
+    verify(searchPresenterSpy.openFavorite(favoritesList.first)).called(1);
+  });
 }

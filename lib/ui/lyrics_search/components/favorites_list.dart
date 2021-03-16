@@ -53,6 +53,7 @@ class _FavoriteListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
+      key: Key("${favorite.id}"),
       leading: Icon(Icons.music_note),
       title: Text("${favorite.artist} - ${favorite.music}"),
       onTap: () => presenter.openFavorite(favorite),
