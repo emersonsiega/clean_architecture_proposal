@@ -90,9 +90,17 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   @override
   Future<void> loadFavorites() async {
-    final favorites = await loadFavoriteLyrics.loadFavorites();
-    _state.favorites = favorites;
-    _update();
+    try {
+      _state.localError = null;
+      _state.favorites = null;
+
+      final favorites = await loadFavoriteLyrics.loadFavorites();
+      _state.favorites = favorites;
+    } on DomainError catch (error) {
+      _state.localError = error.description;
+    } finally {
+      _update();
+    }
   }
 
   void _update() => _stateController.add(_state);

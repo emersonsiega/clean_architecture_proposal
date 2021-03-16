@@ -41,9 +41,15 @@ void main() {
     mockSearchCall().thenAnswer((_) async => entity);
   }
 
+  PostExpectation mockLoadFavoritesCall() =>
+      when(loadFavoriteLyricsSpy.loadFavorites());
+
   void mockLoadFavoriteLyricsSuccess() {
-    when(loadFavoriteLyricsSpy.loadFavorites())
-        .thenAnswer((realInvocation) async => [entity]);
+    mockLoadFavoritesCall().thenAnswer((_) async => [entity]);
+  }
+
+  void mockLoadFavoriteLyricsError() {
+    mockLoadFavoritesCall().thenThrow(DomainError.unexpected);
   }
 
   setUp(() {
@@ -215,6 +221,17 @@ void main() {
 
   test('Should emit favorites event on loadFavorites', () async {
     expectLater(sut.favoritesStream, emits([entity]));
+
+    await sut.loadFavorites();
+  });
+
+  test('Should emit error event on loadFavorites failure', () async {
+    mockLoadFavoriteLyricsError();
+
+    expectLater(
+      sut.localErrorStream,
+      emits('Something wrong happened. Please, try again!'),
+    );
 
     await sut.loadFavorites();
   });
