@@ -152,4 +152,13 @@ void main() {
 
     await sut.addFavorite(entity);
   });
+
+  test('Should emit success message event on remove from favorites', () async {
+    expectLater(
+      sut.successMessageStream,
+      emitsInOrder([null, "Lyric was removed from favorites!"]),
+    );
+
+    await sut.addFavorite(entity);
+  });
 }
