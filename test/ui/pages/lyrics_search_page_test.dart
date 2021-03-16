@@ -282,4 +282,17 @@ void main() {
       findsOneWidget,
     );
   });
+
+  testWidgets('Should not present list of favorites if there is no data',
+      (WidgetTester tester) async {
+    await loadPage(tester);
+
+    favoritesController.add(null);
+    await tester.pump();
+    expect(find.text("Favorites"), findsNothing);
+
+    favoritesController.add([]);
+    await tester.pump();
+    expect(find.text("Favorites"), findsNothing);
+  });
 }
