@@ -128,4 +128,10 @@ void main() {
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
+
+  testWidgets('Should call checkFavorite', (WidgetTester tester) async {
+    await loadPage(tester);
+
+    verify(lyricPresenterSpy.checkIsFavorite(entity)).called(1);
+  });
 }

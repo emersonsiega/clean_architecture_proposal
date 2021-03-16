@@ -25,6 +25,8 @@ class _LyricPageState extends State<LyricPage> {
       }
     });
 
+    Future.delayed(Duration.zero, () => presenter.checkIsFavorite(_entity));
+
     super.initState();
   }
 
