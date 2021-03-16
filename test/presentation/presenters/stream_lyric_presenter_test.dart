@@ -14,6 +14,7 @@ void main() {
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
+  LyricEntity entityToAdd;
   PostExpectation mockLoadFavoritesCall() =>
       when(loadFavoriteLyricsSpy.loadFavorites());
 
@@ -46,13 +47,19 @@ void main() {
       music: faker.lorem.word(),
     );
 
+    entityToAdd = LyricEntity(
+      lyric: faker.lorem.sentence(),
+      artist: faker.person.name(),
+      music: faker.lorem.word(),
+    );
+
     mockLoadSuccess();
   });
 
   test('Should call SaveFavoriteLyrics with correct values', () async {
-    await sut.addFavorite(entity);
+    await sut.addFavorite(entityToAdd);
 
-    verify(saveFavoriteLyricsSpy.save([entity])).called(1);
+    verify(saveFavoriteLyricsSpy.save([entityToAdd])).called(1);
   });
 
   test('Should emits error if SaveFavoriteLyrics fails', () async {
@@ -60,10 +67,10 @@ void main() {
 
     expectLater(
       sut.localErrorStream,
-      emits('Something wrong happened. Please, try again!'),
+      emitsInOrder([null, 'Something wrong happened. Please, try again!']),
     );
 
-    await sut.addFavorite(entity);
+    await sut.addFavorite(entityToAdd);
   });
 
   test('Should emit loading events on SaveFavoriteLyrics', () async {
@@ -79,13 +86,13 @@ void main() {
       emitsInOrder([null, "Lyric was added to favorites!"]),
     );
 
-    await sut.addFavorite(entity);
+    await sut.addFavorite(entityToAdd);
   });
 
   test('Should emit isFavorite event on SaveFavoriteLyrics success', () async {
     expectLater(sut.isFavoriteStream, emitsInOrder([false, true]));
 
-    await sut.addFavorite(entity);
+    await sut.addFavorite(entityToAdd);
   });
 
   test('Should call LoadFavoriteLyrics on checkIsFavorite', () async {
@@ -117,5 +124,11 @@ void main() {
     await sut.checkIsFavorite(
       LyricEntity(lyric: 'other', artist: 'other', music: 'other'),
     );
+  });
+
+  test('Should load favorites before add new one', () async {
+    await sut.addFavorite(entity);
+
+    verify(loadFavoriteLyricsSpy.loadFavorites()).called(1);
   });
 }

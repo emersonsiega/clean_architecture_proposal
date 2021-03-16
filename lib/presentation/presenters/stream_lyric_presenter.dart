@@ -56,10 +56,13 @@ class StreamLyricPresenter implements LyricPresenter {
       _state.isLoading = true;
       _update();
 
-      await saveFavoriteLyrics.save([entity]);
+      final favorites = await loadFavoriteLyrics.loadFavorites();
 
-      _state.isFavorite = true;
-      _state.successMessage = "Lyric was added to favorites!";
+      if (favorites == null || !favorites.contains(entity)) {
+        await saveFavoriteLyrics.save([entity]);
+        _state.isFavorite = true;
+        _state.successMessage = "Lyric was added to favorites!";
+      }
     } on DomainError catch (error) {
       _state.localError = error.description;
     } finally {
