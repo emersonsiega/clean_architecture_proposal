@@ -201,7 +201,7 @@ packages:
     source: hosted
     version: "2.0.0"
   http:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: http
       url: "https://pub.dartlang.org"
@@ -236,7 +236,7 @@ packages:
     source: hosted
     version: "0.6.3"
   localstorage:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: localstorage
       url: "https://pub.dartlang.org"
@@ -252,14 +252,14 @@ packages:
   lyric_module:
     dependency: "direct main"
     description:
-      path: lyric_module
+      path: "packages/lyric_module"
       relative: true
     source: path
     version: "0.0.1"
   lyric_search_module:
     dependency: "direct main"
     description:
-      path: lyric_search_module
+      path: "packages/lyric_search_module"
       relative: true
     source: path
     version: "0.0.1"
@@ -392,7 +392,7 @@ packages:
   shared:
     dependency: "direct main"
     description:
-      path: shared
+      path: "packages/shared"
       relative: true
     source: path
     version: "0.0.1"

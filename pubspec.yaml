@@ -10,16 +10,14 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  http: 0.12.0 #remover
-  localstorage: 4.0.0+1 #remover
 
   # LOCAL PACKAGES
   shared:
-    path: ./shared
+    path: ./packages/shared
   lyric_search_module:
-    path: ./lyric_search_module
+    path: ./packages/lyric_search_module
   lyric_module:
-    path: ./lyric_module
+    path: ./packages/lyric_module
 
 dev_dependencies:
   flutter_test:
