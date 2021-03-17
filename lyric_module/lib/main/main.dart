@@ -3,8 +3,8 @@ import './inject_presenters/inject_presenters.dart';
 
 void startModule() {
   /// USECASES
-  remoteLyricsSearchFactory();
+  localSaveFavoriteLyricsFactory();
 
   /// PRESENTERS
-  streamLyricsSearchPresenterFactory();
+  streamLyricPresenterFactory();
 }

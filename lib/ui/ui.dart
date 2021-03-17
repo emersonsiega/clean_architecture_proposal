@@ -1,1 +1,1 @@
-export 'lyric/lyric.dart';
+export 'app.dart';

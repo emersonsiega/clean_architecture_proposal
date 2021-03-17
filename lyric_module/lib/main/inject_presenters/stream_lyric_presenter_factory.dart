@@ -1,8 +1,8 @@
 import 'package:shared/shared.dart';
 
-import '../../../../presentation/presentation.dart';
-import '../../../../domain/domain.dart';
-import '../../../../ui/ui.dart';
+import '../../presentation/presentation.dart';
+import '../../domain/domain.dart';
+import '../../ui/ui.dart';
 
 void streamLyricPresenterFactory() {
   Get.i().lazyPut<LyricPresenter>(

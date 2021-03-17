@@ -5,8 +5,6 @@ import 'package:shared/shared.dart';
 
 import '../../domain/domain.dart';
 
-import '../data.dart';
-
 class LocalSaveFavoriteLyrics implements SaveFavoriteLyrics {
   final SaveLocalStorage saveLocalStorage;
 
