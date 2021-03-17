@@ -15,6 +15,14 @@ dependencies:
   get_it: 6.0.0
   localstorage: 4.0.0+1
 
+  # LOCAL PACKAGES
+  shared:
+    path: ./shared
+  lyric_search_module:
+    path: ./lyric_search_module
+  lyric_module:
+    path: ./lyric_module
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

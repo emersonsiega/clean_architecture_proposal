@@ -249,6 +249,20 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.0"
+  lyric_module:
+    dependency: "direct main"
+    description:
+      path: lyric_module
+      relative: true
+    source: path
+    version: "0.0.1"
+  lyric_search_module:
+    dependency: "direct main"
+    description:
+      path: lyric_search_module
+      relative: true
+    source: path
+    version: "0.0.1"
   matcher:
     dependency: transitive
     description:
@@ -375,6 +389,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  shared:
+    dependency: "direct main"
+    description:
+      path: shared
+      relative: true
+    source: path
+    version: "0.0.1"
   shelf:
     dependency: transitive
     description:
