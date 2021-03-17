@@ -10,6 +10,8 @@ void main() {
   lazyInjectUsecases();
   lazyInjectPresenters();
 
+  injectModulesDependencies();
+
   runApp(App());
 }
 
