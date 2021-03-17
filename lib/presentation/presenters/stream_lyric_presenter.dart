@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:meta/meta.dart';
+import 'package:shared/shared.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';

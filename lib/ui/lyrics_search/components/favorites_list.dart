@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../../../dependency_management/get_dependency_manager/get_dependency_manager.dart';
-import '../../../domain/domain.dart';
+import 'package:shared/shared.dart';
 
 import '../../ui.dart';
 

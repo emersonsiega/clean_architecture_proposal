@@ -1,4 +1,5 @@
-import '../../../dependency_management/dependency_management.dart';
+import 'package:shared/shared.dart';
+
 import '../../../domain/domain.dart';
 import '../../../data/data.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared/shared.dart';
 
-import '../../../dependency_management/dependency_management.dart';
 import '../../../ui/ui.dart';
 
 class MusicInput extends StatelessWidget {

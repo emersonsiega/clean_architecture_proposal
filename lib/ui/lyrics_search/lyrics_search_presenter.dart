@@ -1,6 +1,4 @@
-import '../../domain/domain.dart';
-
-import '../ui.dart';
+import 'package:shared/shared.dart';
 
 abstract class LyricsSearchPresenter
     implements

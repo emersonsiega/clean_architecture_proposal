@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-
-import '../../dependency_management/dependency_management.dart';
+import 'package:shared/shared.dart';
 
 import '../ui.dart';
 

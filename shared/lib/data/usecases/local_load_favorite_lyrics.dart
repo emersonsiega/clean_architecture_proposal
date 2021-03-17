@@ -2,9 +2,8 @@ import 'dart:convert';
 
 import 'package:meta/meta.dart';
 
+import '../../data/data.dart';
 import '../../domain/domain.dart';
-
-import '../data.dart';
 
 class LocalLoadFavoriteLyrics implements LoadFavoriteLyrics {
   final LoadLocalStorage loadLocalStorage;

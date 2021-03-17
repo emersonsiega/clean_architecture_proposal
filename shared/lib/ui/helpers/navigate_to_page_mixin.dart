@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
-import '../../ui/ui.dart';
+import '../helpers/helpers.dart';
 
 mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
   Stream<PageConfig> get navigateToPageManager;

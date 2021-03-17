@@ -1,3 +1,5 @@
+import 'package:shared/shared.dart';
+
 import '../../domain/domain.dart';
 
 class RemoteLyricModel {

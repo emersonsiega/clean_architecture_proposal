@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
-
-import '../../domain/domain.dart';
+import 'package:shared/shared.dart';
 
 abstract class LyricsSearch {
   Future<LyricEntity> search(LyricsSearchParams params);

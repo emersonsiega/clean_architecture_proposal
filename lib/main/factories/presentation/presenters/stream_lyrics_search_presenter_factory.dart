@@ -1,10 +1,9 @@
-import '../../../../dependency_management/dependency_management.dart';
+import 'package:shared/shared.dart';
+
 import '../../../../presentation/presentation.dart';
-import '../../../../validation/validation.dart';
+
 import '../../../../domain/domain.dart';
 import '../../../../ui/ui.dart';
-
-import '../../../builders/builders.dart';
 
 void streamLyricsSearchPresenterFactory() {
   Get.i().lazyPut<LyricsSearchPresenter>(
