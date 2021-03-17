@@ -1,9 +1,5 @@
 import 'package:shared/shared.dart';
-
-import '../../../../presentation/presentation.dart';
-
-import '../../../../domain/domain.dart';
-import '../../../../ui/ui.dart';
+import 'package:lyric_search_module/lyric_search_module.dart';
 
 void streamLyricsSearchPresenterFactory() {
   Get.i().lazyPut<LyricsSearchPresenter>(

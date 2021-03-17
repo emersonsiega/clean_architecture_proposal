@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lyric_search_module/lyric_search_module.dart';
 
 import '../ui/ui.dart';
 

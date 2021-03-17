@@ -1,3 +1,4 @@
+import 'package:lyric_search_module/lyric_search_module.dart';
 import 'package:shared/shared.dart';
 
 import '../../../domain/domain.dart';
