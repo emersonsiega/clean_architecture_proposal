@@ -1,10 +1,13 @@
-import 'package:clean_architecture_proposal/domain/domain.dart';
-import 'package:clean_architecture_proposal/ui/ui.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:clean_architecture_proposal/presentation/presentation.dart';
+import 'package:clean_architecture_proposal/shared/presentation/presentation.dart';
+import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+import 'package:clean_architecture_proposal/shared/ui/ui.dart';
+
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/domain/domain.dart';
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/presentation/presentation.dart';
 
 class ValidationSpy extends Mock implements Validation {}
 

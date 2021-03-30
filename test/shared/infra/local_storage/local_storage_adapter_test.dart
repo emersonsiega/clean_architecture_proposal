@@ -1,9 +1,9 @@
-import 'package:clean_architecture_proposal/data/local_storage/local_storage_error.dart';
 import 'package:localstorage/localstorage.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:clean_architecture_proposal/infra/infra.dart';
+import 'package:clean_architecture_proposal/shared/data/local_storage/local_storage_error.dart';
+import 'package:clean_architecture_proposal/shared/infra/infra.dart';
 
 class LocalStorageSpy extends Mock implements LocalStorage {}
 

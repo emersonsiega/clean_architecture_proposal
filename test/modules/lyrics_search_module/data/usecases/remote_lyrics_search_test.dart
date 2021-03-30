@@ -2,8 +2,11 @@ import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:clean_architecture_proposal/data/data.dart';
-import 'package:clean_architecture_proposal/domain/domain.dart';
+import 'package:clean_architecture_proposal/shared/data/data.dart';
+import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/data/data.dart';
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/domain/domain.dart';
 
 class HttpClientSpy extends Mock implements HttpClient {}
 

@@ -2,8 +2,10 @@ import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
-import 'package:clean_architecture_proposal/presentation/presenters/presenters.dart';
-import 'package:clean_architecture_proposal/domain/domain.dart';
+import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+
+import 'package:clean_architecture_proposal/modules/lyric_module/presentation/presenters/presenters.dart';
+import 'package:clean_architecture_proposal/modules/lyric_module/domain/domain.dart';
 
 class SaveFavoriteLyricsSpy extends Mock implements SaveFavoriteLyrics {}
 

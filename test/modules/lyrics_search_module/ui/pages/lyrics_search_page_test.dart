@@ -1,13 +1,16 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/domain/domain.dart';
+import 'package:clean_architecture_proposal/modules/modules.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_modular_test/flutter_modular_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
-import 'package:clean_architecture_proposal/ui/ui.dart';
+import 'package:clean_architecture_proposal/shared/ui/ui.dart';
+import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
 
@@ -61,6 +64,13 @@ void main() {
     favoritesController = StreamController<List<LyricEntity>>();
 
     mockPresenter();
+
+    initModule(
+      LyricsSearchModule(),
+      replaceBinds: [
+        Bind.factory<LyricsSearchPresenter>((_) => searchPresenterSpy),
+      ],
+    );
   });
 
   tearDown(() {
@@ -74,8 +84,6 @@ void main() {
   });
 
   Future<void> loadPage(WidgetTester tester) async {
-    Get.i().put<LyricsSearchPresenter>(searchPresenterSpy);
-
     final page = MaterialApp(
       initialRoute: '/',
       routes: {
@@ -231,15 +239,6 @@ void main() {
     isLoadingController.add(false);
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
-  });
-
-  testWidgets('Should navigate to other page', (WidgetTester tester) async {
-    await loadPage(tester);
-
-    navigateToController.add(PageConfig('/other_page'));
-    await tester.pumpAndSettle();
-
-    expect(find.text("other_page"), findsOneWidget);
   });
 
   testWidgets('Should present error if search fails',

@@ -1,13 +1,17 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
-import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:clean_architecture_proposal/domain/domain.dart';
-import 'package:clean_architecture_proposal/ui/ui.dart';
+import 'package:flutter_modular/flutter_modular.dart';
+import 'package:flutter_modular_test/flutter_modular_test.dart';
+import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
+
+import 'package:clean_architecture_proposal/app/app_route.dart';
+import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+
+import 'package:clean_architecture_proposal/modules/modules.dart';
+import 'package:clean_architecture_proposal/modules/lyric_module/ui/ui.dart';
 
 class LyricPresenterSpy extends Mock implements LyricPresenter {}
 
@@ -20,7 +24,6 @@ void main() {
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
-    Get.i().put<LyricPresenter>(lyricPresenterSpy);
 
     final app = MaterialApp(
       initialRoute: '/',
@@ -31,12 +34,14 @@ void main() {
                 return Container();
               },
             ),
-        '/lyric': (_) => LyricPage(),
+        '/lyric': (ctx) => LyricPage(
+              entity: ModalRoute.of(ctx).settings.arguments,
+            ),
       },
     );
 
     await tester.pumpWidget(app);
-    Navigator.of(_context).pushNamed('/lyric', arguments: entity);
+    Navigator.of(_context).pushNamed(AppRoute.lyric, arguments: entity);
     await tester.pumpAndSettle();
   }
 
@@ -61,6 +66,11 @@ void main() {
     );
 
     mockStreams();
+
+    initModule(
+      LyricModule(),
+      replaceBinds: [Bind.factory<LyricPresenter>((_) => lyricPresenterSpy)],
+    );
   });
 
   tearDown(() {

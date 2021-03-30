@@ -3,8 +3,8 @@ import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:http/http.dart';
 
-import 'package:clean_architecture_proposal/infra/infra.dart';
-import 'package:clean_architecture_proposal/data/data.dart';
+import 'package:clean_architecture_proposal/shared/infra/infra.dart';
+import 'package:clean_architecture_proposal/shared/data/data.dart';
 
 class ClientSpy extends Mock implements Client {}
 
