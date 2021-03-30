@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../ui/ui.dart';
 
@@ -14,7 +15,7 @@ mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
 
     _subscription = navigateToPageManager.listen((PageConfig page) async {
       if (page != null) {
-        final navigator = Navigator.of(context);
+        final navigator = Modular.to;
 
         if (page.type == NavigateType.push) {
           await navigator.pushNamed(page.route, arguments: page.arguments);

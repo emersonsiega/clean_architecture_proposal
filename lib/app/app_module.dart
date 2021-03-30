@@ -1,41 +1,33 @@
+import 'package:flutter_modular/flutter_modular.dart';
 import 'package:http/http.dart';
 import 'package:localstorage/localstorage.dart';
-import 'package:flutter/material.dart';
 
 import '../modules/modules.dart';
 import '../shared/shared.dart';
 
-import './app_page.dart';
+import 'app_route.dart';
 
-class AppModule implements MainModule {
-  AppModule() {
-    injectDependencies();
-  }
-
+class AppModule extends Module {
   @override
-  void injectDependencies() {
-    /// Shared Infra
-    Get.i().lazyPut<HttpClient>(
-      () => HttpAdapter(Client()),
-    );
-    Get.i().lazyPut<LocalStorageComposite>(
-      () => LocalStorageAdapter(
+  final List<Bind> binds = [
+    Bind<HttpClient>(
+      (_) => HttpAdapter(Client()),
+    ),
+    Bind<LocalStorageComposite>(
+      (_) => LocalStorageAdapter(
         localStorage: LocalStorage('clean_arch_app.json'),
       ),
-    );
-
-    /// Shared Usecases
-    Get.i().lazyPut<LoadFavoriteLyrics>(
-      () => LocalLoadFavoriteLyrics(
-        loadLocalStorage: Get.i().get<LocalStorageComposite>(),
+    ),
+    Bind<LoadFavoriteLyrics>(
+      (i) => LocalLoadFavoriteLyrics(
+        loadLocalStorage: i.get<LocalStorageComposite>(),
       ),
-    );
-
-    /// Submodules
-    Get.i().lazyPut<LyricsSearchModule>(() => LyricsSearchModule());
-    Get.i().lazyPut<LyricModule>(() => LyricModule());
-  }
+    ),
+  ];
 
   @override
-  Widget get page => AppPage();
+  final List<ModularRoute> routes = [
+    ModuleRoute(AppRoute.home, module: LyricsSearchModule()),
+    ModuleRoute(AppRoute.lyric, module: LyricModule()),
+  ];
 }

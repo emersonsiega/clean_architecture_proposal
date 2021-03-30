@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 
 import '../../../../shared/shared.dart';
+import '../../../../app/app_route.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
@@ -75,7 +76,7 @@ class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
 
   void _navigateToLyric(LyricEntity entity) {
     _state.navigateTo = PageConfig(
-      '/lyric',
+      AppRoute.lyric,
       arguments: entity,
       whenComplete: loadFavorites,
     );

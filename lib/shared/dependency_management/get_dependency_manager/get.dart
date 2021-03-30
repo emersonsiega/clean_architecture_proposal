@@ -1,4 +1,4 @@
-import 'package:get_it/get_it.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../dependency_management.dart';
 
@@ -19,24 +19,24 @@ class Get implements DependencyManager {
 
   @override
   T get<T>() {
-    return GetIt.I.get<T>();
+    return Modular.get<T>();
   }
 
   @override
   void put<T>(T instance) {
     delete<T>();
-    GetIt.I.registerSingleton<T>(instance);
+    //GetIt.I.registerSingleton<T>(instance);
   }
 
   @override
   void lazyPut<T>(T Function() instanceBuilder) {
-    GetIt.I.registerLazySingleton<T>(instanceBuilder);
+    //GetIt.I.registerLazySingleton<T>(instanceBuilder);
   }
 
   @override
   void delete<T>() {
-    if (GetIt.I.isRegistered<T>()) {
-      GetIt.I.unregister<T>();
-    }
+    // if (GetIt.I.isRegistered<T>()) {
+    //   GetIt.I.unregister<T>();
+    // }
   }
 }

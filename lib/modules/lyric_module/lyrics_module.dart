@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../shared/shared.dart';
 
@@ -7,31 +7,24 @@ import './domain/domain.dart';
 import './presentation/presentation.dart';
 import './ui/ui.dart';
 
-class LyricModule implements BaseModule {
-  LyricModule() {
-    injectDependencies();
-  }
+class LyricModule extends Module {
+  @override
+  final List<Bind> binds = [
+    Bind<SaveFavoriteLyrics>(
+      (i) => LocalSaveFavoriteLyrics(
+        saveLocalStorage: i.get<LocalStorageComposite>(),
+      ),
+    ),
+    Bind<LyricPresenter>(
+      (i) => StreamLyricPresenter(
+        saveFavoriteLyrics: i.get<SaveFavoriteLyrics>(),
+        loadFavoriteLyrics: i.get<LoadFavoriteLyrics>(),
+      ),
+    ),
+  ];
 
   @override
-  void injectDependencies() {
-    Get.i().lazyPut<SaveFavoriteLyrics>(
-      () => LocalSaveFavoriteLyrics(
-        saveLocalStorage: Get.i().get<LocalStorageComposite>(),
-      ),
-    );
-
-    Get.i().lazyPut<LyricPresenter>(
-      () => StreamLyricPresenter(
-        saveFavoriteLyrics: Get.i().get<SaveFavoriteLyrics>(),
-        loadFavoriteLyrics: Get.i().get<LoadFavoriteLyrics>(),
-      ),
-    );
-  }
-
-  @override
-  Route onGenerateRoute(RouteSettings settings) {
-    return MaterialPageRoute(
-      builder: (_) => LyricPage(entity: settings.arguments),
-    );
-  }
+  final List<ModularRoute> routes = [
+    ChildRoute('/', child: (_, args) => LyricPage(entity: args.data)),
+  ];
 }

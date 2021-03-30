@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-
-import '../shared/shared.dart';
-import '../modules/modules.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import './app_route.dart';
 
@@ -10,24 +8,10 @@ class AppPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: AppRoute.home.name,
+      initialRoute: AppRoute.home,
       theme: _makeAppTheme(),
-      onGenerateRoute: _onGenerateRoute,
-    );
+    ).modular();
   }
-}
-
-Route _onGenerateRoute(RouteSettings settings) {
-  print("CHANGING ROUTE ${settings.name} ${settings.arguments}");
-
-  switch (appRouteFromString(settings.name)) {
-    case AppRoute.home:
-      return Get.i().get<LyricsSearchModule>().onGenerateRoute(settings);
-    case AppRoute.lyric:
-      return Get.i().get<LyricModule>().onGenerateRoute(settings);
-  }
-
-  return null;
 }
 
 ThemeData _makeAppTheme() {

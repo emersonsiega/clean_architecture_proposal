@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter_modular/flutter_modular.dart';
 
 import '../../shared/shared.dart';
 
@@ -7,28 +7,17 @@ import './data/data.dart';
 import './presentation/presentation.dart';
 import './ui/ui.dart';
 
-class LyricsSearchModule implements BaseModule {
-  String _lyricsApiUrlFactory({String path: ""}) {
-    final baseUrl = "https://api.lyrics.ovh/v1";
-
-    return "$baseUrl$path";
-  }
-
-  LyricsSearchModule() {
-    injectDependencies();
-  }
-
+class LyricsSearchModule extends Module {
   @override
-  void injectDependencies() {
-    Get.i().lazyPut<LyricsSearch>(
-      () => RemoteLyricsSearch(
-        httpClient: Get.i().get<HttpClient>(),
-        url: _lyricsApiUrlFactory(),
+  final List<Bind> binds = [
+    Bind<LyricsSearch>(
+      (i) => RemoteLyricsSearch(
+        httpClient: i.get<HttpClient>(),
+        url: lyricsApiUrlFactory(),
       ),
-    );
-
-    Get.i().lazyPut<LyricsSearchPresenter>(
-      () => StreamLyricsSearchPresenter(
+    ),
+    Bind<LyricsSearchPresenter>(
+      (i) => StreamLyricsSearchPresenter(
         validation: ValidationComposite([
           ...ValidationBuilder.forField('artist')
               .required()
@@ -39,14 +28,14 @@ class LyricsSearchModule implements BaseModule {
               .minLength(2)
               .build(),
         ]),
-        lyricsSearch: Get.i().get<LyricsSearch>(),
-        loadFavoriteLyrics: Get.i().get<LoadFavoriteLyrics>(),
+        lyricsSearch: i.get<LyricsSearch>(),
+        loadFavoriteLyrics: i.get<LoadFavoriteLyrics>(),
       ),
-    );
-  }
+    ),
+  ];
 
   @override
-  Route onGenerateRoute(RouteSettings settings) {
-    return MaterialPageRoute(builder: (_) => LyricsSearchPage());
-  }
+  final List<ModularRoute> routes = [
+    ChildRoute('/', child: (_, __) => LyricsSearchPage()),
+  ];
 }
