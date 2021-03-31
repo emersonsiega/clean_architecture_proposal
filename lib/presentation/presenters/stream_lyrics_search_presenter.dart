@@ -1,106 +1,81 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/domain/domain.dart';
+import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
+import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 
 import '../presentation.dart';
 
-class LyricsSearchState {
-  String artist;
-  String music;
-  String artistError;
-  String musicError;
-  String localError;
-  PageConfig navigateTo;
-  bool isLoading = false;
-
-  bool get isFormValid =>
-      artist?.isNotEmpty == true &&
-      artistError?.isNotEmpty != true &&
-      music?.isNotEmpty == true &&
-      musicError?.isNotEmpty != true;
-}
-
-class StreamLyricsSearchPresenter implements LyricsSearchPresenter {
+class StreamLyricsSearchPresenter
+    extends Bloc<LyricsSearchEvent, LyricsSearchState>
+    implements LyricsSearchPresenter {
   final Validation validation;
   final LyricsSearch lyricsSearch;
-  final _state = LyricsSearchState();
-  final _stateController = StreamController<LyricsSearchState>.broadcast();
 
   StreamLyricsSearchPresenter({
     @required this.validation,
     @required this.lyricsSearch,
-  }) {
-    _stateController.add(_state);
+  }) : super(LyricsSearchState());
+
+  Stream<LyricsSearchState> _search() async* {
+    var newState = state
+        .copyWith(isLoading: true)
+        .copyWithNull(navigateTo: true, localError: true);
+
+    try {
+      yield newState;
+
+      final entity = await lyricsSearch.search(
+        LyricsSearchParams(artist: state.artist, music: state.music),
+      );
+
+      newState = newState.copyWith(
+        navigateTo: PageConfig('/lyric', arguments: entity),
+      );
+    } on DomainError catch (error) {
+      newState = newState.copyWith(localError: error.description);
+    } finally {
+      newState = newState.copyWith(isLoading: false);
+    }
+
+    yield newState;
+  }
+
+  Stream<LyricsSearchState> _validateArtist(String artist) async* {
+    final error = validation.validate(field: 'artist', value: artist);
+
+    yield state.copyWith(artist: artist, artistError: error).copyWithNull(
+        localError: true, navigateTo: true, artistError: error == null);
+  }
+
+  Stream<LyricsSearchState> _validateMusic(String music) async* {
+    final error = validation.validate(field: 'music', value: music);
+
+    yield state.copyWith(music: music, musicError: error).copyWithNull(
+        localError: true, navigateTo: true, musicError: error == null);
   }
 
   @override
-  Stream<String> get artistErrorStream =>
-      _stateController.stream.map((state) => state.artistError).distinct();
+  void dispose() {}
 
   @override
-  Stream<String> get musicErrorStream =>
-      _stateController.stream.map((state) => state.musicError).distinct();
-
-  @override
-  Stream<bool> get isFormValidStream =>
-      _stateController.stream.map((state) => state.isFormValid).distinct();
-
-  @override
-  Stream<bool> get isLoadingStream =>
-      _stateController.stream.map((state) => state.isLoading).distinct();
-
-  @override
-  Stream<String> get localErrorStream =>
-      _stateController.stream.map((state) => state.localError).distinct();
-
-  @override
-  Stream<PageConfig> get navigateToStream =>
-      _stateController.stream.map((state) => state.navigateTo).distinct();
-
-  @override
-  Future<void> search() async {
-    try {
-      _state.isLoading = true;
-      _state.localError = null;
-      _state.navigateTo = null;
-      _update();
-
-      final entity = await lyricsSearch.search(
-        LyricsSearchParams(artist: _state.artist, music: _state.music),
-      );
-
-      _state.navigateTo = PageConfig('/lyric', arguments: entity);
-    } on DomainError catch (error) {
-      _state.localError = error.description;
-    } finally {
-      _state.isLoading = false;
-      _update();
+  Stream<LyricsSearchState> mapEventToState(event) async* {
+    if (event is ValidateMusicEvent) {
+      yield* _validateMusic(event.music);
+    } else if (event is ValidateArtistEvent) {
+      yield* _validateArtist(event.artist);
+    } else if (event is SearchLyricEvent) {
+      yield* _search();
     }
   }
 
-  void _update() => _stateController.add(_state);
+  @override
+  Stream<LyricsSearchState> get stateStream => this.stream;
 
   @override
-  void validateArtist(String artist) {
-    _state.artist = artist;
-    final error = validation.validate(field: 'artist', value: artist);
-    _state.artistError = error;
-    _update();
-  }
-
-  @override
-  void validateMusic(String music) {
-    _state.music = music;
-    final error = validation.validate(field: 'music', value: music);
-    _state.musicError = error;
-    _update();
-  }
-
-  @override
-  void dispose() {
-    _stateController.close();
+  void fireEvent(LyricsSearchEvent event) {
+    this.add(event);
   }
 }

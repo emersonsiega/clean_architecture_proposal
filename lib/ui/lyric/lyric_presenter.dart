@@ -1,13 +1,7 @@
-import '../../domain/domain.dart';
-
 import '../ui.dart';
 
-abstract class LyricPresenter implements LocalErrorManager, LoadingManager {
-  Future<void> addFavorite(LyricEntity entity);
-  Future<void> checkIsFavorite(LyricEntity entity);
+import './lyric_state.dart';
+import './lyric_event.dart';
 
-  Stream<String> get successMessageStream;
-  Stream<bool> get isFavoriteStream;
-
-  void dispose();
+abstract class LyricPresenter implements BasePresenter<LyricState, LyricEvent> {
 }

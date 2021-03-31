@@ -1,22 +1,20 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
+import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:clean_architecture_proposal/dependency_management/dependency_management.dart';
 import 'package:clean_architecture_proposal/domain/domain.dart';
 import 'package:clean_architecture_proposal/ui/ui.dart';
-import 'package:mockito/mockito.dart';
 
 class LyricPresenterSpy extends Mock implements LyricPresenter {}
 
 void main() {
   LyricEntity entity;
   LyricPresenterSpy lyricPresenterSpy;
-  StreamController<String> messageController;
-  StreamController<bool> isFavoriteController;
-  StreamController<bool> isLoadingController;
+  StreamController<LyricState> stateController;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
@@ -41,19 +39,14 @@ void main() {
   }
 
   void mockStreams() {
-    when(lyricPresenterSpy.successMessageStream)
-        .thenAnswer((_) => messageController.stream);
-    when(lyricPresenterSpy.isFavoriteStream)
-        .thenAnswer((_) => isFavoriteController.stream);
-    when(lyricPresenterSpy.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
+    when(lyricPresenterSpy.stateStream)
+        .thenAnswer((_) => stateController.stream);
   }
 
   setUp(() {
     lyricPresenterSpy = LyricPresenterSpy();
-    messageController = StreamController<String>();
-    isFavoriteController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
+    stateController = StreamController<LyricState>.broadcast();
+
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
@@ -64,9 +57,7 @@ void main() {
   });
 
   tearDown(() {
-    messageController.close();
-    isFavoriteController.close();
-    isLoadingController.close();
+    stateController.close();
   });
 
   testWidgets('Should load LyricPage with correct data',
@@ -89,15 +80,18 @@ void main() {
     await loadPage(tester);
 
     await tester.tap(find.byKey(Key("favoriteButton")));
+    await tester.pump();
 
-    verify(lyricPresenterSpy.addFavorite(entity)).called(1);
+    verify(lyricPresenterSpy.fireEvent(AddFavoriteEvent(entity))).called(1);
   });
 
   testWidgets('Should present message on addFavorite success',
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    messageController.add("success_message");
+    stateController.add(
+      LyricState().copyWith(successMessage: "success_message"),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('success_message'), findsOneWidget);
@@ -109,7 +103,7 @@ void main() {
 
     expect(find.byIcon(Icons.favorite_border), findsOneWidget);
 
-    isFavoriteController.add(true);
+    stateController.add(LyricState().copyWith(isFavorite: true));
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.favorite), findsOneWidget);
@@ -119,12 +113,12 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    stateController.add(LyricState().copyWith(isLoading: true));
     await tester.pump(Duration(milliseconds: 200));
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    isLoadingController.add(false);
+    stateController.add(LyricState().copyWith(isLoading: false));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
@@ -132,6 +126,6 @@ void main() {
   testWidgets('Should call checkFavorite', (WidgetTester tester) async {
     await loadPage(tester);
 
-    verify(lyricPresenterSpy.checkIsFavorite(entity)).called(1);
+    verify(lyricPresenterSpy.fireEvent(CheckFavoriteEvent(entity))).called(1);
   });
 }

@@ -14,48 +14,24 @@ void main() {
   LyricsSearchPresenterSpy searchPresenterSpy;
   String artist;
   String music;
-  StreamController<String> artistErrorController;
-  StreamController<String> musicErrorController;
-  StreamController<String> formErrorController;
-  StreamController<PageConfig> navigateToController;
-  StreamController<bool> isFormValidController;
-  StreamController<bool> isLoadingController;
+  StreamController<LyricsSearchState> stateController;
 
   void mockPresenter() {
-    when(searchPresenterSpy.artistErrorStream)
-        .thenAnswer((_) => artistErrorController.stream);
-    when(searchPresenterSpy.musicErrorStream)
-        .thenAnswer((_) => musicErrorController.stream);
-    when(searchPresenterSpy.localErrorStream)
-        .thenAnswer((_) => formErrorController.stream);
-    when(searchPresenterSpy.navigateToStream)
-        .thenAnswer((_) => navigateToController.stream);
-    when(searchPresenterSpy.isFormValidStream)
-        .thenAnswer((_) => isFormValidController.stream);
-    when(searchPresenterSpy.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
+    when(searchPresenterSpy.stateStream)
+        .thenAnswer((_) => stateController.stream);
   }
 
   setUp(() {
     artist = faker.lorem.word();
     music = faker.lorem.sentence();
     searchPresenterSpy = LyricsSearchPresenterSpy();
-    artistErrorController = StreamController<String>();
-    musicErrorController = StreamController<String>();
-    formErrorController = StreamController<String>();
-    navigateToController = StreamController<PageConfig>();
-    isFormValidController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
+    stateController = StreamController<LyricsSearchState>.broadcast();
+
     mockPresenter();
   });
 
   tearDown(() {
-    artistErrorController.close();
-    musicErrorController.close();
-    formErrorController.close();
-    isFormValidController.close();
-    isLoadingController.close();
-    navigateToController.close();
+    stateController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -109,17 +85,17 @@ void main() {
     await loadPage(tester);
 
     await tester.enterText(find.bySemanticsLabel('Artist'), artist);
-    verify(searchPresenterSpy.validateArtist(artist)).called(1);
+    verify(searchPresenterSpy.fireEvent(ValidateArtistEvent(artist))).called(1);
 
     await tester.enterText(find.bySemanticsLabel('Music'), music);
-    verify(searchPresenterSpy.validateMusic(music)).called(1);
+    verify(searchPresenterSpy.fireEvent(ValidateMusicEvent(music))).called(1);
   });
 
   testWidgets('Should present error if Artist is invalid',
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    artistErrorController.add('error');
+    stateController.add(LyricsSearchState(artistError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -129,7 +105,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    musicErrorController.add('error');
+    stateController.add(LyricsSearchState(musicError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -139,8 +115,9 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    artistErrorController.add(null);
-    musicErrorController.add(null);
+    stateController.add(
+      LyricsSearchState(artistError: null, musicError: null),
+    );
     await tester.pump();
 
     expect(
@@ -164,7 +141,9 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    stateController.add(
+      LyricsSearchState(music: 'any_music', artist: 'any_artist'),
+    );
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -177,7 +156,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(false);
+    stateController.add(LyricsSearchState(musicError: 'error'));
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -189,19 +168,21 @@ void main() {
   testWidgets('Should call search on form submit', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    stateController.add(
+      LyricsSearchState(music: 'any_music', artist: 'any_artist'),
+    );
     await tester.pump();
 
     await tester.tap(find.byType(FloatingActionButton));
     await tester.pump();
 
-    verify(searchPresenterSpy.search()).called(1);
+    verify(searchPresenterSpy.fireEvent(SearchLyricEvent())).called(1);
   });
 
   testWidgets('Should present loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    stateController.add(LyricsSearchState(isLoading: true));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });
@@ -209,11 +190,11 @@ void main() {
   testWidgets('Should hide loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    stateController.add(LyricsSearchState(isLoading: true));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    isLoadingController.add(false);
+    stateController.add(LyricsSearchState(isLoading: false));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
@@ -221,7 +202,9 @@ void main() {
   testWidgets('Should navigate to other page', (WidgetTester tester) async {
     await loadPage(tester);
 
-    navigateToController.add(PageConfig('/other_page'));
+    stateController.add(
+      LyricsSearchState(navigateTo: PageConfig('/other_page')),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text("other_page"), findsOneWidget);
@@ -231,7 +214,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    formErrorController.add('error_message');
+    stateController.add(LyricsSearchState(localError: 'error_message'));
     await tester.pump();
     expect(find.text('error_message'), findsOneWidget);
   });

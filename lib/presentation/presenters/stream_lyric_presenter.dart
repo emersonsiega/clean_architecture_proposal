@@ -1,101 +1,90 @@
 import 'dart:async';
 
+import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 
-class LyricState {
-  String localError;
-  String successMessage;
-  bool isLoading = false;
-  bool isFavorite = false;
-}
-
-class StreamLyricPresenter implements LyricPresenter {
+class StreamLyricPresenter extends Bloc<LyricEvent, LyricState>
+    implements LyricPresenter {
   final SaveFavoriteLyrics saveFavoriteLyrics;
   final LoadFavoriteLyrics loadFavoriteLyrics;
-  LyricState _state;
-  final _stateController = StreamController<LyricState>.broadcast();
-
-  void _initialState() {
-    _state = LyricState()
-      ..isFavorite = false
-      ..isLoading = false
-      ..localError = null
-      ..successMessage = null;
-  }
 
   StreamLyricPresenter({
     @required this.saveFavoriteLyrics,
     @required this.loadFavoriteLyrics,
-  }) {
-    _initialState();
+  }) : super(_initialState());
+
+  static LyricState _initialState() {
+    return LyricState()
+        .copyWith(isFavorite: false, isLoading: false)
+        .copyWithNull(localError: true, successMessage: true);
   }
 
-  @override
-  Stream<String> get localErrorStream =>
-      _stateController.stream.map((state) => state.localError).distinct();
+  Stream<LyricState> _addFavorite(LyricEntity entity) async* {
+    var newState = _initialState().copyWith(isLoading: true);
+    yield newState;
 
-  @override
-  Stream<bool> get isLoadingStream =>
-      _stateController.stream.map((state) => state.isLoading).distinct();
-
-  @override
-  Stream<String> get successMessageStream =>
-      _stateController.stream.map((state) => state.successMessage).distinct();
-
-  @override
-  Stream<bool> get isFavoriteStream =>
-      _stateController.stream.map((state) => state.isFavorite).distinct();
-
-  @override
-  Future<void> addFavorite(LyricEntity entity) async {
     try {
-      _initialState();
-      _state.isLoading = true;
-      _update();
-
       final favorites = await loadFavoriteLyrics.loadFavorites() ?? [];
 
       if (favorites.contains(entity)) {
         favorites.remove(entity);
         await saveFavoriteLyrics.save(favorites);
-        _state.isFavorite = false;
-        _state.successMessage = "Lyric was removed from favorites!";
+        newState = newState.copyWith(
+          isFavorite: false,
+          successMessage: "Lyric was removed from favorites!",
+        );
       } else {
         await saveFavoriteLyrics.save([...favorites, entity]);
-        _state.isFavorite = true;
-        _state.successMessage = "Lyric was added to favorites!";
+        newState = newState.copyWith(
+          isFavorite: true,
+          successMessage: "Lyric was added to favorites!",
+        );
       }
     } on DomainError catch (error) {
-      _state.localError = error.description;
+      newState = newState.copyWith(localError: error.description);
     } finally {
-      _state.isLoading = false;
-      _update();
+      newState = newState.copyWith(isLoading: false);
     }
+
+    yield newState;
   }
 
-  @override
-  Future<void> checkIsFavorite(LyricEntity entity) async {
-    try {
-      _state.successMessage = null;
-      _state.isFavorite = false;
+  Stream<LyricState> _checkIsFavorite(LyricEntity entity) async* {
+    var newState =
+        state.copyWith(isFavorite: false).copyWithNull(successMessage: true);
 
+    try {
       final favorites = await loadFavoriteLyrics.loadFavorites();
 
-      _state.isFavorite = favorites?.contains(entity) ?? false;
+      newState =
+          newState.copyWith(isFavorite: favorites?.contains(entity) ?? false);
     } on DomainError catch (error) {
-      _state.localError = error.description;
-    } finally {
-      _update();
+      newState = newState.copyWith(localError: error.description);
     }
+
+    yield newState;
   }
 
-  void _update() => _stateController.add(_state);
+  @override
+  void dispose() {}
 
   @override
-  void dispose() {
-    _stateController.close();
+  void fireEvent(LyricEvent event) {
+    this.add(event);
+  }
+
+  @override
+  Stream<LyricState> get stateStream => this.stream;
+
+  @override
+  Stream<LyricState> mapEventToState(LyricEvent event) async* {
+    if (event is CheckFavoriteEvent) {
+      yield* _checkIsFavorite(event.entity);
+    } else if (event is AddFavoriteEvent) {
+      yield* _addFavorite(event.entity);
+    }
   }
 }

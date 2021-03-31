@@ -24,11 +24,13 @@ class _LyricsSearchPageState extends State<LyricsSearchPage>
 
   @override
   void initState() {
-    navigateToPageManager = presenter.navigateToStream;
+    navigateToPageManager = presenter.stateStream.map(
+      (state) => state.navigateTo,
+    );
 
-    _subscription = presenter.localErrorStream.listen((error) {
-      if (error != null) {
-        showErrorSnack(context: context, error: error);
+    _subscription = presenter.stateStream.listen((state) {
+      if (state?.localError != null) {
+        showErrorSnack(context: context, error: state.localError);
       }
     });
 

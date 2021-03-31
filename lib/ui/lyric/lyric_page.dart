@@ -19,9 +19,9 @@ class _LyricPageState extends State<LyricPage> {
 
   @override
   void initState() {
-    _subscription = presenter.successMessageStream.listen((message) {
-      if (message != null) {
-        showSuccessSnack(context: context, message: message);
+    _subscription = presenter.stateStream.listen((state) {
+      if (state.successMessage != null) {
+        showSuccessSnack(context: context, message: state.successMessage);
       }
     });
 
@@ -37,32 +37,25 @@ class _LyricPageState extends State<LyricPage> {
   @override
   Widget build(BuildContext context) {
     _entity = ModalRoute.of(context).settings.arguments;
-    presenter.checkIsFavorite(_entity);
+    presenter.fireEvent(CheckFavoriteEvent(_entity));
 
     return Scaffold(
       appBar: AppBar(
         title: Text("${_entity.artist}"),
         actions: [
-          StreamBuilder<bool>(
-            stream: presenter.isFavoriteStream,
-            initialData: false,
-            builder: (context, isFavorite) {
-              return StreamBuilder<bool>(
-                stream: presenter.isLoadingStream,
-                initialData: false,
-                builder: (context, isLoading) {
-                  return IconButton(
-                    key: Key("favoriteButton"),
-                    icon: isLoading.data
-                        ? Loading()
-                        : isFavorite.data
-                            ? Icon(Icons.favorite)
-                            : Icon(Icons.favorite_border),
-                    onPressed: isLoading.data
-                        ? () {}
-                        : () => presenter.addFavorite(_entity),
-                  );
-                },
+          StreamBuilder<LyricState>(
+            stream: presenter.stateStream,
+            builder: (context, snapshot) {
+              return IconButton(
+                key: Key("favoriteButton"),
+                icon: snapshot.data?.isLoading == true
+                    ? Loading()
+                    : snapshot.data?.isFavorite == true
+                        ? Icon(Icons.favorite)
+                        : Icon(Icons.favorite_border),
+                onPressed: snapshot.data?.isLoading == true
+                    ? () {}
+                    : () => presenter.fireEvent(AddFavoriteEvent(_entity)),
               );
             },
           ),

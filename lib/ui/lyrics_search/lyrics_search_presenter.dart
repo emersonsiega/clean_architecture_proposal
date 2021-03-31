@@ -1,18 +1,7 @@
 import '../ui.dart';
 
+import './lyrics_search_state.dart';
+import './lyrics_search_event.dart';
+
 abstract class LyricsSearchPresenter
-    implements
-        FormValidManager,
-        LoadingManager,
-        LocalErrorManager,
-        NavigationManager {
-  Stream<String> get artistErrorStream;
-  Stream<String> get musicErrorStream;
-
-  void validateArtist(String artist);
-  void validateMusic(String music);
-
-  Future<void> search();
-
-  void dispose();
-}
+    implements BasePresenter<LyricsSearchState, LyricsSearchEvent> {}
