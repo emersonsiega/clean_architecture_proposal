@@ -11,7 +11,7 @@ class ValidationSpy extends Mock implements Validation {}
 class LyricsSearchSpy extends Mock implements LyricsSearch {}
 
 void main() {
-  StreamLyricsSearchPresenter sut;
+  BlocLyricsSearchPresenter sut;
   ValidationSpy validationSpy;
   LyricsSearchSpy lyricsSearchSpy;
   String artist;
@@ -42,7 +42,7 @@ void main() {
   setUp(() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
-    sut = StreamLyricsSearchPresenter(
+    sut = BlocLyricsSearchPresenter(
       validation: validationSpy,
       lyricsSearch: lyricsSearchSpy,
     );

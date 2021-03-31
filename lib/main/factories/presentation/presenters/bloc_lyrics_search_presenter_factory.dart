@@ -8,7 +8,7 @@ import '../../../builders/builders.dart';
 
 void streamLyricsSearchPresenterFactory() {
   Get.i().lazyPut<LyricsSearchPresenter>(
-    () => StreamLyricsSearchPresenter(
+    () => BlocLyricsSearchPresenter(
       validation: _makeValidations(),
       lyricsSearch: Get.i().get<LyricsSearch>(),
     ),

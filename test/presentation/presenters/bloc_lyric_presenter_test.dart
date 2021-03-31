@@ -11,7 +11,7 @@ class SaveFavoriteLyricsSpy extends Mock implements SaveFavoriteLyrics {}
 class LoadFavoriteLyricsSpy extends Mock implements LoadFavoriteLyrics {}
 
 void main() {
-  StreamLyricPresenter sut;
+  BlocLyricPresenter sut;
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
@@ -31,7 +31,7 @@ void main() {
   setUp(() {
     saveFavoriteLyricsSpy = SaveFavoriteLyricsSpy();
     loadFavoriteLyricsSpy = LoadFavoriteLyricsSpy();
-    sut = StreamLyricPresenter(
+    sut = BlocLyricPresenter(
       saveFavoriteLyrics: saveFavoriteLyricsSpy,
       loadFavoriteLyrics: loadFavoriteLyricsSpy,
     );

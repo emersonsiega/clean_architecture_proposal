@@ -8,13 +8,13 @@ import '../../ui/ui.dart';
 
 import '../presentation.dart';
 
-class StreamLyricsSearchPresenter
+class BlocLyricsSearchPresenter
     extends Bloc<LyricsSearchEvent, LyricsSearchState>
     implements LyricsSearchPresenter {
   final Validation validation;
   final LyricsSearch lyricsSearch;
 
-  StreamLyricsSearchPresenter({
+  BlocLyricsSearchPresenter({
     @required this.validation,
     @required this.lyricsSearch,
   }) : super(LyricsSearchState());

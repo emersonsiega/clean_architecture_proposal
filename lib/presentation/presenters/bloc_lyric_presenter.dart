@@ -6,12 +6,12 @@ import 'package:meta/meta.dart';
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 
-class StreamLyricPresenter extends Bloc<LyricEvent, LyricState>
+class BlocLyricPresenter extends Bloc<LyricEvent, LyricState>
     implements LyricPresenter {
   final SaveFavoriteLyrics saveFavoriteLyrics;
   final LoadFavoriteLyrics loadFavoriteLyrics;
 
-  StreamLyricPresenter({
+  BlocLyricPresenter({
     @required this.saveFavoriteLyrics,
     @required this.loadFavoriteLyrics,
   }) : super(_initialState());
