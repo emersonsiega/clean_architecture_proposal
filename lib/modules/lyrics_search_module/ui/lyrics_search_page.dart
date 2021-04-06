@@ -18,13 +18,11 @@ class _LyricsSearchPageState extends State<LyricsSearchPage>
   StreamSubscription _subscription;
 
   @override
-  Stream<PageConfig> navigateToPageManager;
+  Stream<BaseState> get navigationStream => presenter.stateStream;
 
   @override
   void initState() {
     presenter.loadFavorites();
-    navigateToPageManager =
-        presenter.stateStream.map((state) => state.navigateTo);
 
     _subscription = presenter.stateStream.listen((state) {
       if (state.localError != null) {
