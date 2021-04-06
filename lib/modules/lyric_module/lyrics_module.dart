@@ -16,7 +16,7 @@ class LyricModule extends Module {
       ),
     ),
     Bind<LyricPresenter>(
-      (i) => StreamLyricPresenter(
+      (i) => CubitLyricPresenter(
         saveFavoriteLyrics: i.get<SaveFavoriteLyrics>(),
         loadFavoriteLyrics: i.get<LoadFavoriteLyrics>(),
       ),

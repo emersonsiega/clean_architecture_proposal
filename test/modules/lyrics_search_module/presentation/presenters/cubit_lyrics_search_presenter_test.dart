@@ -1,3 +1,4 @@
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -16,7 +17,7 @@ class LyricsSearchSpy extends Mock implements LyricsSearch {}
 class LoadFavoriteLyricsSpy extends Mock implements LoadFavoriteLyrics {}
 
 void main() {
-  StreamLyricsSearchPresenter sut;
+  CubitLyricsSearchPresenter sut;
   ValidationSpy validationSpy;
   LyricsSearchSpy lyricsSearchSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
@@ -59,7 +60,7 @@ void main() {
     validationSpy = ValidationSpy();
     lyricsSearchSpy = LyricsSearchSpy();
     loadFavoriteLyricsSpy = LoadFavoriteLyricsSpy();
-    sut = StreamLyricsSearchPresenter(
+    sut = CubitLyricsSearchPresenter(
       validation: validationSpy,
       lyricsSearch: lyricsSearchSpy,
       loadFavoriteLyrics: loadFavoriteLyricsSpy,
@@ -94,13 +95,19 @@ void main() {
   test('Should present error if artist is invalid', () async {
     mockValidation(value: 'invalid');
 
-    expectLater(sut.artistErrorStream, emits('invalid'));
+    expectLater(
+      sut.stateStream,
+      emits(LyricsSearchState(artist: artist, artistError: 'invalid')),
+    );
 
     sut.validateArtist(artist);
   });
 
   test('Should emits null if artist is valid', () async {
-    expectLater(sut.artistErrorStream, emits(null));
+    expectLater(
+      sut.stateStream,
+      emits(LyricsSearchState(artist: artist, artistError: null)),
+    );
 
     sut.validateArtist(artist);
   });
@@ -108,13 +115,19 @@ void main() {
   test('Should present error if music is invalid', () async {
     mockValidation(value: 'invalid');
 
-    expectLater(sut.musicErrorStream, emits('invalid'));
+    expectLater(
+      sut.stateStream,
+      emits(LyricsSearchState(music: music, musicError: 'invalid')),
+    );
 
     sut.validateMusic(music);
   });
 
   test('Should emits null if music is valid', () async {
-    expectLater(sut.musicErrorStream, emits(null));
+    expectLater(
+      sut.stateStream,
+      emits(LyricsSearchState(music: music, musicError: null)),
+    );
 
     sut.validateMusic(music);
   });
@@ -122,9 +135,21 @@ void main() {
   test('Should emits invalid form if any field is invalid', () async {
     mockValidation(field: 'music', value: 'invalid');
 
-    expectLater(sut.artistErrorStream, emits(null));
-    expectLater(sut.musicErrorStream, emits('invalid'));
-    expectLater(sut.isFormValidStream, emits(false));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(
+          artist: artist,
+          artistError: null,
+        ),
+        LyricsSearchState(
+          artist: artist,
+          artistError: null,
+          music: music,
+          musicError: 'invalid',
+        )
+      ]),
+    );
 
     sut.validateArtist(artist);
     sut.validateMusic(music);
@@ -133,18 +158,42 @@ void main() {
   test('Should emits invalid form if any field is invalid', () async {
     mockValidation(field: 'artist', value: 'invalid');
 
-    expectLater(sut.artistErrorStream, emits('invalid'));
-    expectLater(sut.musicErrorStream, emits(null));
-    expectLater(sut.isFormValidStream, emits(false));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(
+          artist: artist,
+          artistError: 'invalid',
+        ),
+        LyricsSearchState(
+          artist: artist,
+          artistError: 'invalid',
+          music: music,
+          musicError: null,
+        )
+      ]),
+    );
 
     sut.validateArtist(artist);
     sut.validateMusic(music);
   });
 
   test('Should emits form valid if all fields are valid', () async {
-    expectLater(sut.artistErrorStream, emits(null));
-    expectLater(sut.musicErrorStream, emits(null));
-    expectLater(sut.isFormValidStream, emits(true));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(
+          artist: artist,
+          artistError: null,
+        ),
+        LyricsSearchState(
+          artist: artist,
+          artistError: null,
+          music: music,
+          musicError: null,
+        )
+      ]),
+    );
 
     sut.validateArtist(artist);
     sut.validateMusic(music);
@@ -165,7 +214,32 @@ void main() {
     sut.validateArtist(artist);
     sut.validateMusic(music);
 
-    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(
+          isLoading: true,
+          artist: artist,
+          music: music,
+        ),
+        LyricsSearchState(
+          isLoading: true,
+          artist: artist,
+          music: music,
+          navigateTo: PageConfig(
+            '/lyric',
+            arguments: entity,
+            type: NavigateType.push,
+            whenComplete: sut.loadFavorites,
+          ),
+        ),
+        LyricsSearchState(
+          isLoading: false,
+          artist: artist,
+          music: music,
+        ),
+      ]),
+    );
 
     await sut.search();
   });
@@ -176,10 +250,21 @@ void main() {
     sut.validateArtist(artist);
     sut.validateMusic(music);
 
-    expectLater(sut.isLoadingStream, emits(false));
     expectLater(
-      sut.localErrorStream,
-      emits('Invalid query. Try again with different values.'),
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(
+          isLoading: true,
+          artist: artist,
+          music: music,
+        ),
+        LyricsSearchState(
+          isLoading: false,
+          artist: artist,
+          music: music,
+          localError: 'Invalid query. Try again with different values.',
+        ),
+      ]),
     );
 
     await sut.search();
@@ -191,30 +276,20 @@ void main() {
     sut.validateArtist(artist);
     sut.validateMusic(music);
 
-    expectLater(sut.isLoadingStream, emits(false));
     expectLater(
-      sut.localErrorStream,
-      emits('Something wrong happened. Please, try again!'),
-    );
-
-    await sut.search();
-  });
-
-  test('Should navigate to lyric page on LyricsSearch', () async {
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
-
-    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
-    expectLater(
-      sut.navigateToStream,
+      sut.stateStream,
       emitsInOrder([
-        null,
-        PageConfig(
-          '/lyric',
-          arguments: entity,
-          type: NavigateType.push,
-          whenComplete: sut.loadFavorites,
-        )
+        LyricsSearchState(
+          isLoading: true,
+          artist: artist,
+          music: music,
+        ),
+        LyricsSearchState(
+          isLoading: false,
+          artist: artist,
+          music: music,
+          localError: 'Something wrong happened. Please, try again!',
+        ),
       ]),
     );
 
@@ -229,10 +304,10 @@ void main() {
 
   test('Should emit favorites event on loadFavorites', () async {
     expectLater(
-      sut.favoritesStream,
+      sut.stateStream,
       emitsInOrder([
-        null,
-        [entity]
+        LyricsSearchState(isLoading: true),
+        LyricsSearchState(isLoading: false, favorites: [entity]),
       ]),
     );
 
@@ -243,17 +318,14 @@ void main() {
     mockLoadFavoriteLyricsError();
 
     expectLater(
-      sut.localErrorStream,
-      emits('Something wrong happened. Please, try again!'),
-    );
-
-    await sut.loadFavorites();
-  });
-
-  test('Should emit loading events on loadFavorites', () async {
-    expectLater(
-      sut.isLoadingFavoritesStream,
-      emitsInOrder([true, false]),
+      sut.stateStream,
+      emitsInOrder([
+        LyricsSearchState(isLoading: true),
+        LyricsSearchState(
+          isLoading: false,
+          localError: 'Something wrong happened. Please, try again!',
+        ),
+      ]),
     );
 
     await sut.loadFavorites();
@@ -261,22 +333,16 @@ void main() {
 
   test('Should emit navigate events on openFavorite', () async {
     expectLater(
-      sut.navigateToStream,
-      emits(PageConfig('/lyric', arguments: entity, type: NavigateType.push)),
-    );
-
-    await sut.openFavorite(entity);
-  });
-
-  test('Should reload favorites after openFavorite', () async {
-    expectLater(
-      sut.navigateToStream,
+      sut.stateStream,
       emits(
-        PageConfig(
-          '/lyric',
-          arguments: entity,
-          type: NavigateType.push,
-          whenComplete: sut.loadFavorites,
+        LyricsSearchState(
+          isLoading: false,
+          navigateTo: PageConfig(
+            '/lyric',
+            arguments: entity,
+            type: NavigateType.push,
+            whenComplete: sut.loadFavorites,
+          ),
         ),
       ),
     );

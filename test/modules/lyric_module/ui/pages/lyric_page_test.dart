@@ -18,9 +18,7 @@ class LyricPresenterSpy extends Mock implements LyricPresenter {}
 void main() {
   LyricEntity entity;
   LyricPresenterSpy lyricPresenterSpy;
-  StreamController<String> messageController;
-  StreamController<bool> isFavoriteController;
-  StreamController<bool> isLoadingController;
+  StreamController<LyricState> stateController;
 
   Future<void> loadPage(WidgetTester tester) async {
     BuildContext _context;
@@ -46,19 +44,14 @@ void main() {
   }
 
   void mockStreams() {
-    when(lyricPresenterSpy.successMessageStream)
-        .thenAnswer((_) => messageController.stream);
-    when(lyricPresenterSpy.isFavoriteStream)
-        .thenAnswer((_) => isFavoriteController.stream);
-    when(lyricPresenterSpy.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
+    when(lyricPresenterSpy.stateStream)
+        .thenAnswer((_) => stateController.stream);
   }
 
   setUp(() {
     lyricPresenterSpy = LyricPresenterSpy();
-    messageController = StreamController<String>();
-    isFavoriteController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
+    stateController = StreamController<LyricState>.broadcast();
+
     entity = LyricEntity(
       lyric: faker.lorem.sentences(30).join(" "),
       artist: faker.person.name(),
@@ -74,9 +67,7 @@ void main() {
   });
 
   tearDown(() {
-    messageController.close();
-    isFavoriteController.close();
-    isLoadingController.close();
+    stateController.close();
   });
 
   testWidgets('Should load LyricPage with correct data',
@@ -107,7 +98,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    messageController.add("success_message");
+    stateController.add(LyricState(successMessage: "success_message"));
     await tester.pumpAndSettle();
 
     expect(find.text('success_message'), findsOneWidget);
@@ -119,7 +110,7 @@ void main() {
 
     expect(find.byIcon(Icons.favorite_border), findsOneWidget);
 
-    isFavoriteController.add(true);
+    stateController.add(LyricState(isFavorite: true));
     await tester.pumpAndSettle();
 
     expect(find.byIcon(Icons.favorite), findsOneWidget);
@@ -129,12 +120,12 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
+    stateController.add(LyricState(isLoading: true));
     await tester.pump(Duration(milliseconds: 200));
 
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    isLoadingController.add(false);
+    stateController.add(LyricState(isLoading: false));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });

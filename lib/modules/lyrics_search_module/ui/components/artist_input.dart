@@ -9,16 +9,15 @@ class ArtistInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final presenter = Get.i().get<LyricsSearchPresenter>();
 
-    return StreamBuilder<String>(
-      stream: presenter.artistErrorStream,
-      initialData: null,
+    return StreamBuilder<LyricsSearchState>(
+      stream: presenter.stateStream,
       builder: (context, snapshot) {
         return TextFormField(
           decoration: InputDecoration(
             labelText: "Artist",
             hintText: "Eric Clapton",
             prefixIcon: Icon(Icons.person),
-            errorText: snapshot.data,
+            errorText: snapshot.data?.artistError,
           ),
           textInputAction: TextInputAction.none,
           onChanged: presenter.validateArtist,

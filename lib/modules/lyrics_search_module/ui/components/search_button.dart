@@ -9,26 +9,20 @@ class SearchButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<bool>(
-      stream: presenter.isFormValidStream,
-      initialData: false,
-      builder: (context, isFormValid) {
-        return StreamBuilder<bool>(
-          stream: presenter.isLoadingStream,
-          initialData: false,
-          builder: (context, isLoading) {
-            return FloatingActionButton(
-              child: isLoading.data == true ? Loading() : Icon(Icons.search),
-              backgroundColor: isFormValid.data != true
-                  ? Colors.grey
-                  : Theme.of(context).accentColor,
-              onPressed: isFormValid.data == true
-                  ? isLoading.data == true
-                      ? () {}
-                      : presenter.search
-                  : null,
-            );
-          },
+    return StreamBuilder<LyricsSearchState>(
+      stream: presenter.stateStream,
+      builder: (context, snapshot) {
+        return FloatingActionButton(
+          child:
+              snapshot.data?.isLoading == true ? Loading() : Icon(Icons.search),
+          backgroundColor: snapshot.data?.isFormValid != true
+              ? Colors.grey
+              : Theme.of(context).accentColor,
+          onPressed: snapshot.data?.isFormValid == true
+              ? snapshot.data?.isLoading == true
+                  ? () {}
+                  : presenter.search
+              : null,
         );
       },
     );

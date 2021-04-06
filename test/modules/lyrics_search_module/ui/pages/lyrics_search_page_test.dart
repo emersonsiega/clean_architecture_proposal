@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:clean_architecture_proposal/modules/modules.dart';
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_modular/flutter_modular.dart';
@@ -8,8 +7,8 @@ import 'package:flutter_modular_test/flutter_modular_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:clean_architecture_proposal/shared/ui/ui.dart';
 import 'package:clean_architecture_proposal/shared/domain/domain.dart';
+import 'package:clean_architecture_proposal/modules/modules.dart';
 import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
@@ -19,29 +18,11 @@ void main() {
   String artist;
   String music;
   List<LyricEntity> favoritesList;
-  StreamController<String> artistErrorController;
-  StreamController<String> musicErrorController;
-  StreamController<String> formErrorController;
-  StreamController<PageConfig> navigateToController;
-  StreamController<bool> isFormValidController;
-  StreamController<bool> isLoadingController;
-  StreamController<List<LyricEntity>> favoritesController;
+  StreamController<LyricsSearchState> stateController;
 
   void mockPresenter() {
-    when(searchPresenterSpy.artistErrorStream)
-        .thenAnswer((_) => artistErrorController.stream);
-    when(searchPresenterSpy.musicErrorStream)
-        .thenAnswer((_) => musicErrorController.stream);
-    when(searchPresenterSpy.localErrorStream)
-        .thenAnswer((_) => formErrorController.stream);
-    when(searchPresenterSpy.navigateToStream)
-        .thenAnswer((_) => navigateToController.stream);
-    when(searchPresenterSpy.isFormValidStream)
-        .thenAnswer((_) => isFormValidController.stream);
-    when(searchPresenterSpy.isLoadingStream)
-        .thenAnswer((_) => isLoadingController.stream);
-    when(searchPresenterSpy.favoritesStream)
-        .thenAnswer((_) => favoritesController.stream);
+    when(searchPresenterSpy.stateStream)
+        .thenAnswer((_) => stateController.stream);
   }
 
   setUp(() {
@@ -50,18 +31,13 @@ void main() {
     favoritesList = [
       LyricEntity(lyric: faker.lorem.sentence(), artist: artist, music: music),
       LyricEntity(
-          lyric: faker.lorem.sentence(),
-          artist: faker.lorem.word(),
-          music: faker.lorem.sentence()),
+        lyric: faker.lorem.sentence(),
+        artist: faker.lorem.word(),
+        music: faker.lorem.sentence(),
+      ),
     ];
     searchPresenterSpy = LyricsSearchPresenterSpy();
-    artistErrorController = StreamController<String>();
-    musicErrorController = StreamController<String>();
-    formErrorController = StreamController<String>();
-    navigateToController = StreamController<PageConfig>();
-    isFormValidController = StreamController<bool>();
-    isLoadingController = StreamController<bool>();
-    favoritesController = StreamController<List<LyricEntity>>();
+    stateController = StreamController<LyricsSearchState>.broadcast();
 
     mockPresenter();
 
@@ -74,13 +50,7 @@ void main() {
   });
 
   tearDown(() {
-    artistErrorController.close();
-    musicErrorController.close();
-    formErrorController.close();
-    isFormValidController.close();
-    isLoadingController.close();
-    navigateToController.close();
-    favoritesController.close();
+    stateController.close();
   });
 
   Future<void> loadPage(WidgetTester tester) async {
@@ -142,7 +112,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    artistErrorController.add('error');
+    stateController.add(LyricsSearchState(artistError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -152,7 +122,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    musicErrorController.add('error');
+    stateController.add(LyricsSearchState(musicError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -162,8 +132,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    artistErrorController.add(null);
-    musicErrorController.add(null);
+    stateController.add(LyricsSearchState());
     await tester.pump();
 
     expect(
@@ -187,7 +156,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    stateController.add(LyricsSearchState(artist: 'any', music: 'any'));
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -200,7 +169,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(false);
+    stateController.add(LyricsSearchState(musicError: 'error'));
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -212,7 +181,7 @@ void main() {
   testWidgets('Should call search on form submit', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isFormValidController.add(true);
+    stateController.add(LyricsSearchState(music: 'any', artist: 'any'));
     await tester.pump();
 
     await tester.tap(find.byType(FloatingActionButton));
@@ -221,22 +190,14 @@ void main() {
     verify(searchPresenterSpy.search()).called(1);
   });
 
-  testWidgets('Should present loading', (WidgetTester tester) async {
+  testWidgets('Should show and hide loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    isLoadingController.add(true);
-    await tester.pump();
-    expect(find.byType(CircularProgressIndicator), findsOneWidget);
-  });
-
-  testWidgets('Should hide loading', (WidgetTester tester) async {
-    await loadPage(tester);
-
-    isLoadingController.add(true);
+    stateController.add(LyricsSearchState(isLoading: true));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    isLoadingController.add(false);
+    stateController.add(LyricsSearchState(isLoading: false));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
@@ -245,7 +206,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    formErrorController.add('error_message');
+    stateController.add(LyricsSearchState(localError: 'error_message'));
     await tester.pump();
     expect(find.text('error_message'), findsOneWidget);
   });
@@ -268,7 +229,7 @@ void main() {
   testWidgets('Should present list of favorites', (WidgetTester tester) async {
     await loadPage(tester);
 
-    favoritesController.add(favoritesList);
+    stateController.add(LyricsSearchState(favorites: favoritesList));
     await tester.pump();
 
     expect(find.text("Favorites"), findsOneWidget);
@@ -286,11 +247,11 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    favoritesController.add(null);
+    stateController.add(LyricsSearchState(favorites: null));
     await tester.pump();
     expect(find.text("Favorites"), findsNothing);
 
-    favoritesController.add([]);
+    stateController.add(LyricsSearchState(favorites: []));
     await tester.pump();
     expect(find.text("Favorites"), findsNothing);
   });
@@ -299,7 +260,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    favoritesController.add(favoritesList);
+    stateController.add(LyricsSearchState(favorites: favoritesList));
     await tester.pump();
 
     final favoriteTile = find.byKey(Key("${favoritesList.first.id}"));

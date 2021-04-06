@@ -16,9 +16,5 @@ class PageConfig extends Equatable {
   });
 
   @override
-  List<Object> get props => [route, type, arguments];
-}
-
-abstract class NavigationManager {
-  Stream<PageConfig> get navigateToStream;
+  List<Object> get props => [route, type, arguments, whenComplete];
 }

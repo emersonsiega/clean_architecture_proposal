@@ -17,7 +17,7 @@ class LyricsSearchModule extends Module {
       ),
     ),
     Bind<LyricsSearchPresenter>(
-      (i) => StreamLyricsSearchPresenter(
+      (i) => CubitLyricsSearchPresenter(
         validation: ValidationComposite([
           ...ValidationBuilder.forField('artist')
               .required()

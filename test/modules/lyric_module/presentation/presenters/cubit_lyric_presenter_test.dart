@@ -6,13 +6,14 @@ import 'package:clean_architecture_proposal/shared/domain/domain.dart';
 
 import 'package:clean_architecture_proposal/modules/lyric_module/presentation/presenters/presenters.dart';
 import 'package:clean_architecture_proposal/modules/lyric_module/domain/domain.dart';
+import 'package:clean_architecture_proposal/modules/lyric_module/ui/ui.dart';
 
 class SaveFavoriteLyricsSpy extends Mock implements SaveFavoriteLyrics {}
 
 class LoadFavoriteLyricsSpy extends Mock implements LoadFavoriteLyrics {}
 
 void main() {
-  StreamLyricPresenter sut;
+  CubitLyricPresenter sut;
   SaveFavoriteLyricsSpy saveFavoriteLyricsSpy;
   LoadFavoriteLyricsSpy loadFavoriteLyricsSpy;
   LyricEntity entity;
@@ -32,7 +33,7 @@ void main() {
   setUp(() {
     saveFavoriteLyricsSpy = SaveFavoriteLyricsSpy();
     loadFavoriteLyricsSpy = LoadFavoriteLyricsSpy();
-    sut = StreamLyricPresenter(
+    sut = CubitLyricPresenter(
       saveFavoriteLyrics: saveFavoriteLyricsSpy,
       loadFavoriteLyrics: loadFavoriteLyricsSpy,
     );
@@ -68,31 +69,30 @@ void main() {
     when(saveFavoriteLyricsSpy.save(any)).thenThrow(DomainError.unexpected);
 
     expectLater(
-      sut.localErrorStream,
-      emitsInOrder([null, 'Something wrong happened. Please, try again!']),
+      sut.stream,
+      emitsInOrder([
+        LyricState(localError: null, isLoading: true),
+        LyricState(
+            localError: 'Something wrong happened. Please, try again!',
+            isLoading: false)
+      ]),
     );
 
     await sut.addFavorite(entityToAdd);
   });
 
-  test('Should emit loading events on SaveFavoriteLyrics', () async {
-    expectLater(sut.isLoadingStream, emitsInOrder([true, false]));
-
-    await sut.addFavorite(entity);
-  });
-
-  test('Should emit success message event on SaveFavoriteLyrics success',
-      () async {
+  test('Should emit correct events on SaveFavoriteLyrics', () async {
     expectLater(
-      sut.successMessageStream,
-      emitsInOrder([null, "Lyric was added to favorites!"]),
+      sut.stateStream,
+      emitsInOrder([
+        LyricState(isLoading: true, isFavorite: false),
+        LyricState(
+          isLoading: false,
+          successMessage: "Lyric was added to favorites!",
+          isFavorite: true,
+        ),
+      ]),
     );
-
-    await sut.addFavorite(entityToAdd);
-  });
-
-  test('Should emit isFavorite event on SaveFavoriteLyrics success', () async {
-    expectLater(sut.isFavoriteStream, emitsInOrder([false, true]));
 
     await sut.addFavorite(entityToAdd);
   });
@@ -104,7 +104,15 @@ void main() {
   });
 
   test('Should emit isFavorite true event on checkIsFavorite', () async {
-    expectLater(sut.isFavoriteStream, emits(true));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder(
+        [
+          LyricState(isFavorite: false, isLoading: true),
+          LyricState(isFavorite: true, isLoading: false)
+        ],
+      ),
+    );
 
     await sut.checkIsFavorite(entity);
   });
@@ -113,31 +121,32 @@ void main() {
       () async {
     mockLoadResponse(null);
 
-    expectLater(sut.isFavoriteStream, emits(false));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder(
+        [
+          LyricState(isFavorite: false, isLoading: true),
+          LyricState(isFavorite: false, isLoading: false)
+        ],
+      ),
+    );
 
     await sut.checkIsFavorite(entity);
   });
 
   test('Should emit isFavorite false event on checkIsFavorite', () async {
-    mockLoadResponse(null);
-
-    expectLater(sut.isFavoriteStream, emits(false));
+    expectLater(
+      sut.stateStream,
+      emitsInOrder(
+        [
+          LyricState(isFavorite: false, isLoading: true),
+          LyricState(isFavorite: false, isLoading: false)
+        ],
+      ),
+    );
 
     await sut.checkIsFavorite(
       LyricEntity(lyric: 'other', artist: 'other', music: 'other'),
-    );
-  });
-
-  test('Should emit isFavorite true event on similar entities', () async {
-    mockLoadResponse([entity]);
-
-    expectLater(sut.isFavoriteStream, emits(true));
-
-    await sut.checkIsFavorite(
-      LyricEntity(
-          lyric: entity.lyric,
-          artist: entity.artist.toUpperCase(),
-          music: entity.music.toUpperCase()),
     );
   });
 
@@ -161,17 +170,17 @@ void main() {
     verify(saveFavoriteLyricsSpy.save([otherEntity])).called(1);
   });
 
-  test('Should emit isFavorite false on remove entity from favorites',
-      () async {
-    expectLater(sut.isFavoriteStream, emits(false));
-
-    await sut.addFavorite(entity);
-  });
-
-  test('Should emit success message event on remove from favorites', () async {
+  test('Should emit correct events  on remove entity from favorites', () async {
     expectLater(
-      sut.successMessageStream,
-      emitsInOrder([null, "Lyric was removed from favorites!"]),
+      sut.stateStream,
+      emitsInOrder([
+        LyricState(isLoading: true, isFavorite: false),
+        LyricState(
+          isLoading: false,
+          successMessage: "Lyric was removed from favorites!",
+          isFavorite: false,
+        ),
+      ]),
     );
 
     await sut.addFavorite(entity);
@@ -182,8 +191,15 @@ void main() {
         .thenThrow(DomainError.unexpected);
 
     expectLater(
-      sut.localErrorStream,
-      emits('Something wrong happened. Please, try again!'),
+      sut.stateStream,
+      emitsInOrder([
+        LyricState(isLoading: true, isFavorite: false),
+        LyricState(
+          localError: 'Something wrong happened. Please, try again!',
+          isLoading: false,
+          isFavorite: false,
+        ),
+      ]),
     );
 
     await sut.checkIsFavorite(entity);

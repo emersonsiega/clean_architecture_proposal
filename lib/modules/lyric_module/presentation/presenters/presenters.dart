@@ -1,1 +1,1 @@
-export 'stream_lyric_presenter.dart';
+export 'cubit_lyric_presenter.dart';

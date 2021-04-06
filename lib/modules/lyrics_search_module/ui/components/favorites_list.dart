@@ -9,10 +9,10 @@ class FavoritesList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return StreamBuilder<List<LyricEntity>>(
-      stream: presenter.favoritesStream,
+    return StreamBuilder<LyricsSearchState>(
+      stream: presenter.stateStream,
       builder: (context, snapshot) {
-        final favorites = snapshot?.data ?? [];
+        final favorites = snapshot?.data?.favorites ?? [];
 
         if (favorites.isNotEmpty) {
           return Column(

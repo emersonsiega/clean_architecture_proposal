@@ -9,16 +9,15 @@ class MusicInput extends StatelessWidget {
   Widget build(BuildContext context) {
     final presenter = Get.i().get<LyricsSearchPresenter>();
 
-    return StreamBuilder<String>(
-      stream: presenter.musicErrorStream,
-      initialData: null,
+    return StreamBuilder<LyricsSearchState>(
+      stream: presenter.stateStream,
       builder: (context, snapshot) {
         return TextFormField(
           decoration: InputDecoration(
             labelText: "Music",
             hintText: "Tears in Heaven",
             prefixIcon: Icon(Icons.music_note),
-            errorText: snapshot.data,
+            errorText: snapshot.data?.musicError,
           ),
           textInputAction: TextInputAction.done,
           onChanged: presenter.validateMusic,
