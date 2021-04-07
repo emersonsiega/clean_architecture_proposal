@@ -12,14 +12,22 @@ Its main use case is a lyrics search, using the [lyrics.ovh](https://lyricsovh.d
 This project has some branches where specific tests were made.
 
 Project division strategies:
-  - [master](https://github.com/emersonsiega/clean_architecture_proposal/tree/master) - Simple project, just implementing the clean architecture proposal
-  - [modular](https://github.com/emersonsiega/clean_architecture_proposal/tree/modular) - Using flutter_modular
+  - [master](https://github.com/emersonsiega/clean_architecture_proposal/tree/master) 
+    - Simple project, just implementing the clean architecture proposal
+  - [modular](https://github.com/emersonsiega/clean_architecture_proposal/tree/modular) 
+    - Simple project divided in modules with flutter_modular
+  - [modular_cubit](https://github.com/emersonsiega/clean_architecture_proposal/tree/modular_cubit) 
+    - Implements the modular division with Cubit, using the bloc package 
+    - Provides the same as Bloc, reducing the boilerplate code 
+    - Also, adds some changes to the modular division, reducing the direct dependency on flutter_modular package
   - [packages](https://github.com/emersonsiega/clean_architecture_proposal/tree/packages)
+    - Simple project divided in packages
 
 Changing dependencies without break other layers:  
   - [dio](https://github.com/emersonsiega/clean_architecture_proposal/commit/a371fdb59058deee68e222ed170585ed6dbf1742)  
   - [rxdart](https://github.com/emersonsiega/clean_architecture_proposal/commit/36b0c4dec53a36f8e01254de92921b6e2608cf0e)  
   - [flutter_bloc](https://github.com/emersonsiega/clean_architecture_proposal/tree/flutter_bloc)  
+
 
 
 # Modular division
