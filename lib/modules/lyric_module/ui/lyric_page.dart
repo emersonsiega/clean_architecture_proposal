@@ -16,9 +16,7 @@ class LyricPage extends StatefulWidget {
   _LyricPageState createState() => _LyricPageState();
 }
 
-class _LyricPageState extends State<LyricPage> {
-  LyricPresenter presenter = Get.i().get();
-
+class _LyricPageState extends CustomState<LyricPresenter, LyricPage> {
   StreamSubscription _subscription;
 
   @override

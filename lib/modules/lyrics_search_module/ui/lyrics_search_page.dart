@@ -12,13 +12,9 @@ class LyricsSearchPage extends StatefulWidget {
   _LyricsSearchPageState createState() => _LyricsSearchPageState();
 }
 
-class _LyricsSearchPageState extends State<LyricsSearchPage>
-    with NavigateToPageMixin {
-  LyricsSearchPresenter presenter = Get.i().get();
+class _LyricsSearchPageState
+    extends CustomState<LyricsSearchPresenter, LyricsSearchPage> {
   StreamSubscription _subscription;
-
-  @override
-  Stream<BaseState> get navigationStream => presenter.stateStream;
 
   @override
   void initState() {
