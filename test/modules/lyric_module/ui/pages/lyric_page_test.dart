@@ -2,16 +2,16 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_modular_test/flutter_modular_test.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:clean_architecture_proposal/app/app_route.dart';
+import 'package:clean_architecture_proposal/shared/shared.dart';
 import 'package:clean_architecture_proposal/shared/domain/domain.dart';
 
 import 'package:clean_architecture_proposal/modules/modules.dart';
 import 'package:clean_architecture_proposal/modules/lyric_module/ui/ui.dart';
+
+import '../../../../helpers/module_builder.dart';
 
 class LyricPresenterSpy extends Mock implements LyricPresenter {}
 
@@ -21,26 +21,11 @@ void main() {
   StreamController<LyricState> stateController;
 
   Future<void> loadPage(WidgetTester tester) async {
-    BuildContext _context;
-
     final app = MaterialApp(
-      initialRoute: '/',
-      routes: {
-        '/': (_) => Builder(
-              builder: (context) {
-                _context = context;
-                return Container();
-              },
-            ),
-        '/lyric': (ctx) => LyricPage(
-              entity: ModalRoute.of(ctx).settings.arguments,
-            ),
-      },
+      home: LyricPage(entity: entity),
     );
 
     await tester.pumpWidget(app);
-    Navigator.of(_context).pushNamed(AppRoute.lyric, arguments: entity);
-    await tester.pumpAndSettle();
   }
 
   void mockStreams() {
@@ -60,10 +45,9 @@ void main() {
 
     mockStreams();
 
-    initModule(
-      LyricModule(),
-      replaceBinds: [Bind.factory<LyricPresenter>((_) => lyricPresenterSpy)],
-    );
+    ModuleBuilder.module(LyricModule())
+        .bind<LyricPresenter>(() => lyricPresenterSpy)
+        .build();
   });
 
   tearDown(() {
@@ -78,7 +62,6 @@ void main() {
     expect(find.text(entity.music), findsOneWidget);
     expect(find.text(entity.lyric), findsOneWidget);
 
-    expect(find.byType(BackButton), findsOneWidget);
     expect(
       find.byKey(Key("favoriteButton")),
       findsOneWidget,

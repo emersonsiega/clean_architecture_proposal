@@ -2,14 +2,14 @@ import 'dart:async';
 
 import 'package:faker/faker.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_modular/flutter_modular.dart';
-import 'package:flutter_modular_test/flutter_modular_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:clean_architecture_proposal/shared/domain/domain.dart';
 import 'package:clean_architecture_proposal/modules/modules.dart';
 import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
+
+import '../../../../helpers/module_builder.dart';
 
 class LyricsSearchPresenterSpy extends Mock implements LyricsSearchPresenter {}
 
@@ -41,12 +41,9 @@ void main() {
 
     mockPresenter();
 
-    initModule(
-      LyricsSearchModule(),
-      replaceBinds: [
-        Bind.factory<LyricsSearchPresenter>((_) => searchPresenterSpy),
-      ],
-    );
+    ModuleBuilder.module(LyricsSearchModule())
+        .bind<LyricsSearchPresenter>(() => searchPresenterSpy)
+        .build();
   });
 
   tearDown(() {

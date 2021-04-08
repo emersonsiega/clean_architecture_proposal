@@ -3,7 +3,7 @@ import 'package:flutter_modular/flutter_modular.dart';
 import '../dependency_management.dart';
 
 ///
-/// Dependency Manager implemented with GetIt package.
+/// Dependency Manager implemented with Modular package.
 ///
 class Get implements DependencyManager {
   Get._();
@@ -23,17 +23,20 @@ class Get implements DependencyManager {
   }
 
   @override
+  @deprecated
   void put<T>(T instance) {
     delete<T>();
     //GetIt.I.registerSingleton<T>(instance);
   }
 
   @override
+  @deprecated
   void lazyPut<T>(T Function() instanceBuilder) {
     //GetIt.I.registerLazySingleton<T>(instanceBuilder);
   }
 
   @override
+  @deprecated
   void delete<T>() {
     // if (GetIt.I.isRegistered<T>()) {
     //   GetIt.I.unregister<T>();
