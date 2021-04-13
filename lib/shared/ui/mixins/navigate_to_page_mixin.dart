@@ -3,10 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import '../navigation/navigation.dart';
 
-import '../../ui/ui.dart';
+import '../ui.dart';
 
 mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
-  Stream<BaseState> navigationStream;
+  Stream<NavigationState> get navigationStream;
   StreamSubscription _subscription;
 
   @override

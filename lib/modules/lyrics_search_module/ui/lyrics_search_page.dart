@@ -13,16 +13,20 @@ class LyricsSearchPage extends StatefulWidget {
 }
 
 class _LyricsSearchPageState
-    extends CustomState<LyricsSearchPresenter, LyricsSearchPage> {
+    extends CustomState<LyricsSearchPresenter, LyricsSearchPage>
+    with NavigateToPageMixin {
   StreamSubscription _subscription;
+
+  @override
+  Stream<NavigationState> get navigationStream => presenter.stateStream;
 
   @override
   void initState() {
     presenter.loadFavorites();
 
     _subscription = presenter.stateStream.listen((state) {
-      if (state.localError != null) {
-        showErrorSnack(context: context, error: state.localError);
+      if (state.errorMessage != null) {
+        showErrorSnack(context: context, error: state.errorMessage);
       }
     });
 

@@ -10,9 +10,9 @@ extension LyricsSearchStateCopyWith on LyricsSearchState {
   LyricsSearchState copyWith({
     String artist,
     String artistError,
+    String errorMessage,
     List<LyricEntity> favorites,
     bool isLoading,
-    String localError,
     String music,
     String musicError,
     PageConfig navigateTo,
@@ -20,9 +20,9 @@ extension LyricsSearchStateCopyWith on LyricsSearchState {
     return LyricsSearchState(
       artist: artist ?? this.artist,
       artistError: artistError ?? this.artistError,
+      errorMessage: errorMessage ?? this.errorMessage,
       favorites: favorites ?? this.favorites,
       isLoading: isLoading ?? this.isLoading,
-      localError: localError ?? this.localError,
       music: music ?? this.music,
       musicError: musicError ?? this.musicError,
       navigateTo: navigateTo ?? this.navigateTo,
@@ -32,9 +32,9 @@ extension LyricsSearchStateCopyWith on LyricsSearchState {
   LyricsSearchState copyWithNull({
     bool artist = false,
     bool artistError = false,
+    bool errorMessage = false,
     bool favorites = false,
     bool isLoading = false,
-    bool localError = false,
     bool music = false,
     bool musicError = false,
     bool navigateTo = false,
@@ -42,9 +42,9 @@ extension LyricsSearchStateCopyWith on LyricsSearchState {
     return LyricsSearchState(
       artist: artist == true ? null : this.artist,
       artistError: artistError == true ? null : this.artistError,
+      errorMessage: errorMessage == true ? null : this.errorMessage,
       favorites: favorites == true ? null : this.favorites,
       isLoading: isLoading == true ? null : this.isLoading,
-      localError: localError == true ? null : this.localError,
       music: music == true ? null : this.music,
       musicError: musicError == true ? null : this.musicError,
       navigateTo: navigateTo == true ? null : this.navigateTo,

@@ -38,7 +38,7 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   Future<void> search() async {
     var newState = state
         .copyWith(isLoading: true)
-        .copyWithNull(navigateTo: true, localError: true);
+        .copyWithNull(navigateTo: true, errorMessage: true);
 
     try {
       emit(newState);
@@ -49,7 +49,7 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
 
       _navigateToLyric(entity);
     } on DomainError catch (error) {
-      newState = newState.copyWith(localError: error.description);
+      newState = newState.copyWith(errorMessage: error.description);
     } finally {
       newState = newState.copyWith(isLoading: false);
       emit(newState);
@@ -60,14 +60,14 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   Future<void> loadFavorites() async {
     var newState = state
         .copyWith(isLoading: true)
-        .copyWithNull(localError: true, favorites: true, navigateTo: true);
+        .copyWithNull(errorMessage: true, favorites: true, navigateTo: true);
     try {
       emit(newState);
 
       final favorites = await loadFavoriteLyrics.loadFavorites();
       newState = newState.copyWith(favorites: favorites);
     } on DomainError catch (error) {
-      newState = newState.copyWith(localError: error.description);
+      newState = newState.copyWith(errorMessage: error.description);
     } finally {
       emit(newState.copyWith(isLoading: false));
     }
@@ -82,7 +82,7 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   void validateArtist(String artist) {
     var newState = state
         .copyWith(artist: artist)
-        .copyWithNull(localError: true, artistError: true);
+        .copyWithNull(errorMessage: true, artistError: true);
 
     final error = validation.validate(field: 'artist', value: artist);
 
@@ -95,7 +95,7 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   void validateMusic(String music) {
     var newState = state
         .copyWith(music: music)
-        .copyWithNull(localError: true, musicError: true);
+        .copyWithNull(errorMessage: true, musicError: true);
 
     final error = validation.validate(field: 'music', value: music);
 

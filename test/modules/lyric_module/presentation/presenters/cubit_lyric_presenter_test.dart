@@ -71,9 +71,9 @@ void main() {
     expectLater(
       sut.stream,
       emitsInOrder([
-        LyricState(localError: null, isLoading: true),
+        LyricState(errorMessage: null, isLoading: true),
         LyricState(
-            localError: 'Something wrong happened. Please, try again!',
+            errorMessage: 'Something wrong happened. Please, try again!',
             isLoading: false)
       ]),
     );
@@ -88,7 +88,7 @@ void main() {
         LyricState(isLoading: true, isFavorite: false),
         LyricState(
           isLoading: false,
-          successMessage: "Lyric was added to favorites!",
+          message: "Lyric was added to favorites!",
           isFavorite: true,
         ),
       ]),
@@ -177,7 +177,7 @@ void main() {
         LyricState(isLoading: true, isFavorite: false),
         LyricState(
           isLoading: false,
-          successMessage: "Lyric was removed from favorites!",
+          message: "Lyric was removed from favorites!",
           isFavorite: false,
         ),
       ]),
@@ -195,7 +195,7 @@ void main() {
       emitsInOrder([
         LyricState(isLoading: true, isFavorite: false),
         LyricState(
-          localError: 'Something wrong happened. Please, try again!',
+          errorMessage: 'Something wrong happened. Please, try again!',
           isLoading: false,
           isFavorite: false,
         ),

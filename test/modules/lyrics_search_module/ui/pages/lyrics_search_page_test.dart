@@ -203,7 +203,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(localError: 'error_message'));
+    stateController.add(LyricsSearchState(errorMessage: 'error_message'));
     await tester.pump();
     expect(find.text('error_message'), findsOneWidget);
   });

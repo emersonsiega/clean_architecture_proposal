@@ -1,56 +1,48 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:equatable/equatable.dart';
 
-import '../../../shared/ui/helpers/helpers.dart';
+import '../../../shared/ui/ui.dart';
 
 part 'lyric_state.g.dart';
 
 @CopyWith(generateCopyWithNull: true)
-class LyricState extends Equatable implements BaseState {
-  final String successMessage;
+class LyricState extends BaseState
+    with LoadingState, ErrorMessageState, SuccessMessageState {
   final bool isFavorite;
   @override
-  final String localError;
+  final String message;
+  @override
+  final String errorMessage;
   @override
   final bool isLoading;
-  @override
-  final PageConfig navigateTo;
 
   LyricState({
-    this.successMessage,
+    this.message,
     this.isFavorite: false,
     this.isLoading: false,
-    this.localError,
-    this.navigateTo,
+    this.errorMessage,
   });
 
   factory LyricState.initial() {
     return LyricState(
       isLoading: false,
-      localError: null,
-      navigateTo: null,
-      successMessage: null,
+      errorMessage: null,
+      message: null,
     );
   }
 
   factory LyricState.loading() {
     return LyricState(
       isLoading: true,
-      localError: null,
-      navigateTo: null,
-      successMessage: null,
+      errorMessage: null,
+      message: null,
     );
   }
 
   @override
-  bool get isFormValid => true;
-
-  @override
   List<Object> get props => [
-        this.successMessage,
+        this.message,
         this.isFavorite,
         this.isLoading,
-        this.localError,
-        this.navigateTo,
+        this.errorMessage,
       ];
 }

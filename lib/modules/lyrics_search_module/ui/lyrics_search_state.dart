@@ -1,12 +1,12 @@
 import 'package:copy_with_extension/copy_with_extension.dart';
-import 'package:equatable/equatable.dart';
 
 import '../../../shared/shared.dart';
 
 part 'lyrics_search_state.g.dart';
 
 @CopyWith(generateCopyWithNull: true)
-class LyricsSearchState extends Equatable implements BaseState {
+class LyricsSearchState extends BaseState
+    with NavigationState, ErrorMessageState, LoadingState, FormValidState {
   final String artist;
   final String music;
   final String artistError;
@@ -15,28 +15,9 @@ class LyricsSearchState extends Equatable implements BaseState {
   @override
   final bool isLoading;
   @override
-  final String localError;
+  final String errorMessage;
   @override
   final PageConfig navigateTo;
-
-  LyricsSearchState({
-    this.artist,
-    this.music,
-    this.isLoading: false,
-    this.artistError,
-    this.localError,
-    this.musicError,
-    this.navigateTo,
-    this.favorites,
-  });
-
-  factory LyricsSearchState.initial() {
-    return LyricsSearchState(
-      localError: null,
-      navigateTo: null,
-    );
-  }
-
   @override
   bool get isFormValid =>
       artist?.isNotEmpty == true &&
@@ -44,13 +25,31 @@ class LyricsSearchState extends Equatable implements BaseState {
       music?.isNotEmpty == true &&
       musicError?.isNotEmpty != true;
 
+  LyricsSearchState({
+    this.artist,
+    this.music,
+    this.isLoading: false,
+    this.artistError,
+    this.errorMessage,
+    this.musicError,
+    this.navigateTo,
+    this.favorites,
+  });
+
+  factory LyricsSearchState.initial() {
+    return LyricsSearchState(
+      errorMessage: null,
+      navigateTo: null,
+    );
+  }
+
   @override
   List<Object> get props => [
         this.artist,
         this.music,
         this.isLoading,
         this.artistError,
-        this.localError,
+        this.errorMessage,
         this.musicError,
         this.navigateTo,
         this.favorites,

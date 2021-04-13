@@ -262,7 +262,7 @@ void main() {
           isLoading: false,
           artist: artist,
           music: music,
-          localError: 'Invalid query. Try again with different values.',
+          errorMessage: 'Invalid query. Try again with different values.',
         ),
       ]),
     );
@@ -288,7 +288,7 @@ void main() {
           isLoading: false,
           artist: artist,
           music: music,
-          localError: 'Something wrong happened. Please, try again!',
+          errorMessage: 'Something wrong happened. Please, try again!',
         ),
       ]),
     );
@@ -323,7 +323,7 @@ void main() {
         LyricsSearchState(isLoading: true),
         LyricsSearchState(
           isLoading: false,
-          localError: 'Something wrong happened. Please, try again!',
+          errorMessage: 'Something wrong happened. Please, try again!',
         ),
       ]),
     );

@@ -22,8 +22,8 @@ class _LyricPageState extends CustomState<LyricPresenter, LyricPage> {
   @override
   void initState() {
     _subscription = presenter.stateStream.listen((state) {
-      if (state.successMessage != null) {
-        showSuccessSnack(context: context, message: state.successMessage);
+      if (state.message != null) {
+        showSuccessSnack(context: context, message: state.message);
       }
     });
 

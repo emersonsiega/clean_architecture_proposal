@@ -8,34 +8,30 @@ part of 'lyric_state.dart';
 
 extension LyricStateCopyWith on LyricState {
   LyricState copyWith({
+    String errorMessage,
     bool isFavorite,
     bool isLoading,
-    String localError,
-    PageConfig navigateTo,
-    String successMessage,
+    String message,
   }) {
     return LyricState(
+      errorMessage: errorMessage ?? this.errorMessage,
       isFavorite: isFavorite ?? this.isFavorite,
       isLoading: isLoading ?? this.isLoading,
-      localError: localError ?? this.localError,
-      navigateTo: navigateTo ?? this.navigateTo,
-      successMessage: successMessage ?? this.successMessage,
+      message: message ?? this.message,
     );
   }
 
   LyricState copyWithNull({
+    bool errorMessage = false,
     bool isFavorite = false,
     bool isLoading = false,
-    bool localError = false,
-    bool navigateTo = false,
-    bool successMessage = false,
+    bool message = false,
   }) {
     return LyricState(
+      errorMessage: errorMessage == true ? null : this.errorMessage,
       isFavorite: isFavorite == true ? null : this.isFavorite,
       isLoading: isLoading == true ? null : this.isLoading,
-      localError: localError == true ? null : this.localError,
-      navigateTo: navigateTo == true ? null : this.navigateTo,
-      successMessage: successMessage == true ? null : this.successMessage,
+      message: message == true ? null : this.message,
     );
   }
 }

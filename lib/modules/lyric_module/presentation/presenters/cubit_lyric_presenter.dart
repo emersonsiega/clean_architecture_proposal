@@ -35,17 +35,17 @@ class CubitLyricPresenter extends Cubit<LyricState> implements LyricPresenter {
 
         newState = newState.copyWith(
           isFavorite: false,
-          successMessage: "Lyric was removed from favorites!",
+          message: "Lyric was removed from favorites!",
         );
       } else {
         await saveFavoriteLyrics.save([...favorites, entity]);
         newState = newState.copyWith(
           isFavorite: true,
-          successMessage: "Lyric was added to favorites!",
+          message: "Lyric was added to favorites!",
         );
       }
     } on DomainError catch (error) {
-      newState = newState.copyWith(localError: error.description);
+      newState = newState.copyWith(errorMessage: error.description);
     } finally {
       newState = newState.copyWith(isLoading: false);
 
@@ -65,7 +65,7 @@ class CubitLyricPresenter extends Cubit<LyricState> implements LyricPresenter {
         isFavorite: favorites?.contains(entity) ?? false,
       );
     } on DomainError catch (error) {
-      newState = newState.copyWith(localError: error.description);
+      newState = newState.copyWith(errorMessage: error.description);
     } finally {
       emit(newState.copyWith(isLoading: false));
     }

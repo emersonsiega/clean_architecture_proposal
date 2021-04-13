@@ -81,7 +81,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricState(successMessage: "success_message"));
+    stateController.add(LyricState(message: "success_message"));
     await tester.pumpAndSettle();
 
     expect(find.text('success_message'), findsOneWidget);
