@@ -25,13 +25,15 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   Stream<LyricsSearchState> get stateStream => this.stream;
 
   void _navigateToLyric(LyricEntity entity) {
-    emit(state.copyWith(
-      navigateTo: PageConfig(
-        AppRoute.lyric,
-        arguments: entity,
-        whenComplete: loadFavorites,
-      ),
-    ));
+    emit(state
+        .copyWith(
+          navigateTo: PageConfig(
+            AppRoute.lyric,
+            arguments: entity,
+            whenComplete: loadFavorites,
+          ),
+        )
+        .copyWithNull(errorMessage: true));
   }
 
   @override
