@@ -77,18 +77,18 @@ void main() {
   });
 
   test('Should call validation with correct artist', () async {
-    sut.validate('artist', artist);
+    sut.validate(LyricsSearchFields.artist, artist);
 
     verify(
-      validationSpy.validate(field: 'artist', value: artist),
+      validationSpy.validate(field: LyricsSearchFields.artist, value: artist),
     ).called(1);
   });
 
   test('Should call validation with correct music', () async {
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.music, music);
 
     verify(
-      validationSpy.validate(field: 'music', value: music),
+      validationSpy.validate(field: LyricsSearchFields.music, value: music),
     ).called(1);
   });
 
@@ -102,7 +102,7 @@ void main() {
       ),
     );
 
-    sut.validate('artist', artist);
+    sut.validate(LyricsSearchFields.artist, artist);
   });
 
   test('Should emits null if artist is valid', () async {
@@ -111,7 +111,7 @@ void main() {
       emits(LyricsSearchState.initial(artist: artist)),
     );
 
-    sut.validate('artist', artist);
+    sut.validate(LyricsSearchFields.artist, artist);
   });
 
   test('Should present error if music is invalid', () async {
@@ -122,7 +122,7 @@ void main() {
       emits(LyricsSearchState.initial(music: music, musicError: 'invalid')),
     );
 
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.music, music);
   });
 
   test('Should emits null if music is valid', () async {
@@ -131,12 +131,12 @@ void main() {
       emits(LyricsSearchState.initial(music: music)),
     );
 
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.music, music);
   });
 
   test('Should emits invalid form if any field is invalid (invalid music)',
       () async {
-    mockValidation(field: 'music', value: 'invalid');
+    mockValidation(field: LyricsSearchFields.music, value: 'invalid');
 
     expectLater(
       sut.stateStream,
@@ -147,13 +147,13 @@ void main() {
       ]),
     );
 
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
   });
 
   test('Should emits invalid form if any field is invalid (invalid artist)',
       () async {
-    mockValidation(field: 'artist', value: 'invalid');
+    mockValidation(field: LyricsSearchFields.artist, value: 'invalid');
 
     expectLater(
       sut.stateStream,
@@ -164,8 +164,8 @@ void main() {
       ]),
     );
 
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
   });
 
   test('Should emits form valid if all fields are valid', () async {
@@ -177,13 +177,13 @@ void main() {
       ]),
     );
 
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
   });
 
   test('Should call LyricsSearch with correct values', () async {
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
 
     await sut.search();
 
@@ -193,8 +193,8 @@ void main() {
   });
 
   test('Should emit correct events on LyricsSearch success', () async {
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
 
     expectLater(
       sut.stateStream,
@@ -221,8 +221,8 @@ void main() {
   test('Should emit invalidQuery on LyricsSearch failure', () async {
     mockLyricsSearchError(error: DomainError.invalidQuery);
 
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
 
     expectLater(
       sut.stateStream,
@@ -241,8 +241,8 @@ void main() {
   test('Should emit unexpectedError on LyricsSearch failure', () async {
     mockLyricsSearchError();
 
-    sut.validate('artist', artist);
-    sut.validate('music', music);
+    sut.validate(LyricsSearchFields.artist, artist);
+    sut.validate(LyricsSearchFields.music, music);
 
     expectLater(
       sut.stateStream,

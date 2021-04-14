@@ -99,10 +99,12 @@ void main() {
     await loadPage(tester);
 
     await tester.enterText(find.bySemanticsLabel('Artist'), artist);
-    verify(searchPresenterSpy.validate('artist', artist)).called(1);
+    verify(searchPresenterSpy.validate(LyricsSearchFields.artist, artist))
+        .called(1);
 
     await tester.enterText(find.bySemanticsLabel('Music'), music);
-    verify(searchPresenterSpy.validate('music', music)).called(1);
+    verify(searchPresenterSpy.validate(LyricsSearchFields.music, music))
+        .called(1);
   });
 
   testWidgets('Should present error if Artist is invalid',
@@ -156,8 +158,8 @@ void main() {
     stateController.add(
       state.copyWith(
         form: state.form
-            .copyWith('artist', value: 'any')
-            .copyWith('music', value: 'any'),
+            .copyWith(LyricsSearchFields.artist, value: 'any')
+            .copyWith(LyricsSearchFields.music, value: 'any'),
       ),
     );
     await tester.pump();
@@ -188,8 +190,8 @@ void main() {
     stateController.add(
       state.copyWith(
         form: state.form
-            .copyWith('artist', value: 'any')
-            .copyWith('music', value: 'any'),
+            .copyWith(LyricsSearchFields.artist, value: 'any')
+            .copyWith(LyricsSearchFields.music, value: 'any'),
       ),
     );
     await tester.pump();

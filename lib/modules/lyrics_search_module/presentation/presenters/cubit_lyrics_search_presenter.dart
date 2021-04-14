@@ -47,8 +47,8 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
 
       final entity = await lyricsSearch.search(
         LyricsSearchParams(
-          artist: state.form.value('artist'),
-          music: state.form.value('music'),
+          artist: state.form.value(LyricsSearchFields.artist),
+          music: state.form.value(LyricsSearchFields.music),
         ),
       );
 

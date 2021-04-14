@@ -19,11 +19,11 @@ class LyricsSearchModule extends Module {
     Bind<LyricsSearchPresenter>(
       (i) => CubitLyricsSearchPresenter(
         validation: ValidationComposite([
-          ...ValidationBuilder.forField('artist')
+          ...ValidationBuilder.forField(LyricsSearchFields.artist)
               .required()
               .minLength(2)
               .build(),
-          ...ValidationBuilder.forField('music')
+          ...ValidationBuilder.forField(LyricsSearchFields.music)
               .required()
               .minLength(2)
               .build(),

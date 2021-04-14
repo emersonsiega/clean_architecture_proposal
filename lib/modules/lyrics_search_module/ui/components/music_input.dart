@@ -17,10 +17,11 @@ class MusicInput extends StatelessWidget {
             labelText: "Music",
             hintText: "Tears in Heaven",
             prefixIcon: Icon(Icons.music_note),
-            errorText: snapshot.data?.form?.error('music'),
+            errorText: snapshot.data?.form?.error(LyricsSearchFields.music),
           ),
           textInputAction: TextInputAction.done,
-          onChanged: (value) => presenter.validate('music', value),
+          onChanged: (value) =>
+              presenter.validate(LyricsSearchFields.music, value),
         );
       },
     );

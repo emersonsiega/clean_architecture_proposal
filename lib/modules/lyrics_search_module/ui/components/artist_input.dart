@@ -17,10 +17,11 @@ class ArtistInput extends StatelessWidget {
             labelText: "Artist",
             hintText: "Eric Clapton",
             prefixIcon: Icon(Icons.person),
-            errorText: snapshot.data?.form?.error('artist'),
+            errorText: snapshot.data?.form?.error(LyricsSearchFields.artist),
           ),
           textInputAction: TextInputAction.none,
-          onChanged: (value) => presenter.validate('artist', value),
+          onChanged: (value) =>
+              presenter.validate(LyricsSearchFields.artist, value),
         );
       },
     );

@@ -2,6 +2,8 @@ import 'package:copy_with_extension/copy_with_extension.dart';
 
 import '../../../shared/shared.dart';
 
+import 'lyrics_search_fields.dart';
+
 part 'lyrics_search_state.g.dart';
 
 @CopyWith(generateCopyWithNull: true)
@@ -34,8 +36,16 @@ class LyricsSearchState extends BaseState
   }) {
     return LyricsSearchState(
       form: FormState([
-        FieldState(name: 'artist', value: artist, error: artistError),
-        FieldState(name: 'music', value: music, error: musicError),
+        FieldState(
+          name: LyricsSearchFields.artist,
+          value: artist,
+          error: artistError,
+        ),
+        FieldState(
+          name: LyricsSearchFields.music,
+          value: music,
+          error: musicError,
+        ),
       ]),
     );
   }
