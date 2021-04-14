@@ -1,4 +1,3 @@
-import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
 import 'package:faker/faker.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
@@ -7,6 +6,7 @@ import 'package:clean_architecture_proposal/shared/presentation/presentation.dar
 import 'package:clean_architecture_proposal/shared/domain/domain.dart';
 import 'package:clean_architecture_proposal/shared/ui/ui.dart';
 
+import 'package:clean_architecture_proposal/modules/lyrics_search_module/ui/ui.dart';
 import 'package:clean_architecture_proposal/modules/lyrics_search_module/domain/domain.dart';
 import 'package:clean_architecture_proposal/modules/lyrics_search_module/presentation/presentation.dart';
 
@@ -97,7 +97,9 @@ void main() {
 
     expectLater(
       sut.stateStream,
-      emits(LyricsSearchState(artist: artist, artistError: 'invalid')),
+      emits(
+        LyricsSearchState.initial(artist: artist, artistError: 'invalid'),
+      ),
     );
 
     sut.validateArtist(artist);
@@ -106,7 +108,7 @@ void main() {
   test('Should emits null if artist is valid', () async {
     expectLater(
       sut.stateStream,
-      emits(LyricsSearchState(artist: artist, artistError: null)),
+      emits(LyricsSearchState.initial(artist: artist)),
     );
 
     sut.validateArtist(artist);
@@ -117,7 +119,7 @@ void main() {
 
     expectLater(
       sut.stateStream,
-      emits(LyricsSearchState(music: music, musicError: 'invalid')),
+      emits(LyricsSearchState.initial(music: music, musicError: 'invalid')),
     );
 
     sut.validateMusic(music);
@@ -126,28 +128,22 @@ void main() {
   test('Should emits null if music is valid', () async {
     expectLater(
       sut.stateStream,
-      emits(LyricsSearchState(music: music, musicError: null)),
+      emits(LyricsSearchState.initial(music: music)),
     );
 
     sut.validateMusic(music);
   });
 
-  test('Should emits invalid form if any field is invalid', () async {
+  test('Should emits invalid form if any field is invalid (invalid music)',
+      () async {
     mockValidation(field: 'music', value: 'invalid');
 
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
-          artist: artist,
-          artistError: null,
-        ),
-        LyricsSearchState(
-          artist: artist,
-          artistError: null,
-          music: music,
-          musicError: 'invalid',
-        )
+        LyricsSearchState.initial(artist: artist),
+        LyricsSearchState.initial(
+            artist: artist, music: music, musicError: 'invalid'),
       ]),
     );
 
@@ -155,22 +151,16 @@ void main() {
     sut.validateMusic(music);
   });
 
-  test('Should emits invalid form if any field is invalid', () async {
+  test('Should emits invalid form if any field is invalid (invalid artist)',
+      () async {
     mockValidation(field: 'artist', value: 'invalid');
 
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
-          artist: artist,
-          artistError: 'invalid',
-        ),
-        LyricsSearchState(
-          artist: artist,
-          artistError: 'invalid',
-          music: music,
-          musicError: null,
-        )
+        LyricsSearchState.initial(artist: artist, artistError: 'invalid'),
+        LyricsSearchState.initial(
+            artist: artist, artistError: 'invalid', music: music),
       ]),
     );
 
@@ -182,16 +172,8 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
-          artist: artist,
-          artistError: null,
-        ),
-        LyricsSearchState(
-          artist: artist,
-          artistError: null,
-          music: music,
-          musicError: null,
-        )
+        LyricsSearchState.initial(artist: artist),
+        LyricsSearchState.initial(artist: artist, music: music),
       ]),
     );
 
@@ -217,15 +199,10 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
+        LyricsSearchState.initial(artist: artist, music: music)
+            .copyWith(isLoading: true),
+        LyricsSearchState.initial(artist: artist, music: music).copyWith(
           isLoading: true,
-          artist: artist,
-          music: music,
-        ),
-        LyricsSearchState(
-          isLoading: true,
-          artist: artist,
-          music: music,
           navigateTo: PageConfig(
             '/lyric',
             arguments: entity,
@@ -233,11 +210,8 @@ void main() {
             whenComplete: sut.loadFavorites,
           ),
         ),
-        LyricsSearchState(
-          isLoading: false,
-          artist: artist,
-          music: music,
-        ),
+        LyricsSearchState.initial(artist: artist, music: music)
+            .copyWith(isLoading: false),
       ]),
     );
 
@@ -253,17 +227,11 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
-          isLoading: true,
-          artist: artist,
-          music: music,
-        ),
-        LyricsSearchState(
-          isLoading: false,
-          artist: artist,
-          music: music,
-          errorMessage: 'Invalid query. Try again with different values.',
-        ),
+        LyricsSearchState.initial(artist: artist, music: music)
+            .copyWith(isLoading: true),
+        LyricsSearchState.initial(artist: artist, music: music).copyWith(
+            isLoading: false,
+            errorMessage: 'Invalid query. Try again with different values.'),
       ]),
     );
 
@@ -279,17 +247,11 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(
-          isLoading: true,
-          artist: artist,
-          music: music,
-        ),
-        LyricsSearchState(
-          isLoading: false,
-          artist: artist,
-          music: music,
-          errorMessage: 'Something wrong happened. Please, try again!',
-        ),
+        LyricsSearchState.initial(artist: artist, music: music)
+            .copyWith(isLoading: true),
+        LyricsSearchState.initial(artist: artist, music: music).copyWith(
+            isLoading: false,
+            errorMessage: 'Something wrong happened. Please, try again!'),
       ]),
     );
 
@@ -306,8 +268,9 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(isLoading: true),
-        LyricsSearchState(isLoading: false, favorites: [entity]),
+        LyricsSearchState.initial().copyWith(isLoading: true),
+        LyricsSearchState.initial()
+            .copyWith(isLoading: false, favorites: [entity]),
       ]),
     );
 
@@ -320,8 +283,8 @@ void main() {
     expectLater(
       sut.stateStream,
       emitsInOrder([
-        LyricsSearchState(isLoading: true),
-        LyricsSearchState(
+        LyricsSearchState.initial().copyWith(isLoading: true),
+        LyricsSearchState.initial().copyWith(
           isLoading: false,
           errorMessage: 'Something wrong happened. Please, try again!',
         ),
@@ -335,7 +298,7 @@ void main() {
     expectLater(
       sut.stateStream,
       emits(
-        LyricsSearchState(
+        LyricsSearchState.initial().copyWith(
           isLoading: false,
           navigateTo: PageConfig(
             '/lyric',

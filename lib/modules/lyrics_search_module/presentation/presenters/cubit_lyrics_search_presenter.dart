@@ -44,7 +44,10 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
       emit(newState);
 
       final entity = await lyricsSearch.search(
-        LyricsSearchParams(artist: state.artist, music: state.music),
+        LyricsSearchParams(
+          artist: state.form.value('artist'),
+          music: state.form.value('music'),
+        ),
       );
 
       _navigateToLyric(entity);
@@ -80,26 +83,36 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
 
   @override
   void validateArtist(String artist) {
-    var newState = state
-        .copyWith(artist: artist)
-        .copyWithNull(errorMessage: true, artistError: true);
-
     final error = validation.validate(field: 'artist', value: artist);
 
-    newState = newState.copyWith(artistError: error);
+    var newState = state
+        .copyWith(
+          form: state.form.copyWith(
+            'artist',
+            value: artist,
+            error: error,
+            clearError: error == null,
+          ),
+        )
+        .copyWithNull(errorMessage: true);
 
     emit(newState);
   }
 
   @override
   void validateMusic(String music) {
-    var newState = state
-        .copyWith(music: music)
-        .copyWithNull(errorMessage: true, musicError: true);
-
     final error = validation.validate(field: 'music', value: music);
 
-    newState = newState.copyWith(musicError: error);
+    var newState = state
+        .copyWith(
+          form: state.form.copyWith(
+            'music',
+            value: music,
+            error: error,
+            clearError: error == null,
+          ),
+        )
+        .copyWithNull(errorMessage: true);
 
     emit(newState);
   }

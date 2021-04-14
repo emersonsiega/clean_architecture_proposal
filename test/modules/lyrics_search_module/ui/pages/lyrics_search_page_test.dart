@@ -109,7 +109,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(artistError: 'error'));
+    stateController.add(LyricsSearchState.initial(artistError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -119,7 +119,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(musicError: 'error'));
+    stateController.add(LyricsSearchState.initial(musicError: 'error'));
     await tester.pump();
 
     expect(find.text('error'), findsOneWidget);
@@ -129,7 +129,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState());
+    stateController.add(LyricsSearchState.initial());
     await tester.pump();
 
     expect(
@@ -152,8 +152,14 @@ void main() {
   testWidgets('Should enable button if form is valid',
       (WidgetTester tester) async {
     await loadPage(tester);
-
-    stateController.add(LyricsSearchState(artist: 'any', music: 'any'));
+    var state = LyricsSearchState.initial();
+    stateController.add(
+      state.copyWith(
+        form: state.form
+            .copyWith('artist', value: 'any')
+            .copyWith('music', value: 'any'),
+      ),
+    );
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -166,7 +172,7 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(musicError: 'error'));
+    stateController.add(LyricsSearchState.initial(musicError: 'error'));
     await tester.pump();
 
     final button = tester.widget<FloatingActionButton>(
@@ -178,7 +184,14 @@ void main() {
   testWidgets('Should call search on form submit', (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(music: 'any', artist: 'any'));
+    var state = LyricsSearchState.initial();
+    stateController.add(
+      state.copyWith(
+        form: state.form
+            .copyWith('artist', value: 'any')
+            .copyWith('music', value: 'any'),
+      ),
+    );
     await tester.pump();
 
     await tester.tap(find.byType(FloatingActionButton));
@@ -190,11 +203,11 @@ void main() {
   testWidgets('Should show and hide loading', (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(isLoading: true));
+    stateController.add(LyricsSearchState.initial().copyWith(isLoading: true));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
 
-    stateController.add(LyricsSearchState(isLoading: false));
+    stateController.add(LyricsSearchState.initial().copyWith(isLoading: false));
     await tester.pump();
     expect(find.byType(CircularProgressIndicator), findsNothing);
   });
@@ -203,7 +216,8 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(errorMessage: 'error_message'));
+    stateController.add(
+        LyricsSearchState.initial().copyWith(errorMessage: 'error_message'));
     await tester.pump();
     expect(find.text('error_message'), findsOneWidget);
   });
@@ -226,7 +240,8 @@ void main() {
   testWidgets('Should present list of favorites', (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(favorites: favoritesList));
+    stateController
+        .add(LyricsSearchState.initial().copyWith(favorites: favoritesList));
     await tester.pump();
 
     expect(find.text("Favorites"), findsOneWidget);
@@ -244,11 +259,11 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(favorites: null));
+    stateController.add(LyricsSearchState.initial().copyWith(favorites: null));
     await tester.pump();
     expect(find.text("Favorites"), findsNothing);
 
-    stateController.add(LyricsSearchState(favorites: []));
+    stateController.add(LyricsSearchState.initial().copyWith(favorites: []));
     await tester.pump();
     expect(find.text("Favorites"), findsNothing);
   });
@@ -257,7 +272,8 @@ void main() {
       (WidgetTester tester) async {
     await loadPage(tester);
 
-    stateController.add(LyricsSearchState(favorites: favoritesList));
+    stateController
+        .add(LyricsSearchState.initial().copyWith(favorites: favoritesList));
     await tester.pump();
 
     final favoriteTile = find.byKey(Key("${favoritesList.first.id}"));

@@ -17,7 +17,7 @@ class MusicInput extends StatelessWidget {
             labelText: "Music",
             hintText: "Tears in Heaven",
             prefixIcon: Icon(Icons.music_note),
-            errorText: snapshot.data?.musicError,
+            errorText: snapshot.data?.form?.error('music'),
           ),
           textInputAction: TextInputAction.done,
           onChanged: presenter.validateMusic,

@@ -17,7 +17,7 @@ class ArtistInput extends StatelessWidget {
             labelText: "Artist",
             hintText: "Eric Clapton",
             prefixIcon: Icon(Icons.person),
-            errorText: snapshot.data?.artistError,
+            errorText: snapshot.data?.form?.error('artist'),
           ),
           textInputAction: TextInputAction.none,
           onChanged: presenter.validateArtist,

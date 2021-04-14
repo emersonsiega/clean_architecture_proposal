@@ -8,45 +8,33 @@ part of 'lyrics_search_state.dart';
 
 extension LyricsSearchStateCopyWith on LyricsSearchState {
   LyricsSearchState copyWith({
-    String artist,
-    String artistError,
     String errorMessage,
     List<LyricEntity> favorites,
+    FormState form,
     bool isLoading,
-    String music,
-    String musicError,
     PageConfig navigateTo,
   }) {
     return LyricsSearchState(
-      artist: artist ?? this.artist,
-      artistError: artistError ?? this.artistError,
       errorMessage: errorMessage ?? this.errorMessage,
       favorites: favorites ?? this.favorites,
+      form: form ?? this.form,
       isLoading: isLoading ?? this.isLoading,
-      music: music ?? this.music,
-      musicError: musicError ?? this.musicError,
       navigateTo: navigateTo ?? this.navigateTo,
     );
   }
 
   LyricsSearchState copyWithNull({
-    bool artist = false,
-    bool artistError = false,
     bool errorMessage = false,
     bool favorites = false,
+    bool form = false,
     bool isLoading = false,
-    bool music = false,
-    bool musicError = false,
     bool navigateTo = false,
   }) {
     return LyricsSearchState(
-      artist: artist == true ? null : this.artist,
-      artistError: artistError == true ? null : this.artistError,
       errorMessage: errorMessage == true ? null : this.errorMessage,
       favorites: favorites == true ? null : this.favorites,
+      form: form == true ? null : this.form,
       isLoading: isLoading == true ? null : this.isLoading,
-      music: music == true ? null : this.music,
-      musicError: musicError == true ? null : this.musicError,
       navigateTo: navigateTo == true ? null : this.navigateTo,
     );
   }
