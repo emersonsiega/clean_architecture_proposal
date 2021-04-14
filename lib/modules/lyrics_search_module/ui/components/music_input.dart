@@ -20,7 +20,7 @@ class MusicInput extends StatelessWidget {
             errorText: snapshot.data?.form?.error('music'),
           ),
           textInputAction: TextInputAction.done,
-          onChanged: presenter.validateMusic,
+          onChanged: (value) => presenter.validate('music', value),
         );
       },
     );

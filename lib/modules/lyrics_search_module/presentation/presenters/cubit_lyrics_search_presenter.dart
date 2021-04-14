@@ -82,32 +82,14 @@ class CubitLyricsSearchPresenter extends Cubit<LyricsSearchState>
   }
 
   @override
-  void validateArtist(String artist) {
-    final error = validation.validate(field: 'artist', value: artist);
+  void validate(String fieldName, String value) {
+    final error = validation.validate(field: fieldName, value: value);
 
     var newState = state
         .copyWith(
           form: state.form.copyWith(
-            'artist',
-            value: artist,
-            error: error,
-            clearError: error == null,
-          ),
-        )
-        .copyWithNull(errorMessage: true);
-
-    emit(newState);
-  }
-
-  @override
-  void validateMusic(String music) {
-    final error = validation.validate(field: 'music', value: music);
-
-    var newState = state
-        .copyWith(
-          form: state.form.copyWith(
-            'music',
-            value: music,
+            fieldName,
+            value: value,
             error: error,
             clearError: error == null,
           ),

@@ -77,7 +77,7 @@ void main() {
   });
 
   test('Should call validation with correct artist', () async {
-    sut.validateArtist(artist);
+    sut.validate('artist', artist);
 
     verify(
       validationSpy.validate(field: 'artist', value: artist),
@@ -85,7 +85,7 @@ void main() {
   });
 
   test('Should call validation with correct music', () async {
-    sut.validateMusic(music);
+    sut.validate('music', music);
 
     verify(
       validationSpy.validate(field: 'music', value: music),
@@ -102,7 +102,7 @@ void main() {
       ),
     );
 
-    sut.validateArtist(artist);
+    sut.validate('artist', artist);
   });
 
   test('Should emits null if artist is valid', () async {
@@ -111,7 +111,7 @@ void main() {
       emits(LyricsSearchState.initial(artist: artist)),
     );
 
-    sut.validateArtist(artist);
+    sut.validate('artist', artist);
   });
 
   test('Should present error if music is invalid', () async {
@@ -122,7 +122,7 @@ void main() {
       emits(LyricsSearchState.initial(music: music, musicError: 'invalid')),
     );
 
-    sut.validateMusic(music);
+    sut.validate('music', music);
   });
 
   test('Should emits null if music is valid', () async {
@@ -131,7 +131,7 @@ void main() {
       emits(LyricsSearchState.initial(music: music)),
     );
 
-    sut.validateMusic(music);
+    sut.validate('music', music);
   });
 
   test('Should emits invalid form if any field is invalid (invalid music)',
@@ -147,8 +147,8 @@ void main() {
       ]),
     );
 
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
   });
 
   test('Should emits invalid form if any field is invalid (invalid artist)',
@@ -164,8 +164,8 @@ void main() {
       ]),
     );
 
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
   });
 
   test('Should emits form valid if all fields are valid', () async {
@@ -177,13 +177,13 @@ void main() {
       ]),
     );
 
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
   });
 
   test('Should call LyricsSearch with correct values', () async {
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
 
     await sut.search();
 
@@ -193,8 +193,8 @@ void main() {
   });
 
   test('Should emit correct events on LyricsSearch success', () async {
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
 
     expectLater(
       sut.stateStream,
@@ -221,8 +221,8 @@ void main() {
   test('Should emit invalidQuery on LyricsSearch failure', () async {
     mockLyricsSearchError(error: DomainError.invalidQuery);
 
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
 
     expectLater(
       sut.stateStream,
@@ -241,8 +241,8 @@ void main() {
   test('Should emit unexpectedError on LyricsSearch failure', () async {
     mockLyricsSearchError();
 
-    sut.validateArtist(artist);
-    sut.validateMusic(music);
+    sut.validate('artist', artist);
+    sut.validate('music', music);
 
     expectLater(
       sut.stateStream,

@@ -6,7 +6,7 @@ part 'lyrics_search_state.g.dart';
 
 @CopyWith(generateCopyWithNull: true)
 class LyricsSearchState extends BaseState
-    with NavigationState, ErrorMessageState, LoadingState, FormValidState {
+    with NavigationState, ErrorMessageState, LoadingState, FormStateManager {
   @override
   final bool isLoading;
   @override
@@ -14,10 +14,9 @@ class LyricsSearchState extends BaseState
   @override
   final PageConfig navigateTo;
   @override
-  bool get isFormValid => !form.hasError;
+  final FormState form;
 
   final List<LyricEntity> favorites;
-  final FormState form;
 
   LyricsSearchState({
     this.form,

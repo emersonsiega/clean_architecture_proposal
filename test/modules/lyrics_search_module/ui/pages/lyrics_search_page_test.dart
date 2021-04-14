@@ -99,10 +99,10 @@ void main() {
     await loadPage(tester);
 
     await tester.enterText(find.bySemanticsLabel('Artist'), artist);
-    verify(searchPresenterSpy.validateArtist(artist)).called(1);
+    verify(searchPresenterSpy.validate('artist', artist)).called(1);
 
     await tester.enterText(find.bySemanticsLabel('Music'), music);
-    verify(searchPresenterSpy.validateMusic(music)).called(1);
+    verify(searchPresenterSpy.validate('music', music)).called(1);
   });
 
   testWidgets('Should present error if Artist is invalid',

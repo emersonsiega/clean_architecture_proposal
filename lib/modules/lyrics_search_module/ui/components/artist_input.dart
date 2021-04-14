@@ -20,7 +20,7 @@ class ArtistInput extends StatelessWidget {
             errorText: snapshot.data?.form?.error('artist'),
           ),
           textInputAction: TextInputAction.none,
-          onChanged: presenter.validateArtist,
+          onChanged: (value) => presenter.validate('artist', value),
         );
       },
     );
