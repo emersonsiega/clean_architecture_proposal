@@ -6,18 +6,14 @@ import '../navigation/navigation.dart';
 import '../ui.dart';
 
 mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
-  Stream<NavigationState> get navigationStream;
   StreamSubscription _subscription;
 
-  @override
-  void initState() {
-    super.initState();
+  void subscribeNavigation(Stream<NavigationState> navigationStream) {
+    _subscription = navigationStream.listen((state) async {
+      if (state.navigateTo != null) {
+        final page = state.navigateTo;
 
-    _subscription = navigationStream
-        .map((state) => state.navigateTo)
-        .listen((PageConfig page) async {
-      if (page != null) {
-        if (page.type == NavigateType.push) {
+        if (state.navigateTo.type == NavigateType.push) {
           await Nav.pushNamed(page.route, arguments: page.arguments);
         } else {
           await Nav.pushReplacementNamed(page.route, arguments: page.arguments);
@@ -32,7 +28,7 @@ mixin NavigateToPageMixin<T extends StatefulWidget> on State<T> {
 
   @override
   void dispose() {
-    super.dispose();
     _subscription?.cancel();
+    super.dispose();
   }
 }

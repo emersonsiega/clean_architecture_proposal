@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../../../shared/shared.dart';
@@ -14,32 +12,16 @@ class LyricsSearchPage extends StatefulWidget {
 
 class _LyricsSearchPageState
     extends CustomState<LyricsSearchPresenter, LyricsSearchPage>
-    with NavigateToPageMixin {
-  StreamSubscription _subscription;
-
-  @override
-  Stream<NavigationState> get navigationStream => presenter.stateStream;
-
+    with NavigateToPageMixin, ErrorMessageMixin {
   @override
   void initState() {
     presenter.loadFavorites();
 
-    _subscription = presenter.stateStream.listen((state) {
-      if (state.errorMessage != null) {
-        showErrorSnack(context: context, error: state.errorMessage);
-      }
-    });
+    subscribeErrorMessage(presenter.stateStream);
+
+    subscribeNavigation(presenter.stateStream);
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-
-    presenter.dispose();
-
-    super.dispose();
   }
 
   void _hideKeyboard() {

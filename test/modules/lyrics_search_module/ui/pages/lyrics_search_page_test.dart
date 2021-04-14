@@ -222,14 +222,6 @@ void main() {
     expect(find.text('error_message'), findsOneWidget);
   });
 
-  testWidgets('Should close streams on dispose', (WidgetTester tester) async {
-    await loadPage(tester);
-
-    addTearDown(() {
-      verify(searchPresenterSpy.dispose()).called(1);
-    });
-  });
-
   testWidgets('Should call loadFavorites on initState',
       (WidgetTester tester) async {
     await loadPage(tester);

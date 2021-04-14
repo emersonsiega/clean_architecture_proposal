@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 
 import '../../../shared/shared.dart';
@@ -16,26 +14,15 @@ class LyricPage extends StatefulWidget {
   _LyricPageState createState() => _LyricPageState();
 }
 
-class _LyricPageState extends CustomState<LyricPresenter, LyricPage> {
-  StreamSubscription _subscription;
-
+class _LyricPageState extends CustomState<LyricPresenter, LyricPage>
+    with SuccessMessageMixin {
   @override
   void initState() {
-    _subscription = presenter.stateStream.listen((state) {
-      if (state.message != null) {
-        showSuccessSnack(context: context, message: state.message);
-      }
-    });
+    subscribeSuccessMessage(presenter.stateStream);
 
     presenter.checkIsFavorite(widget.entity);
 
     super.initState();
-  }
-
-  @override
-  void dispose() {
-    _subscription?.cancel();
-    super.dispose();
   }
 
   @override
