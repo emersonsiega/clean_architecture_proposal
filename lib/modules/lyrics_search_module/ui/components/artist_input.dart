@@ -19,7 +19,7 @@ class ArtistInput extends StatelessWidget {
             prefixIcon: Icon(Icons.person),
             errorText: snapshot.data?.form?.error(LyricsSearchFields.artist),
           ),
-          textInputAction: TextInputAction.none,
+          textInputAction: TextInputAction.next,
           onChanged: (value) =>
               presenter.validate(LyricsSearchFields.artist, value),
         );

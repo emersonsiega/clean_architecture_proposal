@@ -30,6 +30,8 @@ class _LyricsSearchPageState
 
   @override
   Widget build(BuildContext context) {
+    final isKeyboardOpened = MediaQuery.of(context).viewInsets.bottom > 100.0;
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Lyrics Search"),
@@ -37,20 +39,32 @@ class _LyricsSearchPageState
       ),
       body: GestureDetector(
         onTap: _hideKeyboard,
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(vertical: 50, horizontal: 32),
-          child: Form(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                ArtistInput(),
-                const SizedBox(height: 30),
-                MusicInput(),
-                const SizedBox(height: 30),
-                FavoritesList(),
-              ],
+        child: Stack(
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 12.0,
+                vertical: 16,
+              ),
+              child: Form(
+                child: Column(
+                  children: [
+                    ArtistInput(),
+                    const SizedBox(height: 30),
+                    MusicInput(),
+                  ],
+                ),
+              ),
             ),
-          ),
+            Visibility(
+              visible: !isKeyboardOpened,
+              maintainState: true,
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: FavoritesList(),
+              ),
+            ),
+          ],
         ),
       ),
       floatingActionButton: SearchButton(),

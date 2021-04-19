@@ -15,25 +15,35 @@ class FavoritesList extends StatelessWidget {
         final favorites = snapshot?.data?.favorites ?? [];
 
         if (favorites.isNotEmpty) {
-          return Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Text(
-                "Favorites",
-                style: Theme.of(context).textTheme.headline5,
-              ),
-              SizedBox(height: 16),
-              Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: favorites
-                    .map(
-                      (favorite) => _FavoriteListTile(favorite: favorite),
-                    )
-                    .toList(),
-              ),
-            ],
+          return SafeArea(
+            child: ExpandableList(
+              minSize: MediaQuery.of(context).size.height * 0.5,
+              indicatorColor: Theme.of(context).accentColor,
+              builder: (ScrollController controller) {
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 10.0, left: 10),
+                      child: Text(
+                        "Favorites",
+                        style: Theme.of(context).textTheme.headline5,
+                      ),
+                    ),
+                    Expanded(
+                      child: ListView.builder(
+                        controller: controller,
+                        itemCount: favorites.length,
+                        physics: AlwaysScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          return _FavoriteListTile(favorite: favorites[index]);
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
           );
         }
 
