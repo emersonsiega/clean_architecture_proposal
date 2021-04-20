@@ -8,8 +8,8 @@
             "name": "Flutter macOS",
             "type": "dart",
             "request": "launch",
-            "program": "lib/main/main.dart",
-            "deviceId": "macOS"
+            "program": "./lib/main.dart",
+        
         },
         {
             "name": "Dart: Run all Tests",

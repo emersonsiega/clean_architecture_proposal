@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="br.com.siega.clean_architecture_proposal">
+    package="com.example.clean_architecture_proposal">
    <application
         android:label="clean_architecture_proposal"
         android:icon="@mipmap/ic_launcher">
