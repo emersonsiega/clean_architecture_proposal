@@ -22,6 +22,7 @@ build/
 .classpath
 .project
 .settings/
+.packages
 
 # Flutter repo-specific
 /bin/cache/
