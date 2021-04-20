@@ -22,13 +22,12 @@ abstract class BaseApp {
 
   Route<dynamic> generateRoute(RouteSettings settings) {
     var routerName = settings.name;
-    var routerArgs = settings.arguments;
+    var routerArgs = settings.arguments ?? Object();
 
     var navigateTo = routes[routerName];
-    if (navigateTo == null) return throw ("navigateTo can't be null");
 
     return MaterialPageRoute(
-      builder: (context) => navigateTo.call(context, routerArgs as Object),
+      builder: (context) => navigateTo!.call(context, routerArgs),
     );
   }
 }

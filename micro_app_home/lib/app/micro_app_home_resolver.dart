@@ -8,8 +8,6 @@ class MicroAppHomeResolver implements MicroApp {
 
   @override
   Map<String, WidgetBuilderArgs> get routes => {
-        '/home': (context, args) => HomePage(
-              title: 'Demo App',
-            ),
+        '/home': (context, args) => HomePage(),
       };
 }

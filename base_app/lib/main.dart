@@ -7,6 +7,9 @@ void main() {
 }
 
 class MyApp extends StatelessWidget with BaseApp {
+  final RouteSettings initialRouteSettings =
+      RouteSettings(name: '/home', arguments: null);
+
   @override
   Widget build(BuildContext context) {
     super.registerRouters();
@@ -17,8 +20,7 @@ class MyApp extends StatelessWidget with BaseApp {
         primarySwatch: Colors.blue,
       ),
       navigatorKey: navigatorKey,
-      onGenerateRoute: super.generateRoute,
-      initialRoute: '/home',
+      onGenerateRoute: (_) => super.generateRoute(initialRouteSettings),
     );
   }
 
