@@ -37,3 +37,16 @@
 /dev/docs/flutter.docs.zip
 /dev/docs/lib/
 /dev/docs/pubspec.yaml
+.flutter-plugins
+.flutter-plugins-dependencies
+android/local.properties
+base_app/.flutter-plugins
+*/.flutter-plugins-dependencies
+ios/Flutter/flutter_export_environment.sh
+ios/Runner/GeneratedPluginRegistrant.h
+ios/Runner/GeneratedPluginRegistrant.m
+ios/Flutter/Generated.xcconfig
+android/app/src/main/java/io/flutter/plugins/GeneratedPluginRegistrant.java
+*/.flutter-plugins
+base_app/ios/Runner.xcworkspace/contents.xcworkspacedata
+*/.metadata
