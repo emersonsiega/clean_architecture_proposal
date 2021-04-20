@@ -10,12 +10,12 @@
 .history
 .svn/
 .dart_tool/
-build/
 
 # IntelliJ related
 *.iml
 *.ipr
 *.iws
+*build/
 .idea/
 
 # Visual Studio Code related
