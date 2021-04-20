@@ -8,7 +8,7 @@
             "name": "Flutter macOS",
             "type": "dart",
             "request": "launch",
-            "program": "./lib/main.dart",
+            "program": "./base_app/lib/main.dart",
         
         },
         {

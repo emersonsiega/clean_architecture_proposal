@@ -12,8 +12,8 @@ abstract class BaseApp {
   final Map<String, WidgetBuilderArgs> routes = {};
 
   void registerRouters() {
-    if (baseRoutes?.isNotEmpty ?? false) routes.addAll(baseRoutes);
-    if (microApps?.isNotEmpty ?? false) {
+    if (baseRoutes.isNotEmpty) routes.addAll(baseRoutes);
+    if (microApps.isNotEmpty) {
       for (MicroApp microapp in microApps) {
         routes.addAll(microapp.routes);
       }
@@ -22,13 +22,14 @@ abstract class BaseApp {
 
   Route<dynamic> generateRoute(RouteSettings settings) {
     var routerName = settings.name;
-    var routerArgs = settings.arguments;
+    var routerArgs = settings.arguments as Object;
 
     var navigateTo = routes[routerName];
-    if (navigateTo == null) return null;
+
+    //if (navigateTo == null) return throw ("navigateTo can't be null");
 
     return MaterialPageRoute(
-      builder: (context) => navigateTo.call(context, routerArgs),
+      builder: (context) => navigateTo!.call(context, routerArgs),
     );
   }
 }
