@@ -17,8 +17,8 @@ flutter pub run build_runner build
 ```
 ## Por dentro de cada micro-frontend
 - ***base_app*** responsável por rodar a aplicação, único que conhece todos os micro-frontends da aplicação.
-- ***micro_commons_dps*** deve por manter as dependências dos micro-frontends 
-- ***micro_core*** sua responsabilidade é manter aquilo que é compartilhando entre os micro-frontends como por exemplo, widgets, themes e etc.
+- ***micro_commons_dps*** deve manter as dependências dos micro-frontends 
+- ***micro_core*** sua responsabilidade é manter aquilo que é compartilhado entre os micro-frontends como por exemplo, widgets, themes e etc.
  
 Cada micro-frontends carrega arquitetura limpa em seu interior da seguinte forma:
 
