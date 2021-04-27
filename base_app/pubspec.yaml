@@ -11,10 +11,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  #MICRO -> APPS
   micro_core:
     path: ../micro_core
+  micro_app_search:
+    path: ../micro_app_search
+  micro_app_about:
+    path: ../micro_app_about
+  micro_commons_deps:
+    path: ../micro_commons_deps
 
   cupertino_icons: ^1.0.2
 

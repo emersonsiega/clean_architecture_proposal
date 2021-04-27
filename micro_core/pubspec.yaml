@@ -11,10 +11,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  
-  #MICRO -> APPS
-  micro_app_home:
-    path: ../micro_app_home
   micro_commons_deps:
     path: ../micro_commons_deps
 
